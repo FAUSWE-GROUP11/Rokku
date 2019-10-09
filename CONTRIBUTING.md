@@ -10,16 +10,17 @@ Your git should have two remotes: origin (pointing to your fork) and upstream (p
 
 ```
 git clone <url of your fork>
+cd Rokku
 git remote add upstream https://github.com/FAUSWE-GROUP11/Rokku.git
 ```
 
 ### 3. Create a virtual environment
 Virtual environment is crucial for any Python projects to manage dependencies. We recommend the built-in `venv` command to create virtual environment (see [doc](https://docs.python.org/3/tutorial/venv.html)). You can, of course, use `virtualenv` (see [guides](https://python-guide-kr.readthedocs.io/ko/latest/dev/virtualenvs.html)) for the same purpose. We do not recommend using `pipenv` as it might create hassel unjustified for this project.
 
-Example:
+The following command creates a virtual environment inside a directory called `venv` inside the main project folder.
 
 ```
-cd Rokku
+# inside Rokku directory
 python3 -m venv venv/
 ```
 
@@ -66,5 +67,14 @@ Example:
 
 `git push origin fanchen/fix_bug`
 
-### 6. Create new pull request
-From your fork, go to the branch you have just pushed and open a new pull request. Wait for one of the codeowners to approve of your PR and your contribution can be merged to upstream/master.
+### 6. Create new pull request (PR)
+From your fork or upstream, open a new PR to merge your new branch to upstream/master. Wait for one of the codeowners (go to CODEOWNER file to see who are codeowners of this project) to approve of your PR. Upon approval, your contribution can be merged to upstream/master.
+
+### 7. Delete your branch
+After your PR is merged to upstream/master, delete your local branch and the branch on your fork. This is to make sure that all branches currently living on the remote repo are unmerged. To delete your local branch and branch on your fork, run this command.
+
+```
+git checkout master
+git branch -d fanchen/fix_bug
+git push -d origin fanchen/fix_bug
+```
