@@ -1,5 +1,5 @@
 # Guidelines for Contributing to This Repo
-## Setting up local development environment
+## SETTING UP LOCAL ENVIRONMENT
 Follow these guidelines to set up your local development environment. If you have already set it up, move on to [Contributing to the project](https://github.com/FAUSWE-GROUP11/Rokku/blob/master/CONTRIBUTING.md#contributing-to-the-project).
 
 ### 1. Fork this repo into your own GitHub account
@@ -39,7 +39,7 @@ The `pre-commit` CLI tool is downloaded already as part of the dependencies for 
 
 `pre-commit install`
 
-## Contributing to the project
+## CONTRIBUTING TO PROJECT
 Proceed only if you have already set up local development environment.
 
 ### 1. Sync your fork with upstream master branch
@@ -70,11 +70,12 @@ Example:
 ### 6. Create new pull request (PR)
 From your fork or upstream, open a new PR to merge your new branch to upstream/master. Wait for one of the codeowners (go to CODEOWNER file to see who are codeowners of this project) to approve of your PR. Upon approval, your contribution can be merged to upstream/master.
 
-### 7. Delete your branch
-After your PR is merged to upstream/master, delete your local branch and the branch on your fork. This is to make sure that all branches currently living on the remote repo are unmerged. To delete your local branch and branch on your fork, run this command.
+### 7. Delete your branch and sync with upstream
+After your PR is merged to upstream/master, delete your local branch and the branch on your fork. This is to make sure that all branches currently living on the remote repo are unmerged. Note that, before you can delete the branch, you have to go to your local master and sync with upstream first.
 
 ```
 git checkout master
+git pull upstream master
 git branch -d fanchen/fix_bug
 git push -d origin fanchen/fix_bug
 ```
