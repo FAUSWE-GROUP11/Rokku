@@ -67,5 +67,14 @@ Example:
 
 `git push origin fanchen/fix_bug`
 
-### 6. Create new pull request
-From your fork, go to the branch you have just pushed and open a new pull request. Wait for one of the codeowners to approve of your PR and your contribution can be merged to upstream/master.
+### 6. Create new pull request (PR)
+From your fork or upstream, open a new PR to merge your new branch to upstream/master. Wait for one of the codeowners (go to CODEOWNER file to see who are codeowners of this project) to approve of your PR. Upon approval, your contribution can be merged to upstream/master.
+
+### 7. Delete your branch
+After your PR is merged to upstream/master, delete your local branch and the branch on your fork. This is to make sure that all branches currently living on the remote repo are unmerged. To delete your local branch and branch on your fork, run this command.
+
+```
+git checkout master
+git branch -d fanchen/fix_bug
+git push -d origin fanchen/fix_bug
+```
