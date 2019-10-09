@@ -10,16 +10,17 @@ Your git should have two remotes: origin (pointing to your fork) and upstream (p
 
 ```
 git clone <url of your fork>
+cd Rokku
 git remote add upstream https://github.com/FAUSWE-GROUP11/Rokku.git
 ```
 
 ### 3. Create a virtual environment
 Virtual environment is crucial for any Python projects to manage dependencies. We recommend the built-in `venv` command to create virtual environment (see [doc](https://docs.python.org/3/tutorial/venv.html)). You can, of course, use `virtualenv` (see [guides](https://python-guide-kr.readthedocs.io/ko/latest/dev/virtualenvs.html)) for the same purpose. We do not recommend using `pipenv` as it might create hassel unjustified for this project.
 
-Example:
+The following command creates a virtual environment inside a directory called `venv` inside the main project folder.
 
 ```
-cd Rokku
+# inside Rokku directory
 python3 -m venv venv/
 ```
 
