@@ -1,6 +1,6 @@
 # Guidelines for Contributing to This Repo
 ## Setting up local development environment
-Follow these guidelines to set up your local development environment. If you have already set it up, move on to [Contributing to the project].
+Follow these guidelines to set up your local development environment. If you have already set it up, move on to [Contributing to the project](https://github.com/FAUSWE-GROUP11/Rokku/blob/master/CONTRIBUTING.md#contributing-to-the-project).
 
 ### 1. Fork this repo into your own GitHub account
 Click the "Fork" button on the upper-right hand corner.
