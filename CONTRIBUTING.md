@@ -76,6 +76,7 @@ After your PR is merged to upstream/master, delete your local branch and the bra
 ```
 git checkout master
 git pull upstream master
+git push origin master
 git branch -d fanchen/fix_bug
 git push -d origin fanchen/fix_bug
 ```
