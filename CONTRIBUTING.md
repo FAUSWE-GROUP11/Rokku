@@ -9,6 +9,7 @@ Click the "Fork" button on the upper-right hand corner.
 Your git should have two remotes: origin (pointing to your fork) and upstream (pointing to the master you have forked from). Always pull from upstream to sync your local repo and push to your origin.
 
 ```
+# Make sure you're in desired directory for your local repository
 git clone <url of your fork>
 cd Rokku
 git remote add upstream https://github.com/FAUSWE-GROUP11/Rokku.git
@@ -19,9 +20,15 @@ Virtual environment is crucial for any Python projects to manage dependencies. W
 
 The following command creates a virtual environment inside a directory called `venv` inside the main project folder.
 
+Note: These commands also assume you have adjusted your file path to include python.exe and python scripts.
+
 ```
 # inside Rokku directory
 python3 -m venv venv/
+```
+```
+# if you're on Windows
+python -m venv c:venv\
 ```
 
 ### 4. Activate virtual environment and install dependencies
@@ -33,6 +40,8 @@ pip3 install -r requirements.txt
 The first command activate the virtual environment, so that all your python dependencies come from within the virtual environment (i.e. within the `venv` directory), instead of your system python site-packages folder.
 
 The second command installs the dependencies required (listed in `requirements.txt`) by the project.
+
+Note: If you're on Windows replace `bin` with `Scripts`.
 
 ### 5. Install pre-commit git hook
 The `pre-commit` CLI tool is downloaded already as part of the dependencies for this project. We use `pre-commit` to check for PEP8 violation (via [`flake8`](http://flake8.pycqa.org/en/latest/index.html)) and automatically format python code (via ['black'](https://github.com/psf/black)) to comply with PEP8, before allowing `git commit` to take effect. Run the following command to install `pre-commit` git hook.
