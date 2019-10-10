@@ -10,10 +10,18 @@ will pass a variable to determine resolution and
 return file location."""
 
 
+
+
+
+
+
+
+
+
 def take_picture():
     # set dir '/home/pi/Desktop/image.jpg'
     # filename = "{0:%Y}-{0:%m}-{0:%d}".format(datetime.now)
-    filename = "test.jpg"
+    filename="test.jpg"
     camera = PiCamera()
     camera.resolution = (1024, 768)
     camera.start_preview()
@@ -27,9 +35,13 @@ def take_picture():
 the file path in future iterations."""
 
 
+
+
+
+
 def record_video(length=10):
     camera = PiCamera()
-    camera.resolution = (640, 480)
+    camera.resolution=(640,480)
     camera.start_recording("test.h264")
     camera.wait_recording(length)
     camera.stop_recording()
@@ -49,6 +61,4 @@ def main():
     sleep(5)
     record_video()
     # Test to check if file was made goes here
-
-
 main()
