@@ -54,7 +54,7 @@ The syntax to use `barnard` without using certificate is this:
 
 For example, using the mumble server parameters mentioned earlier, we can connect a CLI mumble client named "rpi-client" to the mumble server with the following command:
 
-`barnard -server=sf.guildbit.com:50008 -username=rpi-client -password= RichBatman -insecure=true`
+`barnard -server=sf.guildbit.com:50008 -username=rpi-client -password=RichBatman -insecure=true`
 
 Once connected, `barnard` draws a CLI client on the console.
 
