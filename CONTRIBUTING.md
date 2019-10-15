@@ -55,11 +55,26 @@ Proceed only if you have already set up local development environment.
 `git pull upstream master`
 
 ### 2. Check out a new branch to work on
-`git checkout -b fanchen/fix_bug`
+`git checkout -b <your_name>/fix_bug`
 
 ### 3. Make changes
 
-### 4. Commit to your branch
+### 4. Tests
+If you add new functions, it is highly recommended that each function has its own test case. Each subdirectory (i.e. component) in `Rokku` should follow the following structre for setting up tests.
+
+```
+├── readme.md
+├── source_code.py   
+└── tests
+    ├── __init__.py
+    └── test_source_code.py
+```
+
+Specifically, you write your code in `source_code.py`, and write test for the code in `test_source_code.py`. You can have multiple files for both source code and test code. See `raspberry-pi-intercom/tests/test_dummy.py` for simple examples of how to create test cases.
+
+### 5. Commit to your branch
+Before committing, run `pytest` to make sure none of your changes fail any test cases.
+
 Due to the existence of `pre-commit` git hook, your python code will be subject to testing from `flake8` checker and `black` formatter. If either of these two checks fail, your commit will not be fulfilled. You must fix your code's formatting according to the error message shown on the console. Note that, if `flake8` is triggered before `black`, some of the formatting issue reported from `flake8` could be already fixed by `black`, despite both checks show failure. We recommend that you run `git commit` multiple times until `black` passes, and then fix any remaining issues (i.e. issues unfixable by `black`). Once all issues are fixed, your commit will come through.
 
 If you add new dependencies to the project (i.e. you have run `pip3 install <package_name>`), you must update `requirements.txt`. To update, run the following command:
@@ -69,15 +84,15 @@ pip3 freeze > requirements.txt
 git commit -am "Update requirements"
 ```
 
-### 5. Push commit to your remote branch
-Since you have been working on branch "fanchen/fix_bug", you have to push your changes to the same branch of your fork on GitHub. Note: always push to origin (your folk); never push to upstream.
+### 6. Push commit to your remote branch
+Since you have been working on branch `<your_name>/fix_bug`, you have to push your changes to the same branch of your fork on GitHub. Note: always push to origin (your folk); never push to upstream.
 
 Example:
 
-`git push origin fanchen/fix_bug`
+`git push origin <your_name>/fix_bug`
 
-### 6. Create new pull request (PR)
-From your fork or upstream, open a new PR to merge your new branch to upstream/master. Wait for one of the codeowners (go to CODEOWNER file to see who are codeowners of this project) to approve of your PR. Upon approval, your contribution can be merged to upstream/master.
+### 7. Create new pull request (PR)
+From your fork or upstream, open a new PR to merge your new branch to upstream/master. Wait for Travis CI to pass all tests on your PR. Wait for one of the codeowners (go to CODEOWNER file to see who are codeowners of this project) to approve of your PR. Upon passing all tests and review approval, your contribution can be merged to upstream/master.
 
 ### 7. Delete your branch and sync with upstream
 After your PR is merged to upstream/master, delete your local branch and the branch on your fork. This is to make sure that all branches currently living on the remote repo are unmerged. Note that, before you can delete the branch, you have to go to your local master and sync with upstream first.
@@ -86,6 +101,6 @@ After your PR is merged to upstream/master, delete your local branch and the bra
 git checkout master
 git pull upstream master
 git push origin master
-git branch -d fanchen/fix_bug
-git push -d origin fanchen/fix_bug
+git branch -d <your_name>/fix_bug
+git push -d origin <your_name>/fix_bug
 ```
