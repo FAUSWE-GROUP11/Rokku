@@ -1,56 +1,70 @@
 import paho.mqtt.client as mqtt
 from time import sleep
-from collections import defaultdict
-from typing import Dict, List, Tuple
-import json
-
-
-class CallBacks:
-    def __init__(self):
-        self.connect_success = False
-        self.received_msgs: Dict[str, List[str]] = defaultdict(list)
-
-    def on_connect(self, client, userdata, flags, rc):
-        if rc == 0:
-            print("Connection successful")
-            self.connect_success = True
-        else:
-            print("Connection fails")
-            self.connect_success = False
-
-    def on_message(self, client, userdata, message):
-        msg: Tuple[str, str] = json.loads(message.payload.decode("utf-8"))
-        print(f"received: {msg}")
-        self.received_msgs[msg[0]].append(msg[1])
 
 
 class Subscriber:
+    """
+    A wrapper class to create an instance of client to subscribe to a topic and
+    handle related functionalities.
+    """
+
     def __init__(
         self,
         name: str,
-        topic: str = "Rokku",
-        broker_address: str = "test.mosquitto.org",
+        queue,
+        topic: str = "Rokku",  # default topic
+        broker_address: str = "test.mosquitto.org",  # default broker
         port: int = 1883,
     ):
         self.topic = topic
-        self.callbacks = CallBacks()
+        self.queue = queue  # for use of communicating with parent process
         # create a client instance
         self.client = mqtt.Client(name)
         # set up callbacks
-        self.client.on_connect = self.callbacks.on_connect
-        self.client.on_message = self.callbacks.on_message
+        self.client.on_connect = self.on_connect
+        self.client.on_message = self.on_message
+        self.client.on_subscribe = self.on_subscribe
         # connect client
-        while not self.callbacks.connect_success:
-            self.client.connect(broker_address, port=port)
-            sleep(1)
-        self.client.loop_start()
-        # subscribe to the given topic
-        while self.client.subscribe(self.topic)[0] != 0:
-            sleep(1)  # subscribe fail, wait for 1 second and retry
+        self.client.connect(broker_address, port=port)
 
-    def get_msg(self, subtopic: str) -> str:
-        return self.callbacks.received_msgs[subtopic].pop()
+    def start_listen(self):
+        """
+        This function must be run in a child process, as it is blocking.
+        """
+        self.client.loop_forever()
+
+    # Call backs
+    def on_connect(self, client, userdata, flags, rc):
+        """
+        This function is called upon the client gets connected to the broker
+        """
+        if rc == 0:
+            print("Connection successful")
+            # subscribe to the given topic upon connection is established
+            self.client.subscribe(self.topic)
+        else:
+            print("Connection fails, reconnect in 1 second")
+            sleep(2)
+            self.client.reconnect()
+
+    def on_message(self, client, userdata, message):
+        """
+        This function is called upon the client receives message from the topic
+        it subscribes to. It proceeds to push the message to the queue such
+        that the parent process can get the message.
+        """
+        self.queue.put(str(message.payload.decode("utf-8")))
+
+    def on_subscribe(self, client, userdata, mid, granted_qos):
+        """
+        This function is called upon the client successfully subscribes to a
+        topic.
+        """
+        print("Subscribed!")
 
     def close(self):
-        self.client.loop_end()
+        """
+        End the life of the client instance
+        """
+        self.client.loop_stop()
         self.client.disconnect()
