@@ -45,7 +45,7 @@ Test `go` installation by following [this guide](https://golang.org/doc/install#
 ### Fetch and Build `barnard`
 `go get -u layeh.com/barnard`
 
-This takes a while and requires decent internet connection from my side, so I would recommend patience if nothing seems to be happening for a while after running the command above.
+This takes a while and requires decent internet connection as far as I am concerned, so I would recommend patience if nothing seems to be happening for a while after running the command above.
 
 ## Connect `barnard` to Mumble Server
 The syntax to use `barnard` without using certificate is this:
@@ -54,7 +54,7 @@ The syntax to use `barnard` without using certificate is this:
 
 For example, using the mumble server parameters mentioned earlier, we can connect a CLI mumble client named "rpi-client" to the mumble server with the following command:
 
-`barnard -server=sf.guildbit.com:50008 -username=rpi-client -password= RichBatman -insecure=true`
+`barnard -server=sf.guildbit.com:50008 -username=rpi-client -password=RichBatman -insecure=true`
 
 Once connected, `barnard` draws a CLI client on the console.
 
@@ -92,13 +92,16 @@ Kill the `intercom` session:
 `tmux kill-ses -t intercom`
 
 # Configure Sound Input/Output on RPi
-## Before You Start
+There are two ways to configure sound input and output. One is via USB mic and 3.5 mm AUX headphone (or speaker), the other I2S microphone (mic), amplifier (amp) and speaker cone. I2S sound card provides much better sound quality, though they require more configuration. In addition, I2S mic and amp need a few GPIO pins, some of which are also needed by the touch screen on `rpi_in`. Therefore, we have decided that the I2S sound card will be set up for `rpi_out`, both because `rpi_out` has more GPIO pins available and this set up provides better sound quality for an open environment. For `rpi_in`, we opt for USB mic and 3.5 mm AUX headphone (speaker), due to lack of GPIO pin availability. Both approaches will be discussed below.
+
+## USB Mic and 3.5 mm AUX Headphone (Speaker)
+### Before You Start
 The following set up sets sound input from a USB microphone and output via 3.5 mm AUX jack. Plug in the USB microphone and a headphone first.
 
-## Check Sound Card for USB Mic
+### Check Sound Card for USB Mic
 Run command `arecord -l` to see whether the USB microphone is detected by Raspbian. If it is detected, remember the number of its sound card (typically `card 1`)
 
-## Configure sound file
+### Configure sound file
 Run command `nano ~/.asoundrc`
 
 Delete whatever content on `.asoundrc` file, if any, copy and paste the following configuration, and save the file:
@@ -132,20 +135,126 @@ pcm.input {
 }
 ```
 
-## Adjust Volume
+### Adjust Volume
 Adjust volume of output and input by using `alsamixer` (run command `alsamixer`, use F6 to choose which sound device to modify, F3 to see sound playback volume, F4 to see sound capture volume, up and down arrow to adjust volume for both output and input). Make sure you change the volume for the microphone to 100%, otherwise the recording volume will be very faint.
 
-## Test Headphone 
+### Test Headphone 
 Test headphone by running the following command. You shall hear white noise.
 
 `speaker-test`
 
-## Test Microphone
+### Test Microphone
 Test microphone by running the following command (still assuming microphone is on card 1). You shall hear your own voice played back after you speak into the microphone. Use this test to estimate roughly the usable range of the microphone.
 
 `arecord --device=hw:1,0 --format S16_LE --rate 48000 -c1 | aplay`
 
 If both headphone and microphone tests are good, your sound input/output configuration is successful. Now you can use `barnard` as a complete audio-only mumble client. You can test it by spinning up another client on your laptop, and see whether sounds spoken into the laptop can be received by RPi via the headphone, and whether sounds spoken into the USB mic can be picked up the speaker of the laptop.
+
+## I2S Mic, Amp, and Speaker Cone
+### Finished product
+![RPi I2S Product](https://raw.githubusercontent.com/FAUSWE-GROUP11/Rokku/master/raspberry-pi-intercom/static/rpi_I2S_product.jpg)
+
+
+### Prepare the I2S mic and amp
+In general, follow [this tutorial](https://learn.adafruit.com/adafruit-i2s-mems-microphone-breakout/overview) to solder I2S mic and wire it to RPi. Similarly, follow [this tutorial](https://learn.adafruit.com/adafruit-max98357-i2s-class-d-mono-amp/overview) for I2S amp solder and wiring. However, since we are going to configure both the mic and amp, the eventual wiring and configuration are slightly modified (see below for details).
+
+### Wiring diagram
+![RPi I2S Wiring](https://raw.githubusercontent.com/FAUSWE-GROUP11/Rokku/master/raspberry-pi-intercom/static/rpi_I2S_wiring.png)
+
+### I2S mic configuration
+Follow exactly the procedures laied out [here](https://learn.adafruit.com/adafruit-i2s-mems-microphone-breakout/raspberry-pi-wiring-and-test). No change needed.
+
+### I2S amp configuration
+Follow the instructions in "Detailed Install" (i.e. not running the provided script). In step "Create asound.conf file", we will not create `asound.conf` file, because we already have `.asoundrc` file. Make sure it looks exactly the same as the final content of `.asoundrc` shown below.
+
+### `.asoundrc` file content
+
+```
+#This section makes a reference to your I2S hardware, adjust the card name
+# to what is shown in arecord -l after card x: before the name in []
+#You may have to adjust channel count also but stick with default first
+pcm.dmic_hw {
+    type hw
+    card sndrpisimplecar
+    channels 2
+    format S32_LE
+}
+
+#This is the software volume control, it links to the hardware above and after
+# saving the .asoundrc file you can type alsamixer, press F6 to select
+# your I2S mic then F4 to set the recording volume and arrow up and down
+# to adjust the volume
+# After adjusting the volume - go for 50 percent at first, you can do
+# something like
+# arecord -D dmic_sv -c2 -r 48000 -f S32_LE -t wav -V mono -v myfile.wav
+pcm.dmic_sv {
+    type softvol
+    slave.pcm dmic_hw
+    control {
+        name "Boost Capture Volume"
+        card sndrpisimplecar
+    }
+    min_dB -3.0
+    max_dB 30.0
+}
+
+pcm.speakerbonnet {
+   type hw card 0
+}
+
+pcm.dmixer {
+   type dmix
+   ipc_key 1024
+   ipc_perm 0666
+   slave {
+     pcm "speakerbonnet"
+     period_time 0
+     period_size 1024
+     buffer_size 8192
+     rate 44100
+     channels 2
+   }
+}
+
+ctl.dmixer {
+    type hw card 0
+}
+
+pcm.softvol {
+    type softvol
+    slave.pcm "dmixer"
+    control.name "PCM"
+    control.card 0
+}
+
+ctl.softvol {
+    type hw card 0
+}
+
+pcm.!default {
+    type        asym
+    playback.pcm    "plug:softvol"
+    capture.pcm        "plug:dmic_sv"
+}
+
+ctl.!default {
+    type    hw
+    card    0
+}
+```
+
+### Test amp and speaker cone
+`speaker-test`
+
+### Test mic
+
+```
+arecord -D dmic_sv -c2 -r 48000 -f S32_LE -t wav -V mono -v recording.wav
+aplay recording.wav
+```
+
+
+
 
 # Troubleshooting
 * If you run into this error during downloading and building `barnard`: `fatal: index file smaller than expected git pull`, reinstalling Raspbian can resolve this problem.

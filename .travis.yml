@@ -8,3 +8,7 @@ install:
 script:
   - flake8 .
   - black --check .
+  - pytest
+branches:
+  only: 
+    - master
