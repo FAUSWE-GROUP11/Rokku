@@ -14,6 +14,11 @@ This code serves as an example for communication between two devices via mqtt.
 This file is NOT supposed to be tested by `pytest`
 """
 
+try:
+    os.remove("mqtt.log")
+except Exception:
+    pass
+
 # Instantiate publisher
 pub = publisher.Publisher(topic="Rokku/mac_to_rpi")
 
@@ -34,3 +39,7 @@ while counter <= 10:
         pub.publish(f"hello from macbook {counter}")
         sleep(2)
         counter += 1
+child_proc.terminate()
+child_proc.join()
+sub.close()
+pub.close()
