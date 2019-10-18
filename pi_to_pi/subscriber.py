@@ -3,6 +3,7 @@ from time import sleep
 import logging
 import logging.config
 import yaml
+import os
 
 
 class Subscriber:
@@ -31,7 +32,8 @@ class Subscriber:
         self.client.connect(broker_address, port=port)
 
         # set up logger
-        with open("config.yaml", "r") as f:
+        fname: str = f"{os.path.dirname(__file__)}/../logger_config.yaml"
+        with open(fname, "r") as f:
             config = yaml.safe_load(f.read())
             logging.config.dictConfig(config)
         self.logger = logging.getLogger("Subscriber")

@@ -1,3 +1,4 @@
+# Configuring logger
 version: 1
 formatters:
   simple:
