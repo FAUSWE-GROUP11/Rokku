@@ -17,7 +17,7 @@ handlers:
 loggers:
   Subscriber:
     level: DEBUG
-    handlers: [console, file]
+    handlers: [file]
   Publisher:
     level: DEBUG
-    handlers: [console, file]
+    handlers: [file]

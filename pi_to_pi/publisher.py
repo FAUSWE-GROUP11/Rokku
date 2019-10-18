@@ -14,7 +14,7 @@ class Publisher:
 
     def __init__(
         self,
-        name: str,
+        name: str = "",
         topic: str = "Rokku",  # default topic
         broker_address: str = "test.mosquitto.org",  # default broker
         port: int = 1883,
@@ -50,7 +50,7 @@ class Publisher:
         msg_info = self.client.publish(self.topic, msg, qos=1)
         # This call will block until the message is published.
         msg_info.wait_for_publish()
-        self.logger.debug(f"Message content: {msg}")
+        self.logger.debug(f"Published content: {msg}")
 
     def close(self):
         """
@@ -76,4 +76,4 @@ class Publisher:
         """
         This function is called upon the client successfully publish a message.
         """
-        self.logger.debug("Messge published.")
+        self.logger.debug(f"Messge published to topic: {self.topic}.")

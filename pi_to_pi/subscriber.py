@@ -14,8 +14,8 @@ class Subscriber:
 
     def __init__(
         self,
-        name: str,
         queue,
+        name: str = "",
         topic: str = "Rokku",  # default topic
         broker_address: str = "test.mosquitto.org",  # default broker
         port: int = 1883,
