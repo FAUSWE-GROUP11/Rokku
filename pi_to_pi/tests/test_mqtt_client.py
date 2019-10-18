@@ -33,9 +33,13 @@ def test_pub_sub():
 
 
 def test_logger():
-    os.remove("mqtt.log")  # remove any old logs
+    log_name = f"{os.path.dirname(__file__)}/../../rokku.log"
+    try:
+        os.remove(log_name)  # remove any old logs
+    except Exception:
+        pass
     test_pub_sub()  # this produces a new log
-    with open("mqtt.log", "r") as f_obj:
+    with open(log_name, "r") as f_obj:
         data = f_obj.read()
     num_success = len(re.findall(r"successful", data))  # should be 2
     num_closed = len(re.findall(r"closed", data))  # should be 2
@@ -43,4 +47,4 @@ def test_logger():
     # Test
     assert sum([num_success, num_closed, num_msg]) == 6
     # clean up
-    os.remove("mqtt.log")
+    os.remove(log_name)

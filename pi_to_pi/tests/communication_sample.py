@@ -16,7 +16,7 @@ This file is NOT supposed to be tested by `pytest`
 
 # For testing purpose only
 try:
-    os.remove("mqtt.log")
+    os.remove("rokku.log")
 except Exception:
     pass
 
