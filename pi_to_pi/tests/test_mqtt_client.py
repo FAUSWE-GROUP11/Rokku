@@ -9,14 +9,14 @@ import os
 def test_pub_sub():
     q = Queue()
     # subscriber
-    sub = subscriber.Subscriber("sub_test", q)
+    sub = subscriber.Subscriber(q)
     # Run the listening function of subscriber in a child process
     # Use a queue to transfer data from child process to parent
     child_proc = Process(target=sub.start_listen, args=())
     child_proc.start()
 
     # publisher
-    pub = publisher.Publisher("pub_test")
+    pub = publisher.Publisher()
     pub.publish(json.dumps({"intercom": 1}))  # publish a dict
 
     # wait for subscriber to receive the msg
