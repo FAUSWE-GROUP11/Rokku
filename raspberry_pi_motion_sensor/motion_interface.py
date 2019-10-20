@@ -45,13 +45,13 @@ class MotionPir:
         self.armed = False
         self.stop_monitor()
 
-    def show_state(self):
-        """Prints the state of armed / 'alarm system' """
+    def get_state(self):
+        """Returns the state of armed / 'alarm system' """
 
         if self.armed:
-            print("System Armed")
+            return True
         else:
-            print("System Disarmed")
+            return False
 
     def monitor(self):
         """GPIO is set up to manage callback on second thread to run motion_callback() in response to a rising edge"""
