@@ -1,13 +1,8 @@
-import sys
-from pathlib import Path
-
-sys.path.append("/home/pi/github-repos/Rokku/raspberry_pi_motion_sensor")
-sys.path.append(str(Path.cwd().resolve().parent))
-from motion_interface import MotionPir
+from .. import motion_interface
 from queue import Queue
 
 queue = Queue()
-motion = MotionPir(queue, 23)
+motion = motion_interface.MotionPir(queue, 23)
 
 
 class TestMotionPir:
