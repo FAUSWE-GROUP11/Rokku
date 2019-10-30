@@ -40,14 +40,13 @@ class MotionPir:
 
     def set_armed(self):
         """Sets Object state to True 'armed' and calls monitor() to initialize GPIO input
-        
+
         Also, GPIO is set up to manage callback on second thread to run motion_callback() in response to a rising edge"""
 
         self.armed = True
-                GPIO.add_event_detect(
+        GPIO.add_event_detect(
             self.channel_num, GPIO.RISING, callback=self.motion_callback
         )
-
 
     def set_disarmed(self):
         """Sets Object state to False 'disarmed' and will stop callbacks from motion_pir by removing event detection"""
@@ -63,4 +62,5 @@ class MotionPir:
         else:
             return False
 
-#TODO Decide where board mode setup belongs 
+
+# TODO Decide where board mode setup belongs
