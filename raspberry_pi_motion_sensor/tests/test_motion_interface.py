@@ -30,12 +30,12 @@ class TestMotionPir:
         result = motion.queue.get()
         assert result is True
 
-    def test_get_state(self):
+    def test_show_state(self):
         motion.set_disarmed()
         motion.set_armed()
-        result = motion.get_state()
+        result = motion.show_state()
         assert result is True
 
-    def test_get_state2(self):
-        result = motion.get_state()
+    def test_show_state2(self):
+        result = motion.show_state()
         assert result is True

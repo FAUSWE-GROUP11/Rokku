@@ -21,6 +21,11 @@ class MotionPir:
         self.queue = queue
         self.channel_num = channel_num
 
+        GPIO.setmode(
+            GPIO.BCM
+        )  # use GPIO.setmode(GPIO.board) for using pin numbers
+        GPIO.setup(self.channel_num, GPIO.IN)
+
     def motion_callback(self, channel):
         """channel argument is for receiving GPIO input.
 
@@ -34,19 +39,26 @@ class MotionPir:
         print("Movement Detected")
 
     def set_armed(self):
-        """Sets Object state to True 'armed' and calls monitor() to initialize GPIO input"""
+        """Sets Object state to True 'armed' and calls monitor() to initialize GPIO input
+
+        Also, GPIO is set up to manage callback on second thread to run motion_callback() in response to a rising edge"""
 
         self.armed = True
-        self.monitor()
+        GPIO.add_event_detect(
+            self.channel_num, GPIO.RISING, callback=self.motion_callback
+        )
 
     def set_disarmed(self):
-        """Sets Object state to False 'disarmed' and calls stop_monitor() to stop event detection"""
+        """Sets Object state to False 'disarmed' and will stop callbacks from motion_pir by removing event detection"""
 
         self.armed = False
-        self.stop_monitor()
+        GPIO.remove_event_detect(self.channel_num)
 
     def get_state(self):
         """Returns the state of armed / 'alarm system' """
+
+    def show_state(self):
+        """Returnss the state of armed / 'alarm system' """
 
         if self.armed:
             return True
@@ -70,4 +82,4 @@ class MotionPir:
         GPIO.remove_event_detect(self.channel_num)
 
 
-# TODO - make functions to set up GPIO pin settings and possibly initialize within __init__
+# TODO Decide where board mode setup belongs
