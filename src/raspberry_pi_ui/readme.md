@@ -15,3 +15,6 @@ One of the main dependencies is the `gi` module. For Raspbian, it is included in
 1. Install GTK+ 3 with Homebrew: `brew install gtk+3`. 
 2. Activate your virtual environment, and then install `pygobject`: `PKG_CONFIG_PATH=/usr/local/opt/libffi/lib/pkgconfig ARCHFLAGS="-arch x86_64" pip3 install pygobject`
 3. Test whether `gi` module is available now.
+
+## Spin up UI Window
+To spin up the UI window, run `python3 rpi_in_driver.py` from root directory and under virtual environment.
