@@ -33,7 +33,7 @@ def test_pub_sub():
 
 
 def test_logger():
-    log_name = f"{os.path.dirname(__file__)}/../../rokku.log"
+    log_name = f"{os.path.dirname(__file__)}/../../../rokku.log"
     try:
         os.remove(log_name)  # remove any old logs
     except Exception:
