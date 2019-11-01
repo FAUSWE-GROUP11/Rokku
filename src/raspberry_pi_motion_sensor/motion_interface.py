@@ -21,6 +21,11 @@ class MotionPir:
         self.queue = queue
         self.channel_num = channel_num
 
+        GPIO.setmode(
+            GPIO.BCM
+        )  # use GPIO.setmode(GPIO.board) for using pin numbers
+        GPIO.setup(self.channel_num, GPIO.IN)
+
     def motion_callback(self, channel):
         """channel argument is for receiving GPIO input.
 
@@ -34,40 +39,28 @@ class MotionPir:
         print("Movement Detected")
 
     def set_armed(self):
-        """Sets Object state to True 'armed' and calls monitor() to initialize GPIO input"""
+        """Sets Object state to True 'armed' and calls monitor() to initialize GPIO input
+
+        Also, GPIO is set up to manage callback on second thread to run motion_callback() in response to a rising edge"""
 
         self.armed = True
-        self.monitor()
-
-    def set_disarmed(self):
-        """Sets Object state to False 'disarmed' and calls stop_monitor() to stop event detection"""
-
-        self.armed = False
-        self.stop_monitor()
-
-    def show_state(self):
-        """Prints the state of armed / 'alarm system' """
-
-        if self.armed:
-            print("System Armed")
-        else:
-            print("System Disarmed")
-
-    def monitor(self):
-        """GPIO is set up to manage callback on second thread to run motion_callback() in response to a rising edge"""
-
-        GPIO.setmode(
-            GPIO.BCM
-        )  # use GPIO.setmode(GPIO.board) for using pin numbers
-        GPIO.setup(self.channel_num, GPIO.IN)
         GPIO.add_event_detect(
             self.channel_num, GPIO.RISING, callback=self.motion_callback
         )
 
-    def stop_monitor(self):
-        """Will stop callbacks from motion_pir"""
+    def set_disarmed(self):
+        """Sets Object state to False 'disarmed' and will stop callbacks from motion_pir by removing event detection"""
 
+        self.armed = False
         GPIO.remove_event_detect(self.channel_num)
 
+    def show_state(self):
+        """Returnss the state of armed / 'alarm system' """
 
-# TODO - make functions to set up GPIO pin settings and possibly initialize within __init__
+        if self.armed:
+            return True
+        else:
+            return False
+
+
+# TODO Decide where board mode setup belongs
