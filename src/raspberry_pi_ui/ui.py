@@ -53,5 +53,21 @@ class Main:
     def on_button2_clicked(self, widget):
         os.system("python test.py")
 
+    """
+    Record button
+    """
+
+    def record_btn_clicked(self, widget):
+        # upon clicking, change record button color and text
+        ctx = widget.get_style_context()
+        ctx.remove_class("record_default")
+        ctx.add_class("recording")
+        widget.set_label("Recording...")
+
     def run(self):
         Gtk.main()
+
+
+if __name__ == "__main__":
+    main = Main()
+    Gtk.main()

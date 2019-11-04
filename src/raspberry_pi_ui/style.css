@@ -8,3 +8,14 @@
     background-color: yellow;
     background: yellow;
 }
+
+.record_default {
+    background-color: blue;
+    background: blue;
+    color: white;
+}
+
+.recording {
+    background-color: red;
+    background: red;
+}
