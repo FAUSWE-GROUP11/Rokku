@@ -1,5 +1,5 @@
-from src.raspberry_pi_ui import ui
+from src.raspberry_pi_ui import rokku
 
 
-main = ui.Main()
+main = rokku.Main()
 main.run()

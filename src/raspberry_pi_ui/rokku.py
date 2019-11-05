@@ -19,7 +19,7 @@ class Main:
 
     def __init__(self):
         self.builder = gtk.Builder()
-        self.builder.add_from_file("rokku.glade")
+        self.builder.add_from_file(f"{os.path.dirname(__file__)}/rokku.glade")
         self.builder.connect_signals(self)
 
         self.armed = False
@@ -212,13 +212,11 @@ class Main:
     Should close up any processes that have been started when first loading Rokku
     """
 
-    def close_application(self, widget):
+    def close_application(self, widget, something):
         # anything to do before closing (stop livestream)
 
         # closes window with .py file
         gtk.main_quit()
 
-
-if __name__ == "__main__":
-    main = Main()
-    gtk.main()
+    def run(self):
+        gtk.main()
