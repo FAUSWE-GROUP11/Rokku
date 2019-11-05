@@ -25,9 +25,20 @@ listen_proc.start()
 logger.info("Publisher and subscriber set up successfully!")
 
 
-# forever listening on topic "Rokku/in_to_out"
-while True:
-    if not msg_q.empty():
-        # code behaviors
-        pass
-    sleep(1)
+try:
+    # forever listening on topic "Rokku/in_to_out"
+    while True:
+        if not msg_q.empty():
+            # code behaviors
+            pass
+        sleep(1)
+except (KeyboardInterrupt, SystemExit):
+    logger.warning("Termination signal sensed.")
+    logger.info("Terminate listening process of subscriber")
+    listen_proc.terminate()
+    while listen_proc.is_alive():
+        logger.debug("Waiting for termination...")
+        sleep(1)
+    listen_proc.join()
+    logger.info("Listening process of subscriber terminated successfully!")
+logger.info("\n******* rpi_out_driver ends *******\n")
