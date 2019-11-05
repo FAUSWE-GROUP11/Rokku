@@ -160,7 +160,7 @@ class Main:
 
         # intercom active for both devices. Turn off both
         elif self.rpi_in_intercom_on and self.rpi_out_intercom_on:
-            self.logger("Turning off rpi_in barnard Mumble CLI client...")
+            self.logger.info("Turning off rpi_in barnard Mumble CLI client...")
             # code to turn off barnard
             #########################
             #   Missing code        #
