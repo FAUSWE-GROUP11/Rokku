@@ -27,3 +27,6 @@ loggers:
   RPI_OUT:
     level: DEBUG
     handlers: [file, console]
+  UI:
+    level: DEBUG
+    handlers: [file, console]
