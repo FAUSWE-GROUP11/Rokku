@@ -25,11 +25,13 @@ listen_proc = Process(target=sub.start_listen, args=())
 listen_proc.start()
 logger.info("Publisher and subscriber set up successfully!")
 
-
-logger.info("Spinning up UI...")
-main = rokku.Main(pub, msg_q)
-main.run()
-logger.info("UI terminated.")
+try:
+    logger.info("Spinning up UI...")
+    main = rokku.Main(pub, msg_q)
+    main.run()
+    logger.info("UI terminated.")
+except (KeyboardInterrupt, SystemExit):
+    pass  # do nothing here because the code below completes the cleanup
 
 logger.info("Terminate listening process of subscriber")
 listen_proc.terminate()

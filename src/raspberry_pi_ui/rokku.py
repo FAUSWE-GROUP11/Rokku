@@ -138,9 +138,7 @@ class Main:
                 self.logger.info("Sending intercom ON message to rpi_out...")
                 self.pub.publish(json.dumps(["intercom", True]))
                 try:  # wait for rpi_out to send msg back
-                    self.rpi_out_intercom_on = self._wait_for_msg("intercom")[
-                        1
-                    ]
+                    self.rpi_out_intercom_on = self._wait_msg("intercom")[1]
                 except IndexError:  # no message received
                     self.rpi_out_intercom_on = False
 
@@ -174,9 +172,7 @@ class Main:
                 self.logger.info("Sending intercom OFF message to rpi_out...")
                 self.pub.publish(json.dumps(["intercom", False]))
                 try:  # wait for rpi_out to send msg back
-                    self.rpi_out_intercom_on = self._wait_for_msg("intercom")[
-                        1
-                    ]
+                    self.rpi_out_intercom_on = self._wait_msg("intercom")[1]
                 except IndexError:  # no message received
                     self.rpi_out_intercom_on = False
 
@@ -263,7 +259,7 @@ class Main:
         gtk.main()
 
     # Utility functions listed below.
-    def _wait_for_msg(self, identifier: str, timeout: int = 10):
+    def _wait_msg(self, identifier: str, timeout: int = 10):
         """
         Wait for a message containing the given identifier. Note that all
         messages are in the format of '[identifier, boolean]'. Thus, we only
