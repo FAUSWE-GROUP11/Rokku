@@ -6,6 +6,9 @@ from time import sleep
 import pytest
 
 
+# For more info about pytest.fixture, read
+# http://doc.pytest.org/en/latest/fixture.html#fixture-finalization-executing-teardown-code
+# and https://pybit.es/pytest-fixtures.html
 @pytest.fixture(scope="module")
 def mqtt_out():
     # set up mqtt components of rpi_out
