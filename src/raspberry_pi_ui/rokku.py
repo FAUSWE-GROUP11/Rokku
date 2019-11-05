@@ -46,14 +46,13 @@ class Main:
         self.recordButton = self.builder.get_object("recordButton")
         self.armButton = self.builder.get_object("armButton")
 
-        # set up buttons with correct background color
+        # set default background color and label for all buttons
         self.livestreamButton.override_background_color(
             gtk.StateFlags.NORMAL, color
         )
         self.videoButton.override_background_color(
             gtk.StateFlags.NORMAL, color
         )
-        self._set_button_property(self.talkButton, blue, "Talk")
         self.soundAlarmButton.override_background_color(
             gtk.StateFlags.NORMAL, color
         )
@@ -61,6 +60,7 @@ class Main:
             gtk.StateFlags.NORMAL, color
         )
         self.armButton.override_background_color(gtk.StateFlags.NORMAL, color)
+        self._set_button_property(self.talkButton, blue, "Talk")
 
         # set up connections between .py file and glade signals
         self.livestreamButton.connect(
@@ -122,7 +122,7 @@ class Main:
 
     def on_talkButton_clicked(self, widget):
         # Always turn button to yellow whenever button is clicked
-        self._set_button_property(self.talkButton, yellow, "Connecting...")
+        self._set_button_property(self.talkButton, yellow, "Configuring...")
         # user wants to turn on intercom for both rpi_in and rpi_out
         if not self.rpi_in_intercom_on and not self.rpi_out_intercom_on:
             # turn on barnard in rpi_in
