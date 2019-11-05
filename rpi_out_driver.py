@@ -1,4 +1,3 @@
-from src.raspberry_pi_ui import rokku
 from src.pi_to_pi import publisher, subscriber
 from multiprocessing import Process, Queue
 import logging
@@ -11,31 +10,24 @@ from time import sleep
 with open("logger_config.yaml", "r") as f:
     config = yaml.safe_load(f.read())
     logging.config.dictConfig(config)
-logger = logging.getLogger("RPI_IN")
+logger = logging.getLogger("RPI_OUT")
 
 
 logger.info("Setting up publisher and subscriber")
 # publisher from rpi_in to rpi_out
-pub = publisher.Publisher(topic="Rokku/in_to_out")
+pub = publisher.Publisher(topic="Rokku/out_to_in")
 msg_q = Queue()
 # subscriber listening messages from rpi_out to rpi_in
-sub = subscriber.Subscriber(msg_q, topic="Rokku/out_to_in")
+sub = subscriber.Subscriber(msg_q, topic="Rokku/in_to_out")
 # listen in a separate process
 listen_proc = Process(target=sub.start_listen, args=())
 listen_proc.start()
 logger.info("Publisher and subscriber set up successfully!")
 
 
-logger.info("Spinning up UI...")
-main = rokku.Main(pub, msg_q)
-main.run()
-logger.info("UI terminated.")
-
-logger.info("Terminate listening process of subscriber")
-listen_proc.terminate()
-while listen_proc.is_alive():
-    logger.debug("Waiting for termination...")
+# forever listening on topic "Rokku/in_to_out"
+while True:
+    if not msg_q.empty():
+        # code behaviors
+        pass
     sleep(1)
-listen_proc.join()
-logger.info("Listening process of subscriber terminated successfully!")
-logger.info("\n******* rpi_in_driver ends *******\n")

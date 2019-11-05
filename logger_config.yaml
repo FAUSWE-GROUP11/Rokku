@@ -17,7 +17,13 @@ handlers:
 loggers:
   Subscriber:
     level: DEBUG
-    handlers: [file]
+    handlers: [file, console]
   Publisher:
     level: DEBUG
-    handlers: [file]
+    handlers: [file, console]
+  RPI_IN:
+    level: DEBUG
+    handlers: [file, console]
+  RPI_OUT:
+    level: DEBUG
+    handlers: [file, console]

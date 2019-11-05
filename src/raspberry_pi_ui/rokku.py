@@ -17,7 +17,7 @@ class Main:
     This also is wear any object in the .glade (buttons, labels, etc.) are connected to self
     """
 
-    def __init__(self):
+    def __init__(self, pub, msg_q):
         self.builder = gtk.Builder()
         self.builder.add_from_file(f"{os.path.dirname(__file__)}/rokku.glade")
         self.builder.connect_signals(self)
@@ -74,6 +74,10 @@ class Main:
         window = self.builder.get_object("Main")
         window.connect("delete-event", self.close_application)
         window.show_all()
+
+        # set up publisher and message queue
+        self.pub = pub
+        self.msg_q = msg_q
 
     """
     This will be called on whenever the Sound Alarm button is clicked
