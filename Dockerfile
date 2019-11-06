@@ -7,6 +7,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     libcairo2-dev \
     libgirepository1.0-dev \
     xauth \
-    xvfb
+    xvfb \
+    python3 python3-dev python3-pip \
+    && pip3 install --upgrade pip
 
-EXPOSE 4567
+CMD ["/bin/bash"]

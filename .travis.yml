@@ -10,16 +10,16 @@ before_install:
   - docker run -d -p 127.0.0.1:80:4567 myimage
   - docker ps -a
 
-install:
-  - pip3 install -r requirements.txt
-  - pip3 install flake8
-  - pip3 instal black
+# install:
+#   - pip3 install -r requirements.txt
+#   - pip3 install flake8
+#   - pip3 instal black
 
 script:
-  - docker ps | grep -q rokku
-  - flake8 .
-  - black --check .
-  - xvfb-run -a python3 -m pytest
+  - docker run bash -c "pip3 install -r requirements.txt"
+  - docker run bash -c "flake8 ."
+  - docker run bash -c "black --check ."
+  - docker run bash -c "xvfb-run -a python3 -m pytest"
 
 branches:
   only: 
