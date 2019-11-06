@@ -44,7 +44,12 @@ python:
 
 install:
   - sudo apt-get update
-  - sudo apt-get install --no-install-recommends -y libcairo2-dev libgirepository1.0-dev gir1.2-gtk-3.0
+  - >
+    sudo apt-get install --no-install-recommends -y 
+    libcairo2-dev
+    libgirepository1.0-dev
+    gir1.2-gtk-3.0
+    xvfb
   - pip3 install -r requirements.txt
   - pip3 install flake8
   - pip3 install black
@@ -52,7 +57,8 @@ install:
 script:
   - flake8 .
   - black --check .
-  - python3 -m pytest
+  - python3 -m pytest --ignore=src/raspberry_pi_ui/tests
+  - xvfb-run -a python3 -m pytest src/raspberry_pi_ui/tests
 
 branches:
   only: 
