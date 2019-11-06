@@ -86,7 +86,6 @@ class Main:
         self.msg_q = msg_q
 
         # set up logger
-        # set up logger
         with open(
             f"{os.path.dirname(__file__)}/../../logger_config.yaml", "r"
         ) as f:

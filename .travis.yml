@@ -2,6 +2,8 @@ language: python
 python:
   - "3.7"
 install:
+  - sudo apt-get update
+  - sudo apt-get install libcairo2-dev libgirepository1.0-dev gir1.2-gtk-3.0
   - pip3 install -r requirements.txt
   - pip3 install flake8
   - pip3 install black
@@ -9,7 +11,7 @@ install:
 script:
   - flake8 .
   - black --check .
-  - pytest
+  - python3 -m pytest
 branches:
   only: 
     - master
