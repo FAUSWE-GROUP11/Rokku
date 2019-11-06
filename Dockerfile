@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     libgirepository1.0-dev \
     xauth \
     xvfb \
-    python3.7 python3.7-dev python3-pip \
+    python3 python3-dev python3-pip \
     && pip3 install --upgrade pip setuptools
 
 # We copy just the requirements.txt first to leverage Docker cache
