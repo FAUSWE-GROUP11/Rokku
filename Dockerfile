@@ -2,8 +2,9 @@ FROM ubuntu:xenial
 
 ENV LANG C.UTF-8
 
-RUN apt-get update \
-    && apt-get install software-properties-common python-software-properties \
+RUN apt-get update && apt-get install --no-install-recommends -y \
+    software-properties-common \
+    python-software-properties \
     && add-apt-repository ppa:jonathonf/python-3.6
 
 RUN apt-get install --no-install-recommends -y \
