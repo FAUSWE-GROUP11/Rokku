@@ -9,14 +9,14 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     xauth \
     xvfb \
     python3 python3-dev python3-pip \
-    && pip3 install --upgrade pip setuptools
+    && pip install --upgrade pip setuptools
 
 # We copy just the requirements.txt first to leverage Docker cache
 COPY ./requirements.txt /app/requirements.txt
 
 WORKDIR /app
 
-RUN pip3 install -r requirements.txt
-RUN pip3 install flake8
-RUN pip3 install black
+RUN pip install -r requirements.txt
+RUN pip install flake8
+RUN pip install black
 
