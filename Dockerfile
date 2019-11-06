@@ -17,7 +17,8 @@ COPY ./requirements.txt /app/requirements.txt
 
 WORKDIR /app
 
-RUN python3 -m pip install -r requirements.txt
-RUN python3 -m pip install flake8
-RUN python3 -m pip install black
+RUN python3 -m pip install --upgrade pip setuptools \
+    && python3 -m pip install -r requirements.txt \
+    && python3 -m pip install flake8 \
+    && python3 -m pip install black
 
