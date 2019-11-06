@@ -8,6 +8,10 @@ before_install:
   # Create a docker image called "myimage"
   - docker build -t myimage -f "Dockerfile" .
 
+install:
+  - pip3 install flake8
+  - pip3 install black
+
 before_script:
   # create a docker container from the image, mount the current working
   # directory to /app inside the container and let the container running
@@ -16,9 +20,9 @@ before_script:
   - docker run --volume "$(pwd):/app" --workdir "/app" --tty --detach myimage bash > container_id
 
 script:
-  - docker exec "$(cat container_id)" flake8 .
-  - docker exec "$(cat container_id)" black --check .
   - docker exec "$(cat container_id)" xvfb-run -a python3 -m pytest
+  - flake8 .
+  - black --check .
 
 
 branches:
