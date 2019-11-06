@@ -1,38 +1,58 @@
-sudo: required
-services: docker
+# sudo: required
+# services: docker
+# language: python
+# python:
+#   - "3.7"
+
+# before_install:
+#   # Create a docker image called "myimage"
+#   - docker build -t myimage -f "Dockerfile" .
+
+# # testing everything on travis except for ui
+# install:
+#   - sudo apt-get install libcairo2-dev libgirepository1.0-dev gir1.2-gtk-3.0
+#   - pip3 install -r requirements.txt
+#   - pip3 install flake8
+#   - pip3 install black
+
+# before_script:
+#   # create a docker container from the image, mount the current working
+#   # directory to /app inside the container and let the container running
+#   # in the background. The resulting container ID will be saved to
+#   # container_id so we can reference it later on.
+#   - docker run --volume "$(pwd):/app" --workdir "/app" --tty --detach myimage bash > container_id
+
+# script:
+#   # use docker to test ui, see https://pygobject.readthedocs.io/en/latest/guide/testing.html
+#   - docker exec "$(cat container_id)" xvfb-run -a python3.6 -m pytest src/raspberry_pi_ui/tests
+#   - flake8 .
+#   - black --check .
+#   - python3 -m pytest --ignore=src/raspberry_pi_ui/tests
+
+
+# branches:
+#   only: 
+#     - master
+
+# after_script:
+#   # stop the container
+#   - docker stop "$(cat container_id)"
 language: python
 python:
   - "3.7"
 
-before_install:
-  # Create a docker image called "myimage"
-  - docker build -t myimage -f "Dockerfile" .
-
-# testing everything on travis except for ui
 install:
-  - sudo apt-get install libcairo2-dev libgirepository1.0-dev gir1.2-gtk-3.0
+  - sudo apt-get update
+  - sudo apt-get install --no-install-recommends -y libcairo2-dev libgirepository1.0-dev gir1.2-gtk-3.0
   - pip3 install -r requirements.txt
   - pip3 install flake8
   - pip3 install black
 
-before_script:
-  # create a docker container from the image, mount the current working
-  # directory to /app inside the container and let the container running
-  # in the background. The resulting container ID will be saved to
-  # container_id so we can reference it later on.
-  - docker run --volume "$(pwd):/app" --workdir "/app" --tty --detach myimage bash > container_id
-
 script:
-  - docker exec "$(cat container_id)" xvfb-run -a python3.6 -m pytest src/raspberry_pi_ui/tests
   - flake8 .
   - black --check .
-  - python3 -m pytest --ignore=src/raspberry_pi_ui/tests
-
+  - python3 -m pytest
 
 branches:
   only: 
     - master
-
-after_script:
-  # stop the container
-  - docker stop "$(cat container_id)"
