@@ -1,5 +1,9 @@
 import paho.mqtt.client as mqtt
 from time import sleep
+import logging
+import logging.config
+import yaml
+import os
 
 
 class Publisher:
@@ -10,7 +14,7 @@ class Publisher:
 
     def __init__(
         self,
-        name: str,
+        name: str = "",
         topic: str = "Rokku",  # default topic
         broker_address: str = "test.mosquitto.org",  # default broker
         port: int = 1883,
@@ -24,6 +28,13 @@ class Publisher:
         # connect client
         self.client.connect(broker_address, port=port)
         self.client.loop_start()
+
+        # set up logger
+        fname: str = f"{os.path.dirname(__file__)}/../../logger_config.yaml"
+        with open(fname, "r") as f:
+            config = yaml.safe_load(f.read())
+            logging.config.dictConfig(config)
+        self.logger = logging.getLogger("Publisher")
 
     def publish(self, msg: str) -> None:
         """
@@ -39,6 +50,7 @@ class Publisher:
         msg_info = self.client.publish(self.topic, msg, qos=1)
         # This call will block until the message is published.
         msg_info.wait_for_publish()
+        self.logger.debug(f"Published content: {msg}")
 
     def close(self):
         """
@@ -46,6 +58,7 @@ class Publisher:
         """
         self.client.loop_stop()
         self.client.disconnect()
+        self.logger.debug("Connection to broker closed.")
 
     # Call backs
     def on_connect(self, client, userdata, flags, rc):
@@ -53,14 +66,14 @@ class Publisher:
         This function is called upon the client gets connected to the broker
         """
         if rc == 0:
-            print("Connection successful")
+            self.logger.debug("Connection to broker successful.")
         else:
-            print("Connection fails, reconnect in 1 second")
-            sleep(2)
+            self.logger.error("Connection fails, reconnect in 1 second.")
+            sleep(1)
             self.client.reconnect()
 
     def on_publish(self, client, userdata, mid):
         """
         This function is called upon the client successfully publish a message.
         """
-        print("published")
+        self.logger.debug(f"Messge published to topic: {self.topic}.")

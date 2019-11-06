@@ -1,5 +1,9 @@
 import paho.mqtt.client as mqtt
 from time import sleep
+import logging
+import logging.config
+import yaml
+import os
 
 
 class Subscriber:
@@ -10,8 +14,8 @@ class Subscriber:
 
     def __init__(
         self,
-        name: str,
         queue,
+        name: str = "",
         topic: str = "Rokku",  # default topic
         broker_address: str = "test.mosquitto.org",  # default broker
         port: int = 1883,
@@ -27,11 +31,19 @@ class Subscriber:
         # connect client
         self.client.connect(broker_address, port=port)
 
+        # set up logger
+        fname: str = f"{os.path.dirname(__file__)}/../../logger_config.yaml"
+        with open(fname, "r") as f:
+            config = yaml.safe_load(f.read())
+            logging.config.dictConfig(config)
+        self.logger = logging.getLogger("Subscriber")
+
     def start_listen(self):
         """
         This function must be run in a child process, as it is blocking.
         """
         self.client.loop_forever()
+        self.logger.debug(f"Start listening on topic {self.topic}")
 
     # Call backs
     def on_connect(self, client, userdata, flags, rc):
@@ -39,11 +51,11 @@ class Subscriber:
         This function is called upon the client gets connected to the broker
         """
         if rc == 0:
-            print("Connection successful")
+            self.logger.debug("Connection to broker successful.")
             # subscribe to the given topic upon connection is established
             self.client.subscribe(self.topic)
         else:
-            print("Connection fails, reconnect in 1 second")
+            self.logger.error("Connection fails, reconnect in 1 second.")
             sleep(2)
             self.client.reconnect()
 
@@ -53,14 +65,16 @@ class Subscriber:
         it subscribes to. It proceeds to push the message to the queue such
         that the parent process can get the message.
         """
-        self.queue.put(str(message.payload.decode("utf-8")))
+        msg: str = str(message.payload.decode("utf-8"))
+        self.queue.put(msg)
+        self.logger.debug(f"Message received: {msg}")
 
     def on_subscribe(self, client, userdata, mid, granted_qos):
         """
         This function is called upon the client successfully subscribes to a
         topic.
         """
-        print("Subscribed!")
+        self.logger.debug(f"Subscribed to topic: {self.topic}")
 
     def close(self):
         """
@@ -68,3 +82,4 @@ class Subscriber:
         """
         self.client.loop_stop()
         self.client.disconnect()
+        self.logger.debug("Connection to broker closed.")

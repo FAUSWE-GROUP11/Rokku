@@ -5,6 +5,7 @@ install:
   - pip3 install -r requirements.txt
   - pip3 install flake8
   - pip3 install black
+  - pip3 install fake-rpi
 script:
   - flake8 .
   - black --check .
