@@ -7,6 +7,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     libcairo2-dev \
     libgirepository1.0-dev \
     xauth \
-    xvfb \
+    xvfb
 
 EXPOSE 4567
