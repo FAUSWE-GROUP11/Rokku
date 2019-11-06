@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     python-software-properties \
     && add-apt-repository ppa:jonathonf/python-3.6
 
-RUN apt-get install --no-install-recommends -y \
+RUN apt-get update && apt-get install --no-install-recommends -y \
     gir1.2-gtk-3.0 \
     python3.6 \
     python3-gi \
