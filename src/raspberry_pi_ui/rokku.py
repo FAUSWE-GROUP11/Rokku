@@ -27,16 +27,21 @@ class Main:
         self.builder.add_from_file(f"{os.path.dirname(__file__)}/rokku.glade")
         self.builder.connect_signals(self)
 
+        # set up css
+        cssProvider = gtk.CssProvider()
+        cssProvider.load_from_path(f"{os.path.dirname(__file__)}/style.css")
+        screen = gdk.Screen.get_default()
+        styleContext = gtk.StyleContext()
+        styleContext.add_provider_for_screen(
+            screen, cssProvider, gtk.STYLE_PROVIDER_PRIORITY_USER
+        )
+
+        # All functionality flags
         self.armed = False
         self.sound_playing = False
         self.recording = False
         self.rpi_in_intercom_on = False
         self.rpi_out_intercom_on = False
-
-        # set up colors
-        color = gdk.RGBA()
-        color.parse(blue)
-        color.to_string()
 
         # connecting all buttons to python to allow for the changing of text/colors
         self.livestreamButton = self.builder.get_object("livestreamButton")
@@ -46,21 +51,23 @@ class Main:
         self.recordButton = self.builder.get_object("recordButton")
         self.armButton = self.builder.get_object("armButton")
 
+        # Button background color, set to empty string initially
+        self.button_color = {
+            self.livestreamButton.get_name(): "",
+            self.videoButton.get_name(): "",
+            self.talkButton.get_name(): "",
+            self.soundAlarmButton.get_name(): "",
+            self.recordButton.get_name(): "",
+            self.armButton.get_name(): "",
+        }
+
         # set default background color and label for all buttons
-        self.livestreamButton.override_background_color(
-            gtk.StateFlags.NORMAL, color
-        )
-        self.videoButton.override_background_color(
-            gtk.StateFlags.NORMAL, color
-        )
-        self.soundAlarmButton.override_background_color(
-            gtk.StateFlags.NORMAL, color
-        )
-        self.recordButton.override_background_color(
-            gtk.StateFlags.NORMAL, color
-        )
-        self.armButton.override_background_color(gtk.StateFlags.NORMAL, color)
-        self._set_button_property(self.talkButton, blue, "Talk")
+        self._set_button_property(self.livestreamButton, "blue", "Livestream")
+        self._set_button_property(self.videoButton, "blue", "Videos")
+        self._set_button_property(self.soundAlarmButton, "blue", "Sound Alarm")
+        self._set_button_property(self.recordButton, "blue", "Record")
+        self._set_button_property(self.armButton, "blue", "Arm")
+        self._set_button_property(self.talkButton, "blue", "Talk")
 
         # set up connections between .py file and glade signals
         self.livestreamButton.connect(
@@ -73,8 +80,6 @@ class Main:
         )
         self.recordButton.connect("clicked", self.on_recordButton_clicked)
         self.armButton.connect("clicked", self.on_armButton_clicked)
-
-        # set livestream
 
         # activate window
         window = self.builder.get_object("Main")
@@ -121,7 +126,7 @@ class Main:
 
     def on_talkButton_clicked(self, widget):
         # Always turn button to yellow whenever button is clicked
-        self._set_button_property(self.talkButton, yellow, "Configuring...")
+        self._set_button_property(self.talkButton, "yellow", "Configuring...")
         # user wants to turn on intercom for both rpi_in and rpi_out
         if not self.rpi_in_intercom_on and not self.rpi_out_intercom_on:
             # turn on barnard in rpi_in
@@ -144,7 +149,7 @@ class Main:
             if self.rpi_out_intercom_on and self.rpi_in_intercom_on:
                 # intercom is on for both sides, turn button to red
                 self.logger.info("Intercom ON on both devices")
-                self._set_button_property(self.talkButton, red, "End Talk")
+                self._set_button_property(self.talkButton, "red", "End Talk")
             else:  # at least one of the intercom is not on
                 self.logger.error(
                     f"Intercom status: rpi_in = {self.rpi_in_intercom_on}, rpi_out = {self.rpi_out_intercom_on}"
@@ -153,7 +158,7 @@ class Main:
                 #########################
                 #   Missing code        #
                 #########################
-                self._set_button_property(self.talkButton, blue, "Talk")
+                self._set_button_property(self.talkButton, "blue", "Talk")
                 self.rpi_in_intercom_on = False
                 self.rpi_out_intercom_on = False
 
@@ -178,7 +183,7 @@ class Main:
             if not self.rpi_out_intercom_on and not self.rpi_in_intercom_on:
                 # intercom is off for both sides, turn button to red
                 self.logger.info("Intercom OFF on both devices")
-            self._set_button_property(self.talkButton, blue, "Talk")
+            self._set_button_property(self.talkButton, "blue", "Talk")
             self.rpi_in_intercom_on = False
             self.rpi_out_intercom_on = False
 
@@ -298,20 +303,22 @@ class Main:
                 gtk.main_iteration()
         return msg_list
 
-    def _set_button_property(self, button, color_name: str, label: str):
+    def _set_button_property(self, button, color: str, label: str):
         """
         Set background color and label of a given button
 
         Args:
-            button:     A button widget object.
-            color_name: Name of the color (choose from blue, red, and yellow)
-            label:      The label to be displayed on the button
+            button: A button widget object.
+            color:  Name of the color (choose from 'blue', 'red', and 'yellow')
+            label:  The label to be displayed on the button
         Returns:
             None
         Raises:
             None
         """
-        color = gdk.RGBA()
-        color.parse(color_name)
-        button.override_background_color(gtk.StateFlags.NORMAL, color)
+        ctx = button.get_style_context()
+        if self.button_color[button.get_name()]:
+            ctx.remove_class(self.button_color[button.get_name()])
+        ctx.add_class(color)
+        self.button_color[button.get_name()] = color
         button.set_label(label)
