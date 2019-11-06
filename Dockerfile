@@ -8,15 +8,16 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     libgirepository1.0-dev \
     xauth \
     xvfb \
-    python3 python3-dev python3-pip \
-    && pip install --upgrade pip setuptools
+    python3 \
+    python3-dev \
+    python3-pip
 
 # We copy just the requirements.txt first to leverage Docker cache
 COPY ./requirements.txt /app/requirements.txt
 
 WORKDIR /app
 
-RUN pip install -r requirements.txt
-RUN pip install flake8
-RUN pip install black
+RUN python3 -m pip install -r requirements.txt
+RUN python3 -m pip install flake8
+RUN python3 -m pip install black
 
