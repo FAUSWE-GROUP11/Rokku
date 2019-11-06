@@ -11,6 +11,7 @@ before_install:
 # testing everything on travis except for ui
 install:
   - sudo apt-get install libcairo2-dev libgirepository1.0-dev gir1.2-gtk-3.0
+  - pip3 install -r requirements.txt
   - pip3 install flake8
   - pip3 install black
 
