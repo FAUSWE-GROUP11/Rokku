@@ -8,7 +8,9 @@ before_install:
   # Create a docker image called "myimage"
   - docker build -t myimage -f "Dockerfile" .
 
+# testing everything on travis except for ui
 install:
+  - sudo apt-get install libcairo2-dev libgirepository1.0-dev gir1.2-gtk-3.0
   - pip3 install flake8
   - pip3 install black
 
@@ -20,9 +22,10 @@ before_script:
   - docker run --volume "$(pwd):/app" --workdir "/app" --tty --detach myimage bash > container_id
 
 script:
-  - docker exec "$(cat container_id)" xvfb-run -a python3 -m pytest
+  - docker exec "$(cat container_id)" xvfb-run -a python3 -m pytest src/raspberry_pi_ui/tests
   - flake8 .
   - black --check .
+  - python3 -m pytest --ignore=src/raspberry_pi_ui/tests
 
 
 branches:
