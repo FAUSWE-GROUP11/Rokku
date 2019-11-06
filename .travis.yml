@@ -1,17 +1,35 @@
+sudo: required
+services: docker
 language: python
 python:
   - "3.7"
+
+before_install:
+  # Create a docker image called "myimage"
+  - docker build -t myimage -f "Dockerfile" .
+
+before_script:
+  # create a docker container from the image, mount the current working
+  # directory to /app inside the container and let the container running
+  # in the background. The resulting container ID will be saved to
+  # container_id so we can reference it later on.
+  - docker run --volume "$(pwd):/app" --workdir "/app" --tty --detach myimage bash > container_id
+
 install:
-  - sudo apt-get update
-  - sudo apt-get install libcairo2-dev libgirepository1.0-dev gir1.2-gtk-3.0
-  - pip3 install -r requirements.txt
-  - pip3 install flake8
-  - pip3 install black
-  - pip3 install fake-rpi
+  - docker exec "$(cat container_id)" pip3 install -r requirements.txt
+  - docker exec "$(cat container_id)" pip3 install flake8
+  - docker exec "$(cat container_id)" pip3 install black
+  - docker exec "$(cat container_id)" pip3 install fake-rpi
+
 script:
-  - flake8 .
-  - black --check .
-  - python3 -m pytest
+  - docker exec "$(cat container_id)" flake8 .
+  - docker exec "$(cat container_id)" black --check .
+  - docker exec "$(cat container_id)" xvfb-run -a python3 -m pytest
+
 branches:
   only: 
     - master
+
+after_script:
+  # stop the container
+  - docker stop "$(cat container_id)"
