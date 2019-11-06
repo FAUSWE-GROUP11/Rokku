@@ -23,7 +23,7 @@ before_script:
   - docker run --volume "$(pwd):/app" --workdir "/app" --tty --detach myimage bash > container_id
 
 script:
-  - docker exec "$(cat container_id)" xvfb-run -a python3 -m pytest src/raspberry_pi_ui/tests
+  - docker exec "$(cat container_id)" xvfb-run -a python3.6 -m pytest src/raspberry_pi_ui/tests
   - flake8 .
   - black --check .
   - python3 -m pytest --ignore=src/raspberry_pi_ui/tests
