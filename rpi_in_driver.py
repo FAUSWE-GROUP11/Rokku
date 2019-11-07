@@ -1,11 +1,15 @@
-from src.raspberry_pi_ui import rokku
-from src.pi_to_pi import publisher, subscriber
-from multiprocessing import Process, Queue
 import logging
 import logging.config
-import yaml
-from time import sleep
 
+import yaml
+
+from src.pi_to_pi.utility import set_up_pub_sub
+from src.raspberry_pi_driver.utility import (
+    command_line_parser,
+    hash_prefix,
+    terminate_proc,
+)
+from src.raspberry_pi_ui import rokku
 
 # set up logger
 with open("logger_config.yaml", "r") as f:
@@ -14,32 +18,14 @@ with open("logger_config.yaml", "r") as f:
 logger = logging.getLogger("RPI_IN")
 
 
-def set_up_pub_sub():
-    """
-    Utility function to set up pub and sub
-
-    Args:
-        None
-    Return:
-        publihser object, message queue, and a listening process for subscriber
-    Raises:
-        None
-    """
-    logger.info("Setting up publisher and subscriber")
-    # publisher from rpi_in to rpi_out
-    pub = publisher.Publisher(topic="Rokku/in_to_out")
-    msg_q = Queue()
-    # subscriber listening messages from rpi_out to rpi_in
-    sub = subscriber.Subscriber(msg_q, topic="Rokku/out_to_in")
-    # listen in a separate process
-    listen_proc = Process(target=sub.start_listen, args=())
-    listen_proc.start()
-    logger.info("Publisher and subscriber set up successfully!")
-    return pub, msg_q, listen_proc
-
-
 def main():
-    pub, msg_q, listen_proc = set_up_pub_sub()
+    # parse command line argument
+    args = command_line_parser("RPI_IN_DRIVER")
+    prefix: str = hash_prefix(args.public_id)
+    # set up pub sub
+    logger.info("Setting up publisher and subscriber")
+    pub, msg_q, listen_proc = set_up_pub_sub(prefix, "in_to_out", "out_to_in")
+    logger.info("Publisher and subscriber set up successfully!")
     try:
         logger.info("Spinning up UI...")
         rokku_ui = rokku.Main(pub, msg_q)
@@ -48,13 +34,9 @@ def main():
     except (KeyboardInterrupt, SystemExit):
         pass  # do nothing here because the code below completes the cleanup
 
-    logger.info("Terminate listening process of subscriber")
-    listen_proc.terminate()
-    while listen_proc.is_alive():
-        logger.debug("Waiting for termination...")
-        sleep(1)
-    listen_proc.join()
-    logger.info("Listening process of subscriber terminated successfully!")
+    logger.info(f"Terminating {listen_proc.name}...")
+    terminate_proc(listen_proc)
+    logger.info(f"{listen_proc.name} terminated successfully!")
     logger.info("\n******* rpi_in_driver ends *******\n")
 
 
