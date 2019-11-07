@@ -11,6 +11,7 @@ repos:
     rev: v4.3.21
     hooks:
     -   id: isort
+        args: ["--recursive"]
         additional_dependencies: [toml]
 -   repo: https://github.com/psf/black
     rev: stable

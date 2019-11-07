@@ -1,9 +1,11 @@
-from src.raspberry_pi_ui.rokku import Main
-from rpi_out_driver import set_up_pub_sub as sups_out
-from rpi_in_driver import set_up_pub_sub as sups_in
 import json
 from time import sleep
+
 import pytest
+
+from src.pi_to_pi.utility import set_up_pub_sub
+from src.raspberry_pi_driver.utility import hash_prefix, terminate_proc
+from src.raspberry_pi_ui.rokku import Main
 
 
 # For more info about pytest.fixture, read
@@ -12,28 +14,26 @@ import pytest
 @pytest.fixture(scope="module")
 def mqtt_out():
     # set up mqtt components of rpi_out
-    mqtt_out = sups_out()
+    mqtt_out = set_up_pub_sub(
+        hash_prefix("Rokku/test_topic"), "out_to_in", "in_to_out"
+    )
     yield mqtt_out
     print("tear down mqtt_out")
     _, _, out_listen_proc = mqtt_out
-    out_listen_proc.terminate()
-    while out_listen_proc.is_alive():
-        sleep(1)
-    out_listen_proc.join()
+    terminate_proc(out_listen_proc)
 
 
 @pytest.fixture(scope="module")
 def ui():
     # set up ui
-    in_pub, in_msg_q, in_listen_proc = sups_in()
+    in_pub, in_msg_q, in_listen_proc = set_up_pub_sub(
+        hash_prefix("Rokku/test_topic"), "in_to_out", "out_to_in"
+    )
     ui = Main(in_pub, in_msg_q)
     yield ui
     print("tear down ui")
     ui.close_application("", "")
-    in_listen_proc.terminate()
-    while in_listen_proc.is_alive():
-        sleep(1)
-    in_listen_proc.join()
+    terminate_proc(in_listen_proc)
 
 
 def empty_queues(out_msg_q, in_msg_q):
