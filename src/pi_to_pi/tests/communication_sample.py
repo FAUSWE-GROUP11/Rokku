@@ -1,13 +1,14 @@
 import os
 import sys
+from multiprocessing import Process, Queue
+from time import sleep
+
+import publisher
+import subscriber
 
 # add parent dir to sys path such that we can import modules from parent dir
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import publisher
-import subscriber
-from time import sleep
-from multiprocessing import Process, Queue
 
 """
 This code serves as an example for communication between two devices via mqtt.
