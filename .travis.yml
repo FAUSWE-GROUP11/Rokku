@@ -18,7 +18,7 @@ install:
 
 script:
   - flake8 .
-  - black --check .
+  - black --check --verbose .
   # test non-ui code
   - python3 -m pytest --ignore=src/raspberry_pi_ui/tests
   # use xvfb to test ui code without spinning up ui
