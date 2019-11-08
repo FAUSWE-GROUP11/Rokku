@@ -1,14 +1,15 @@
-import os
 import json
-import gi
 import logging
 import logging.config
-import yaml
+import os
 from time import time
 
-gi.require_version("Gtk", "3.0")
+import gi
+import yaml
 from gi.repository import Gdk as gdk
 from gi.repository import Gtk as gtk
+
+gi.require_version("Gtk", "3.0")
 
 
 # Any global variables that should be used throughout file
@@ -21,7 +22,8 @@ class Main:
     """
     Class implemented to create the GUI
     Contains __init__ which adds the .glade file to draw out the application.
-    This also is wear any object in the .glade (buttons, labels, etc.) are connected to self
+    This also is wear any object in the .glade (buttons, labels, etc.) are
+    connected to self
     """
 
     def __init__(self, pub, msg_q):
@@ -46,7 +48,8 @@ class Main:
         self.rpi_in_intercom_on = False
         self.rpi_out_intercom_on = False
 
-        # connecting all buttons to python to allow for the changing of text/colors
+        # connecting all buttons to python to allow for the changing of
+        # text/colors
         self.livestreamButton = self.builder.get_object("livestreamButton")
         self.videoButton = self.builder.get_object("videoButton")
         self.talkButton = self.builder.get_object("talkButton")
@@ -121,8 +124,10 @@ class Main:
 
     """
     This will be called on whenever the Talk button is clicked
-    First will communicate with rpi_out to see if intercom is active on both parties and will set the self.intercom flag accordingly
-    If intercom is active, turn off intercom and set color to blue with 'Talk' text for button
+    First will communicate with rpi_out to see if intercom is active on both
+    parties and will set the self.intercom flag accordingly
+    If intercom is active, turn off intercom and set color to blue with 'Talk'
+    text for button
     If intercom is not active, send signal to activate intercom and set self.intercom_active accordingly
     Intercom will reset if error message is recieved when trying to active intercom
     """
