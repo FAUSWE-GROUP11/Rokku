@@ -1,9 +1,9 @@
 import os
-import gi
 
+import gi
+from gi.repository import Gdk, Gtk
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, Gdk
 
 
 class Main:

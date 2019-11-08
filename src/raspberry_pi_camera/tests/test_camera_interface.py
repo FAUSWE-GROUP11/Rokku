@@ -1,9 +1,11 @@
 import sys
+
 import fake_rpi
 
 sys.modules["picamera"] = fake_rpi.picamera  # Fake picamera
 
 from .. import camera_interface  # from .. import camera_interface
+
 
 """import os"""
 

@@ -1,9 +1,10 @@
-import paho.mqtt.client as mqtt
-from time import sleep
 import logging
 import logging.config
-import yaml
 import os
+from time import sleep
+
+import paho.mqtt.client as mqtt
+import yaml
 
 
 class Publisher:

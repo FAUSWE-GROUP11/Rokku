@@ -1,8 +1,9 @@
-from picamera import PiCamera
 import datetime
+import socket
 import subprocess
 from time import sleep
-import socket
+
+from picamera import PiCamera
 
 """class to hold everything goes here..."""
 
