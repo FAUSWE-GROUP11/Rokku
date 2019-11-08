@@ -1,15 +1,15 @@
+import os
 import json
+import gi
 import logging
 import logging.config
-import os
+import yaml
 from time import time
 
-import gi
-import yaml
+gi.require_version("Gtk", "3.0")
 from gi.repository import Gdk as gdk
 from gi.repository import Gtk as gtk
 
-gi.require_version("Gtk", "3.0")
 
 # Any global variables that should be used throughout file
 red = "#eb3434"
