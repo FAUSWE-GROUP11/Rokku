@@ -15,10 +15,12 @@ install:
   - pip3 install -r requirements.txt
   - pip3 install flake8
   - pip3 install black
+  - pip3 install isort
 
 script:
   - flake8 .
-  - black --check --verbose .
+  - isort --recursive --check
+  - black --check .
   # test non-ui code
   - python3 -m pytest --ignore=src/raspberry_pi_ui/tests
   # use xvfb to test ui code without spinning up ui

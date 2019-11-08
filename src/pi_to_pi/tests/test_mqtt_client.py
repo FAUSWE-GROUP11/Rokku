@@ -1,9 +1,10 @@
-from .. import publisher, subscriber
 import json
-from time import sleep
-from multiprocessing import Process, Queue
-import re
 import os
+import re
+from multiprocessing import Process, Queue
+from time import sleep
+
+from .. import publisher, subscriber
 
 
 def test_pub_sub():

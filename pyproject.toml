@@ -17,6 +17,8 @@ exclude = '''
 
 [tool.isort]
 line_length = 79
+skip = "rokku.py"
+skip_glob = ["*/venv/*", "*/raspberry_pi_camera/tests/*", "*/raspberry_pi_motion_sensor/tests/*"]
 known_future_library = ["future", "pies"]
 known_third_party = ["RPi", "fake_rpi", "gi", "paho", "picamera", "publisher", "pytest", "subscriber", "yaml"]
 indent = "    "
