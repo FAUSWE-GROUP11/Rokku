@@ -8,6 +8,7 @@ sys.modules["RPi.GPIO"] = fake_rpi.RPi.GPIO
 
 from .. import motion_interface
 
+
 queue = Queue()
 motion = motion_interface.MotionPir(queue, 23)
 
