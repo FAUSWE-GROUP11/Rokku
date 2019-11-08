@@ -14,3 +14,13 @@ exclude = '''
   | dist
 )/
 '''
+
+[tool.isort]
+line_length = 79
+known_future_library = ["future", "pies"]
+known_third_party = ["RPi", "fake_rpi", "gi", "paho", "picamera", "publisher", "pytest", "subscriber", "yaml"]
+indent = "    "
+multi_line_output= 3
+include_trailing_comma= "True"
+force_grid_wrap= 0
+use_parentheses= "True"

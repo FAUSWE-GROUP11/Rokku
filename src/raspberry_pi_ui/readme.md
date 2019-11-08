@@ -18,3 +18,8 @@ One of the main dependencies is the `gi` module. For Raspbian, it is included in
 
 ## Spin up UI Window
 To spin up the UI window, run `python3 rpi_in_driver.py` from root directory and under virtual environment.
+
+## Testing
+UI testing is tricky. So far, we haven't found an easy solution to simulate button click to fully test our UI. But we are able to run simple test on non-event related functions in the UI object. According to the [documentation](https://pygobject.readthedocs.io/en/latest/guide/testing.html), Travis-ci doesn't have up-to-date GTK version in its Ubuntu virtual machine, so testing of PyGObject has to be done in a Docker container. This is no longer correct, as of 11/05/2019, Travis-ci provides Ubuntu 18.04 (Bionic) which has GTK version 3.22, enough to test UI built from PyGObject.
+
+On the other hand, using Docker container might be able to test UI, but since all the Docker images shown on [the example](https://github.com/pygobject/pygobject-travis-ci-docker-examples) have Python version no higher than 3.5, compatibility with code written in Python 3.7 is a serious issue (e.g. support for f-string starts in Python 3.6). Therefore, it is much easier to test directly on Travis-CI's virtual machine by specifying `dist: bionic`.

@@ -1,15 +1,30 @@
+dist: bionic
 language: python
 python:
   - "3.7"
+
 install:
+  # install linux dependencies for PyGObject
+  - sudo apt-get update
+  - >
+    sudo apt-get install --no-install-recommends -y 
+    libcairo2-dev
+    libgirepository1.0-dev
+    gir1.2-gtk-3.0
+    xvfb
   - pip3 install -r requirements.txt
   - pip3 install flake8
   - pip3 install black
-  - pip3 install fake-rpi
+
 script:
   - flake8 .
-  - black --check .
-  - pytest
+  - black --check --verbose .
+  # test non-ui code
+  - python3 -m pytest --ignore=src/raspberry_pi_ui/tests
+  # use xvfb to test ui code without spinning up ui
+  # see this: https://pygobject.readthedocs.io/en/latest/guide/testing.html
+  - xvfb-run -a python3 -m pytest src/raspberry_pi_ui/tests
+
 branches:
   only: 
     - master
