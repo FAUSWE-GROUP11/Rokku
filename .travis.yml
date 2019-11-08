@@ -19,7 +19,7 @@ install:
 
 script:
   - flake8 .
-  - isort --recursive
+  - isort --recursive --check
   - black --check .
   # test non-ui code
   - python3 -m pytest --ignore=src/raspberry_pi_ui/tests
