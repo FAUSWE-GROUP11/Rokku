@@ -246,9 +246,8 @@ class Main:
             try:  # wait for rpi_out to send msg back
                 self.armed_out = self._wait_msg("motion")[1]
             except IndexError:  # no message received
-                self.armed = (
-                    False
-                )  # this is assuming rpi_out did not change state
+                # this is assuming rpi_out did not change state
+                self.armed = False
 
             # If message from rpi_out was recieved
             if self.armed_out:
@@ -279,9 +278,8 @@ class Main:
             try:  # wait for rpi_out to send msg back
                 self.armed_out = self._wait_msg("motion")[1]
             except IndexError:  # no message received
-                self.armed = (
-                    True
-                )  # this is assuming rpi_out did not change state
+                # this is assuming rpi_out did not change state
+                self.armed = True
 
             if not self.armed_out:
                 # rpi_out message recieved, motion detection is off, turn button to blue
