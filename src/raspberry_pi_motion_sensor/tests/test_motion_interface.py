@@ -2,11 +2,11 @@ import sys
 from multiprocessing import Queue
 
 import fake_rpi
+sys.modules["RPi"] = fake_rpi.RPi
+sys.modules["RPi.GPIO"] = fake_rpi.RPi.GPIO
 
 from .. import motion_interface
 
-sys.modules["RPi"] = fake_rpi.RPi
-sys.modules["RPi.GPIO"] = fake_rpi.RPi.GPIO
 
 queue = Queue()
 motion = motion_interface.MotionPir(queue, 23)
