@@ -1,13 +1,15 @@
-import os
 import json
-import gi
 import logging
 import logging.config
-import yaml
+import os
 from time import time
 
+import gi
+import yaml
+from gi.repository import Gdk as gdk
+from gi.repository import Gtk as gtk
+
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk as gtk, Gdk as gdk
 
 # Any global variables that should be used throughout file
 red = "#eb3434"
@@ -19,7 +21,8 @@ class Main:
     """
     Class implemented to create the GUI
     Contains __init__ which adds the .glade file to draw out the application.
-    This also is wear any object in the .glade (buttons, labels, etc.) are connected to self
+    This also is wear any object in the .glade (buttons, labels, etc.) are
+    connected to self
     """
 
     def __init__(self, pub, msg_q):
