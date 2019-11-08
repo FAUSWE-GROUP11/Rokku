@@ -46,7 +46,8 @@ class Main:
         self.rpi_in_intercom_on = False
         self.rpi_out_intercom_on = False
 
-        # connecting all buttons to python to allow for the changing of text/colors
+        # connecting all buttons to python to allow for the changing of
+        # text/colors
         self.livestreamButton = self.builder.get_object("livestreamButton")
         self.videoButton = self.builder.get_object("videoButton")
         self.talkButton = self.builder.get_object("talkButton")
