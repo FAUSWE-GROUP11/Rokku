@@ -218,12 +218,46 @@ class Main:
     """
 
     def on_recordButton_clicked(self, widget):
-        # add code to check if clip is still recording and set self.recording accordingly
-
+        # variable to hold link as a string
+        yt_link = None
+        # Sets button to yellow while rpi_in tries communicating with rpi_out
+        self._set_button_property(
+            self.recordButton, "yellow", "Spooling up camera..."
+        )
+        # Check if not recording
         if not self.recording:
-            # code to send message to record clip
-
-            self.recording = True
+            self.logger.info("Sending record ON message to rpi_out...")
+            self.pub.publish(json.dumps(["record", True]))
+            try:  # wait for rpi_out to send true msg back
+                self.recording = self._wait_msg("record")[1]
+            except IndexError:  # no message received
+                self.recording = False
+        if self.recording:
+            # Since rpi_out sent back true it should be recording now
+            self.logger.info("rpi_out is recording now...")
+            # turn button to red if not already red
+            self._set_button_property(self.recordButton, "red", "Recording...")
+            # waiting for rpi_out to send youtube playlist link
+            try:  # wait for rpi_out to send msg back
+                yt_link = self._wait_msg("yt_link")[1]
+            except IndexError:  # no message received
+                self.recording = False
+        if (
+            type(yt_link) == str
+        ) and self.recording:  # Does not catch if junk str was sent back
+            self.logger.info("rpi_out recorded a video succesfully...")
+            self._set_button_property(self.recordButton, "blue", "Record")
+            self.recording = False
+        else:  # Something wrong with mqtt or the recording failed
+            self.logger.error(
+                f"Mqtt or the YouTube Api broke, no video was recorded. Recording status: rpi_i n = {self.recording}"
+            )
+            # display message box with error
+            #########################
+            #   Missing code        #
+            #########################
+            self._set_button_property(self.recordButton, "blue", "Record")
+            self.recording = False
 
     def on_armButton_clicked(self, widget):
         """ This will be called on whenever the Arm button is clicked
