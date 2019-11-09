@@ -54,7 +54,7 @@ class MotionPir:
         self.armed = False
         GPIO.remove_event_detect(self.channel_num)
 
-    def show_state(self):
+    def get_state(self):
         """Returnss the state of armed / 'alarm system' """
 
         if self.armed:
