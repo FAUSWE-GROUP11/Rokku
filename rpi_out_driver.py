@@ -5,7 +5,7 @@ from time import sleep
 import yaml
 
 from src.pi_to_pi.utility import set_up_pub_sub
-from src.raspberry_pi_driver.behaviors import sample
+from src.raspberry_pi_driver.behaviors import (motion)
 from src.raspberry_pi_driver.utility import (
     command_line_parser,
     hash_prefix,
@@ -31,8 +31,11 @@ def main():
         # forever listening on topic "Rokku/in_to_out"
         while True:
             if not msg_q.empty():
-                # code behaviors
-                sample(msg_q, pub)
+                msg: str = msg_q.get()
+                print(f"Sample behavior received: {msg}")
+                identifier, flag = json.loads(msg)
+                if identifier is "motion":
+                    motion(pub, flag)              
             sleep(1)
     except (KeyboardInterrupt, SystemExit):
         logger.warning("Termination signal sensed.")

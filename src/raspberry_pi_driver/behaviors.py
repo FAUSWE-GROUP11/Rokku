@@ -1,6 +1,6 @@
 import json
 from time import sleep
-
+from src.raspberry_pi_motion_sensor.motion_interface import MotionPIR
 
 def sample(msg_q, pub) -> None:
     """
@@ -22,3 +22,12 @@ def sample(msg_q, pub) -> None:
     identifier, flag = json.loads(msg)
     sleep(1)
     pub.publish(json.dumps([identifier, flag]))
+
+def motion(pub, flag):
+    motion = MotionPIR(None, 23)
+    if flag is True:
+        motion.set_armed()
+    else:
+        motion.set_disarmed()
+    pub.publish(json.dumps(["motion", motion.get_state()]))
+
