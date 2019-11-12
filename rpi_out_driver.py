@@ -7,7 +7,7 @@ import RPi.GPIO as GPIO
 import yaml
 
 from src.pi_to_pi.utility import set_up_pub_sub
-from src.raspberry_pi_driver.behaviors import (motion, intercom, record, alarm)
+from src.raspberry_pi_driver.behaviors import alarm, intercom, motion, record
 from src.raspberry_pi_driver.utility import (
     command_line_parser,
     hash_prefix,
