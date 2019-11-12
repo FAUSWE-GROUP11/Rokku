@@ -1,6 +1,6 @@
 import json
 from time import sleep
-from src.raspberry_pi_motion_sensor.motion_interface import MotionPIR
+from ..raspberry_pi_motion_sensor.motion_interface import MotionPir
 
 def sample(msg_q, pub) -> None:
     """
