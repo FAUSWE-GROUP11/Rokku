@@ -1,12 +1,13 @@
+import json
 import logging
 import logging.config
 from time import sleep
-import json
-import yaml
+
 import RPi.GPIO as GPIO
+import yaml
 
 from src.pi_to_pi.utility import set_up_pub_sub
-from src.raspberry_pi_driver.behaviors import (motion)
+from src.raspberry_pi_driver import behaviors
 from src.raspberry_pi_driver.utility import (
     command_line_parser,
     hash_prefix,
@@ -20,9 +21,8 @@ with open("logger_config.yaml", "r") as f:
 logger = logging.getLogger("RPI_OUT")
 
 # set up RPi board
-GPIO.setmode(
-    GPIO.BCM
-)  # use GPIO.setmode(GPIO.board) for using pin numbers
+GPIO.setmode(GPIO.BCM)  # use GPIO.setmode(GPIO.board) for using pin numbers
+
 
 def main():
     # parse command line argument
@@ -39,8 +39,8 @@ def main():
                 msg: str = msg_q.get()
                 print(f"Sample behavior received: {msg}")
                 identifier, flag = json.loads(msg)
-                if identifier is "motion":
-                    motion(pub, flag)              
+                if identifier == "motion":
+                    behaviors.motion(pub, flag)
             sleep(1)
     except (KeyboardInterrupt, SystemExit):
         logger.warning("Termination signal sensed.")
