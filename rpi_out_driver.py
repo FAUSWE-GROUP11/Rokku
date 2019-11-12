@@ -7,7 +7,7 @@ import RPi.GPIO as GPIO
 import yaml
 
 from src.pi_to_pi.utility import set_up_pub_sub
-from src.raspberry_pi_driver import behaviors
+from src.raspberry_pi_driver.behaviors import (motion, intercom, record, alarm)
 from src.raspberry_pi_driver.utility import (
     command_line_parser,
     hash_prefix,
@@ -39,8 +39,14 @@ def main():
                 msg: str = msg_q.get()
                 print(f"Sample behavior received: {msg}")
                 identifier, flag = json.loads(msg)
+                if identifier == "alarm":
+                    alarm(pub, flag)
+                if identifier == "intercom":
+                    intercom(pub, flag)
                 if identifier == "motion":
-                    behaviors.motion(pub, flag)
+                    motion(pub, flag)
+                if identifier == "record":
+                    record(pub, flag)
             sleep(1)
     except (KeyboardInterrupt, SystemExit):
         logger.warning("Termination signal sensed.")
