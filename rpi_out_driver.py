@@ -3,6 +3,7 @@ import logging.config
 from time import sleep
 import json
 import yaml
+import RPi.GPIO as GPIO
 
 from src.pi_to_pi.utility import set_up_pub_sub
 from src.raspberry_pi_driver.behaviors import (motion)
@@ -18,6 +19,10 @@ with open("logger_config.yaml", "r") as f:
     logging.config.dictConfig(config)
 logger = logging.getLogger("RPI_OUT")
 
+# set up RPi board
+GPIO.setmode(
+    GPIO.BCM
+)  # use GPIO.setmode(GPIO.board) for using pin numbers
 
 def main():
     # parse command line argument
@@ -43,6 +48,7 @@ def main():
         terminate_proc(listen_proc)
         logger.info(f"{listen_proc.name} terminated successfully!")
     logger.info("\n******* rpi_out_driver ends *******\n")
+    GPIO.cleanup()
 
 
 if __name__ == "__main__":
