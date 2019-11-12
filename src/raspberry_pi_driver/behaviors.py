@@ -24,10 +24,10 @@ def sample(msg_q, pub) -> None:
     pub.publish(json.dumps([identifier, flag]))
 
 def motion(pub, flag):
-    motion = MotionPIR(None, 23)
+    sensor = MotionPIR(None, 23)
     if flag is True:
-        motion.set_armed()
+        sensor.set_armed()
     else:
-        motion.set_disarmed()
-    pub.publish(json.dumps(["motion", motion.get_state()]))
+        sensor.set_disarmed()
+    pub.publish(json.dumps(["motion", sensor.get_state()]))
 
