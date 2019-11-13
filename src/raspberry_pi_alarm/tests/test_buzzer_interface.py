@@ -7,7 +7,7 @@ from .. import buzzer_interface
 
 alarm = buzzer_interface.Buzzer(24)
 
-class testBuzzer:
+class TestBuzzer:
     def test_init(self):
         assert alarm.channel == 24
 
@@ -23,7 +23,7 @@ class testBuzzer:
         assert alarm.state is False
 
     def test_get_state(self):
-        alarm.get state()
+        alarm.get_state()
         assert alarm.get_state() is False
 
     def test_get_state2(self):
@@ -32,4 +32,4 @@ class testBuzzer:
 
     def test_get_state3(self):
         alarm.scilence()
-        assert alarm.get_state is False
+        assert alarm.get_state() is False

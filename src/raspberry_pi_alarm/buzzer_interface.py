@@ -6,7 +6,8 @@ class Buzzer:
 
     def __init__(self, channel):
         self.state = False
-        GPIO.setup(channel, GPIO.OUT, initial=GPIO.HIGH)
+        self.channel = channel
+        GPIO.setup(self.channel, GPIO.OUT, initial=GPIO.HIGH)
 
     def get_state(self) -> bool:
         if self.state is True:
@@ -16,11 +17,11 @@ class Buzzer:
 
     def sound(self):
         self.state = True
-        GPIO.output(channel, GPIO.HIGH)
+        GPIO.output(self.channel, GPIO.HIGH)
 
     def scilence(self):
         self.state = False
-        GPIO.output(channel, GPIO.LOW)
+        GPIO.output(self.channel, GPIO.LOW)
         
 
 
