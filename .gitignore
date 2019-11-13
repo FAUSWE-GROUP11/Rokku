@@ -284,3 +284,6 @@ dmypy.json
 
 # custom ignore
 **/*.log
+
+# Visual Studio Code
+.vscode/
