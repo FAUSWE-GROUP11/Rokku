@@ -18,7 +18,7 @@ class TestMotionPir:
         assert motion.channel_num == 23
 
     def test_init_2(self):
-        assert motion.queue.qsize() == 0
+        assert motion.queue.empty()
 
     def test_init_3(self):
         assert motion.armed is False

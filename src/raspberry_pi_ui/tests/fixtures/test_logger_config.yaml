@@ -15,21 +15,6 @@ handlers:
     formatter: simple
     filename: rokku.log
 loggers:
-  Subscriber:
+  TESET:
     level: DEBUG
-    handlers: [file, console]
-  Publisher:
-    level: DEBUG
-    handlers: [file, console]
-  RPI_IN:
-    level: DEBUG
-    handlers: [file, console]
-  RPI_OUT:
-    level: DEBUG
-    handlers: [file, console]
-  UI:
-    level: DEBUG
-    handlers: [file, console]
-  TalkButton:
-    level: DEBUG
-    handlers: [file, console]
+    handlers: [console]
