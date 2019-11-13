@@ -20,10 +20,6 @@ class MotionPir:
         self.armed = False
         self.queue = queue
         self.channel_num = channel_num
-
-        GPIO.setmode(
-            GPIO.BCM
-        )  # use GPIO.setmode(GPIO.board) for using pin numbers
         GPIO.setup(self.channel_num, GPIO.IN)
 
     def motion_callback(self, channel):

@@ -1,11 +1,14 @@
+import json
 import logging
 import logging.config
+from multiprocessing import Queue
 from time import sleep
 
+import RPi.GPIO as GPIO
 import yaml
 
 from src.pi_to_pi.utility import set_up_pub_sub
-from src.raspberry_pi_driver.behaviors import sample
+from src.raspberry_pi_driver.behaviors import alarm, intercom, motion, record
 from src.raspberry_pi_driver.utility import (
     command_line_parser,
     hash_prefix,
@@ -18,6 +21,9 @@ with open("logger_config.yaml", "r") as f:
     logging.config.dictConfig(config)
 logger = logging.getLogger("RPI_OUT")
 
+# set up RPi board
+GPIO.setmode(GPIO.BCM)  # use GPIO.setmode(GPIO.board) for using pin numbers
+
 
 def main():
     # parse command line argument
@@ -27,12 +33,22 @@ def main():
     logger.info("Setting up publisher and subscriber")
     pub, msg_q, listen_proc = set_up_pub_sub(prefix, "out_to_in", "in_to_out")
     logger.info("Publisher and subscriber set up successfully!")
+    motion_queue = Queue()
     try:
         # forever listening on topic "Rokku/in_to_out"
         while True:
             if not msg_q.empty():
-                # code behaviors
-                sample(msg_q, pub)
+                msg: str = msg_q.get()
+                print(f"Sample behavior received: {msg}")
+                identifier, flag = json.loads(msg)
+                if identifier == "alarm":
+                    alarm(pub, flag)
+                if identifier == "intercom":
+                    intercom(pub, flag)
+                if identifier == "motion":
+                    motion(pub, flag, motion_queue)
+                if identifier == "record":
+                    record(pub, flag)
             sleep(1)
     except (KeyboardInterrupt, SystemExit):
         logger.warning("Termination signal sensed.")
@@ -40,6 +56,7 @@ def main():
         terminate_proc(listen_proc)
         logger.info(f"{listen_proc.name} terminated successfully!")
     logger.info("\n******* rpi_out_driver ends *******\n")
+    GPIO.cleanup()
 
 
 if __name__ == "__main__":
