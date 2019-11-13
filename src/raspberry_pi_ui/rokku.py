@@ -205,12 +205,12 @@ class Main:
 
 
     def on_soundAlarmButton_clicked(self, widget):
-    """ This will be called on whenever the Sound Alarm button is clicked
+        """ This will be called on whenever the Sound Alarm button is clicked
 
-    First will communicate with rpi_out to see if sound is being played and will set the self.alarm_sounding flag accordingly
-    If sound alarm is active, do nothing
-    If not active, send signal to sound alarm and set self.alarm_sounding accordingly
-    """
+        First will communicate with rpi_out to see if sound is being played and will set the self.alarm_sounding flag accordingly
+        If sound alarm is active, do nothing
+        If not active, send signal to sound alarm and set self.alarm_sounding accordingly
+        """
         # user wants to set off alarm on rpi_out
         if not self.alarm_sounding and not self.alarm_sounding_out:
             # turn button yellow, but with message "Acitvating"

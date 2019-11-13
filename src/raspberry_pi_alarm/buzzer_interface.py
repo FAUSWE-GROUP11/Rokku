@@ -17,11 +17,11 @@ class Buzzer:
 
     def sound(self):
         self.state = True
-        GPIO.output(self.channel, GPIO.HIGH)
+        GPIO.output(self.channel, GPIO.LOW)
 
     def silence(self):
         self.state = False
-        GPIO.output(self.channel, GPIO.LOW)
+        GPIO.output(self.channel, GPIO.HIGH)
         
 
 
