@@ -31,7 +31,7 @@ class MotionPir:
         """
 
         # Here, alternatively, an application / command can be started
-        # self.queue.put(True)
+        self.queue.put(True)
         print("Movement Detected")
 
     def set_armed(self):

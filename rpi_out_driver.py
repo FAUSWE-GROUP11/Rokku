@@ -2,7 +2,7 @@ import json
 import logging
 import logging.config
 from time import sleep
-
+from multiprocessing import Queue
 import RPi.GPIO as GPIO
 import yaml
 
@@ -32,6 +32,7 @@ def main():
     logger.info("Setting up publisher and subscriber")
     pub, msg_q, listen_proc = set_up_pub_sub(prefix, "out_to_in", "in_to_out")
     logger.info("Publisher and subscriber set up successfully!")
+    motion_queue = Queue()
     try:
         # forever listening on topic "Rokku/in_to_out"
         while True:
@@ -44,7 +45,7 @@ def main():
                 if identifier == "intercom":
                     intercom(pub, flag)
                 if identifier == "motion":
-                    motion(pub, flag)
+                    motion(pub, flag, motion_queue)
                 if identifier == "record":
                     record(pub, flag)
             sleep(1)

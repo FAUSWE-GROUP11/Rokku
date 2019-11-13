@@ -3,9 +3,9 @@ import json
 from ..raspberry_pi_motion_sensor.motion_interface import MotionPir
 
 
-def motion(pub, flag) -> None:
+def motion(pub, flag, queue) -> None:
     """Behavior that will arm or disarm the motion sensor."""
-    sensor = MotionPir(None, 23)
+    sensor = MotionPir(queue, 23)
     if flag is True:
         sensor.set_armed()
     else:
