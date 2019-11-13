@@ -1,8 +1,9 @@
 import json
 import logging
 import logging.config
-from time import sleep
 from multiprocessing import Queue
+from time import sleep
+
 import RPi.GPIO as GPIO
 import yaml
 
