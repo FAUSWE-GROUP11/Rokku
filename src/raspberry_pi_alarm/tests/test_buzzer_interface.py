@@ -19,7 +19,7 @@ class TestBuzzer:
         assert alarm.state is True
     
     def test_scilence(self):
-        alarm.scilence()
+        alarm.silence()
         assert alarm.state is False
 
     def test_get_state(self):
@@ -31,5 +31,5 @@ class TestBuzzer:
         assert alarm.get_state() is True
 
     def test_get_state3(self):
-        alarm.scilence()
+        alarm.silence()
         assert alarm.get_state() is False

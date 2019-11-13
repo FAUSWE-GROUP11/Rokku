@@ -19,7 +19,7 @@ class Buzzer:
         self.state = True
         GPIO.output(self.channel, GPIO.HIGH)
 
-    def scilence(self):
+    def silence(self):
         self.state = False
         GPIO.output(self.channel, GPIO.LOW)
         
