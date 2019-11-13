@@ -1,17 +1,17 @@
 .blue {
-    background-color: blue;
-    background: blue;
+    background-color: #346eeb;
+    background: #346eeb;
     color: white;
 }
 
 .yellow {
-    background-color: yellow;
-    background: yellow;
+    background-color: #e5eb34;
+    background: #e5eb34;
     color: black;
 }
 
 .red {
-    background-color: red;
-    background: red;
+    background-color: #eb3434;
+    background: #eb3434;
     color: white;
 }

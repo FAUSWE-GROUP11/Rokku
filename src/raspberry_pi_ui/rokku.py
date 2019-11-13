@@ -14,12 +14,6 @@ from gi.repository import Gdk as gdk
 from gi.repository import Gtk as gtk
 
 
-# Any global variables that should be used throughout file
-red = "#eb3434"
-blue = "#346eeb"
-yellow = "#e5eb34"
-
-
 class Main:
     """
     Class implemented to create the GUI

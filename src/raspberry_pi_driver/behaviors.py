@@ -1,6 +1,6 @@
 import json
 
-from ..raspberry_pi_motion_sensor.motion_interface import MotionPir
+from src.raspberry_pi_motion_sensor.motion_interface import MotionPir
 
 
 def motion(pub, flag, queue) -> None:
