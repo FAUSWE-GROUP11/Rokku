@@ -17,7 +17,7 @@ class TalkButton(Button):
 
     def __init__(self, button, pub, msg_q):
         """Constructor of the class, which inherit from Button class"""
-        super().__init__(button, pub, msg_q)
+        super().__init__(button, pub, msg_q, "Talk")
 
         # unique functionality flags
         self.rpi_in_intercom_on = False
@@ -32,6 +32,21 @@ class TalkButton(Button):
         self.logger = logging.getLogger("TalkButton")
 
     def on_clicked(self, widget):
+        """Callback when `Talk` button is clicked.
+
+        This will be called on whenever the Talk button is clicked
+        First will communicate with rpi_out to see if intercom is active on
+        both parties and will set the self.intercom flag accordingly.
+
+        If intercom is active, turn off intercom and set color to blue with
+        'Talk' text for button.
+
+        If intercom is not active, send signal to activate intercom and set
+        self.intercom_active accordingly
+
+        Intercom will reset if error message is recieved when trying to active
+        intercom.
+        """
         # Always turn button to yellow whenever button is clicked
         set_button_property(self, "yellow", "Configuring...")
         # user wants to turn on intercom for both rpi_in and rpi_out

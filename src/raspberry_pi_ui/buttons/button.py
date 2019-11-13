@@ -7,7 +7,7 @@ class Button(object):
     This is the parent class.
     """
 
-    def __init__(self, button, pub, msg_q):
+    def __init__(self, button, pub, msg_q, label: str):
         """Constructor of the class.
 
         :param button:      The actual button widget from UI
@@ -17,7 +17,7 @@ class Button(object):
         self._button = button
         self._color = ""  # initialize color with empty string
         self._button.connect("clicked", self.on_clicked)
-        set_button_property(self, "blue", "Talk")  # initial button property
+        set_button_property(self, "blue", label)  # initial button property
 
         # set up publisher and message queue
         self.pub = pub

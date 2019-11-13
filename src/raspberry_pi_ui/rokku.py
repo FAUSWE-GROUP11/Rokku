@@ -11,7 +11,7 @@ gi.require_version("Gdk", "3.0")
 from gi.repository import Gdk as gdk
 from gi.repository import Gtk as gtk
 
-from src.raspberry_pi_ui.buttons import talk
+from src.raspberry_pi_ui.buttons import talk, arm
 
 
 class Main:
@@ -47,8 +47,7 @@ class Main:
         self.logger = logging.getLogger("UI")
 
         # All functionality flags
-        self.armed = False
-        self.armed_out = False
+
         self.sound_playing = False
         self.recording = False
 
@@ -59,9 +58,11 @@ class Main:
         self.talk_button = talk.TalkButton(
             self.builder.get_object("talkButton"), pub, msg_q
         )
+        self.arm_button = arm.ArmButton(
+            self.builder.get_object("armButton"), pub, msg_q
+        )
         # self.soundAlarmButton = self.builder.get_object("soundAlarmButton")
         # self.recordButton = self.builder.get_object("recordButton")
-        # self.armButton = self.builder.get_object("armButton")
 
         # Button background color, set to empty string initially
         # self.button_color = {
@@ -119,16 +120,6 @@ class Main:
         # Figure out how to give url passed on button clicked
         # os.system("python embedded_yt.py")
         self.videoButton.set_label("Need code")
-
-    """
-    This will be called on whenever the Talk button is clicked
-    First will communicate with rpi_out to see if intercom is active on both
-    parties and will set the self.intercom flag accordingly
-    If intercom is active, turn off intercom and set color to blue with 'Talk'
-    text for button
-    If intercom is not active, send signal to activate intercom and set self.intercom_active accordingly
-    Intercom will reset if error message is recieved when trying to active intercom
-    """
 
     """
     This will be called on whenever the Sound Alarm button is clicked
@@ -189,78 +180,6 @@ class Main:
     #         #########################
     #     self._set_button_property(self.recordButton, "blue", "Record")
     #     self.recording = False
-
-    # def on_armButton_clicked(self, widget):
-    #     """ This will be called on whenever the Arm button is clicked
-
-    #     Inbetween changing motion detector state, the button will be yellow with 'Arming' and 'Disarming' messages to notify that the change has not taken place yet.
-    #     If the alarm is not set, sets text to 'Disarm' and color to red along with sending a message to rpi_out activing armed flag.
-    #     If the alarm is set, sets text to 'Arm' and color to blue along with sending a message to rpi_out disactiving armed flag."""
-    #     # user wants to turn on motion_sensor for rpi_out
-    #     if not self.armed and not self.armed_out:
-    #         # turn button yellow, but with message "Arming"
-    #         self._set_button_property(self.armButton, "yellow", "Arming...")
-    #         # let rpi_in know to arm motion detector
-    #         self.logger.info("Arming rpi_out motion sensor...")
-    #         self.armed = True
-
-    #         self.logger.info(
-    #             "Sending motion detection ON message to rpi_out..."
-    #         )
-    #         self.pub.publish(json.dumps(["motion", True]))
-    #         try:  # wait for rpi_out to send msg back
-    #             self.armed_out = self._wait_msg("motion")[1]
-    #         except IndexError:  # no message received
-    #             # this is assuming rpi_out did not change state
-    #             self.armed = False
-
-    #         # If message from rpi_out was recieved
-    #         if self.armed_out:
-    #             # motion_sensor is 'armed' on rpi_out: turn button to red
-    #             self.logger.info("Motion sensor ARMED on rpi_out")
-    #             self._set_button_property(self.armButton, "red", "Disarm")
-    #         else:  # A message from rpi_out was not recieved
-    #             self.logger.error(
-    #                 f"Motion status: rpi_in = {self.armed}, rpi_out = {self.armed_out}"
-    #             )
-    #             # display message box with error
-    #             #########################
-    #             #   Missing code        #
-    #             #########################
-    #             self._set_button_property(self.armButton, "blue", "Arm")
-    #             self.armed = False
-
-    #     # motion detection active. Turn off sensor.
-    #     elif self.armed and self.armed_out:
-    #         # turn button yellow, but with message "Disarming"
-    #         self._set_button_property(self.armButton, "yellow", "Disarming...")
-    #         self.logger.info("Disarming rpi_out motion sensor...")
-    #         self.armed = False
-
-    #         # Send disarm signal
-    #         self.logger.info("Sending armed OFF message to rpi_out...")
-    #         self.pub.publish(json.dumps(["motion", False]))
-    #         try:  # wait for rpi_out to send msg back
-    #             self.armed_out = self._wait_msg("motion")[1]
-    #         except IndexError:  # no message received
-    #             # this is assuming rpi_out did not change state
-    #             self.armed = True
-
-    #         if not self.armed_out:
-    #             # rpi_out message recieved, motion detection is off, turn button to blue
-    #             self.logger.info("Motion sensor is OFF on rpi_out")
-    #             self._set_button_property(self.armButton, "blue", "Arm")
-    #             self.armed = False
-    #         else:  # A message from rpi_out was not recieved
-    #             self.logger.error(
-    #                 f"Motion status: rpi_in = {self.armed}, rpi_out = ?"
-    #             )
-    #             # display message box with error
-    #             #########################
-    #             #   Missing code        #
-    #             #########################
-    #             self._set_button_property(self.armButton, "red", "Disarm")
-    #             self.armed = True
 
     """
     This will be called on closing the Rokku application

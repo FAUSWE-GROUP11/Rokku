@@ -33,3 +33,6 @@ loggers:
   TalkButton:
     level: DEBUG
     handlers: [file, console]
+  ArmButton:
+    level: DEBUG
+    handlers: [file, console]
