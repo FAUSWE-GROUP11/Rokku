@@ -1,4 +1,5 @@
 import json
+from time import sleep
 
 from src.raspberry_pi_motion_sensor.motion_interface import MotionPir
 
@@ -34,6 +35,10 @@ def record(pub, flag) -> None:
         #########################
         #   Missing code        #
         #########################
+
+        # simulate recording for now. Delete this code once the real code is
+        # available above
+        sleep(5)
         yt_playlist_link = ""
 
         # Once recording is over and YouTube gives link to playlist

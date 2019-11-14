@@ -24,6 +24,7 @@ class RecordButton(Button):
 
         # variables to catch youtube links sent back (Strings)
         self.yt_playlist_link = None
+        self.video_length = 30  # video lasts 30 seconds
 
         # set up logger
         with open(
@@ -61,9 +62,13 @@ class RecordButton(Button):
             # turn button to red if not already red
             set_button_property(self, "red", "Recording...")
             # waiting for rpi_out to send youtube playlist link
-            try:  # wait for rpi_out to send msg back
+            try:  # wait for rpi_out to send msg back.
+                # Set timeout longer than video length
                 self.yt_playlist_link = wait_msg(
-                    "yt_playlist_link", self.logger, self.msg_q
+                    "yt_playlist_link",
+                    self.logger,
+                    self.msg_q,
+                    timeout=self.video_length + 5,
                 )[1]
             except IndexError:  # no message received
                 self.recording = False
