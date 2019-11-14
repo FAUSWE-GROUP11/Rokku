@@ -36,3 +36,6 @@ loggers:
   ArmButton:
     level: DEBUG
     handlers: [file, console]
+  RecordButton:
+    level: DEBUG
+    handlers: [file, console]

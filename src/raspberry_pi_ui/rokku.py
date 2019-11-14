@@ -11,7 +11,7 @@ gi.require_version("Gdk", "3.0")
 from gi.repository import Gdk as gdk
 from gi.repository import Gtk as gtk
 
-from src.raspberry_pi_ui.buttons import talk, arm
+from src.raspberry_pi_ui.buttons import talk, arm, record
 
 
 class Main:
@@ -46,11 +46,6 @@ class Main:
             logging.config.dictConfig(config)
         self.logger = logging.getLogger("UI")
 
-        # All functionality flags
-
-        self.sound_playing = False
-        self.recording = False
-
         # connecting all buttons to python to allow for the changing of
         # text/colors
         # self.livestreamButton = self.builder.get_object("livestreamButton")
@@ -61,38 +56,10 @@ class Main:
         self.arm_button = arm.ArmButton(
             self.builder.get_object("armButton"), pub, msg_q
         )
+        self.record_button = record.RecordButton(
+            self.builder.get_object("recordButton"), pub, msg_q
+        )
         # self.soundAlarmButton = self.builder.get_object("soundAlarmButton")
-        # self.recordButton = self.builder.get_object("recordButton")
-
-        # Button background color, set to empty string initially
-        # self.button_color = {
-        #     self.livestreamButton.get_name(): "",
-        #     self.videoButton.get_name(): "",
-        #     self.talkButton.get_name(): "",
-        #     self.soundAlarmButton.get_name(): "",
-        #     self.recordButton.get_name(): "",
-        #     self.armButton.get_name(): "",
-        # }
-
-        # set default background color and label for all buttons
-        # self._set_button_property(self.livestreamButton, "blue", "Livestream")
-        # self._set_button_property(self.videoButton, "blue", "Videos")
-        # self._set_button_property(self.soundAlarmButton, "blue", "Sound Alarm")
-        # self._set_button_property(self.recordButton, "blue", "Record")
-        # self._set_button_property(self.armButton, "blue", "Arm")
-        # self._set_button_property(self.talkButton, "blue", "Talk")
-
-        # set up connections between .py file and glade signals
-        # self.livestreamButton.connect(
-        #     "clicked", self.on_livestreamButton_clicked
-        # )
-        # self.videoButton.connect("clicked", self.on_videoButton_clicked)
-        # self.talkButton.connect("clicked", self.on_talkButton_clicked)
-        # self.soundAlarmButton.connect(
-        #     "clicked", self.on_soundAlarmButton_clicked
-        # )
-        # self.recordButton.connect("clicked", self.on_recordButton_clicked)
-        # self.armButton.connect("clicked", self.on_armButton_clicked)
 
         # activate window
         window = self.builder.get_object("Main")
@@ -100,7 +67,7 @@ class Main:
         window.show_all()
 
         # variables to catch youtube links sent back (Strings)
-        self.yt_playlist_link = None
+
         self.yt_livestream_link = None
 
     """
@@ -135,51 +102,6 @@ class Main:
             # code to send message to sound alarm
 
             self.sound_alarm = True
-
-    """
-    This will be called on whenever the Record button is clicked
-    First will communicate with rpi_out to see if a clip is being record or not and will set the self.recording flag accordingly
-    If recording still, do nothing
-    If not record, send signal to record clip and set self.recording accordingly
-    """
-
-    # def on_recordButton_clicked(self, widget):
-    #     # Sets button to yellow while rpi_in tries communicating with rpi_out
-    #     self._set_button_property(
-    #         self.recordButton, "yellow", "Spooling up camera..."
-    #     )
-    #     # Check if not recording
-    #     if not self.recording:
-    #         self.logger.info("Sending record ON message to rpi_out...")
-    #         self.pub.publish(json.dumps(["record", True]))
-    #         try:  # wait for rpi_out to send true msg back
-    #             self.recording = self._wait_msg("record")[1]
-    #         except IndexError:  # no message received
-    #             self.recording = False
-    #     if self.recording:
-    #         # Since rpi_out sent back true it should be recording now
-    #         self.logger.info("rpi_out is recording now...")
-    #         # turn button to red if not already red
-    #         self._set_button_property(self.recordButton, "red", "Recording...")
-    #         # waiting for rpi_out to send youtube playlist link
-    #         try:  # wait for rpi_out to send msg back
-    #             self.yt_playlist_link = self._wait_msg("yt_playlist_link")[1]
-    #         except IndexError:  # no message received
-    #             self.recording = False
-    #     if (
-    #         type(self.yt_playlist_link) == str
-    #     ) and self.recording:  # Does not catch if junk str was sent back
-    #         self.logger.info("rpi_out recorded a video succesfully...")
-    #     else:  # Something wrong with mqtt or the recording failed
-    #         self.logger.error(
-    #             f"Mqtt or the YouTube Api broke, no video was recorded. Recording status: rpi_in = {self.recording}"
-    #         )
-    #         # display message box with error
-    #         #########################
-    #         #   Missing code        #
-    #         #########################
-    #     self._set_button_property(self.recordButton, "blue", "Record")
-    #     self.recording = False
 
     """
     This will be called on closing the Rokku application
