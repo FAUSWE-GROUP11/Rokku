@@ -11,18 +11,24 @@ gi.require_version("Gdk", "3.0")
 from gi.repository import Gdk as gdk
 from gi.repository import Gtk as gtk
 
-from src.raspberry_pi_ui.buttons import talk, arm, record
+from src.raspberry_pi_ui.buttons import (
+    talk,
+    arm,
+    record,
+    alarm,
+    livestream,
+    video,
+)
 
 
 class Main:
-    """
-    Class implemented to create the GUI
-    Contains __init__ which adds the .glade file to draw out the application.
-    This also is wear any object in the .glade (buttons, labels, etc.) are
-    connected to self
-    """
+    """Class implemented to create the GUI."""
 
     def __init__(self, pub, msg_q):
+        """Adds the .glade file to draw out the application.
+
+        Also set up css, logger, button, and activate window.
+        """
         self.builder = gtk.Builder()
         self.builder.add_from_file(f"{os.path.dirname(__file__)}/rokku.glade")
         self.builder.connect_signals(self)
@@ -46,10 +52,7 @@ class Main:
             logging.config.dictConfig(config)
         self.logger = logging.getLogger("UI")
 
-        # connecting all buttons to python to allow for the changing of
-        # text/colors
-        # self.livestreamButton = self.builder.get_object("livestreamButton")
-        # self.videoButton = self.builder.get_object("videoButton")
+        # connecting all buttons to python
         self.talk_button = talk.TalkButton(
             self.builder.get_object("talkButton"), pub, msg_q
         )
@@ -59,60 +62,29 @@ class Main:
         self.record_button = record.RecordButton(
             self.builder.get_object("recordButton"), pub, msg_q
         )
-        # self.soundAlarmButton = self.builder.get_object("soundAlarmButton")
+        self.livestream_button = livestream.LivestreamButton(
+            self.builder.get_object("livestreamButton"), pub, msg_q
+        )
+        self.video_button = video.VideoButton(
+            self.builder.get_object("videoButton"), pub, msg_q
+        )
+        self.alarm_button = alarm.AlarmButton(
+            self.builder.get_object("soundAlarmButton"), pub, msg_q
+        )
 
         # activate window
         window = self.builder.get_object("Main")
         window.connect("delete-event", self.close_application)
         window.show_all()
 
-        # variables to catch youtube links sent back (Strings)
-
-        self.yt_livestream_link = None
-
-    """
-    This will be called on whenever the Sound Alarm button is clicked
-    """
-
-    def on_livestreamButton_clicked(self, widget):
-        # Figure out how to give url passed on button clicked
-        os.system("python embedded_yt.py")
-        self.livestreamButton.set_label("Need code")
-
-    """
-    This will be called on whenever the Videos button is clicked
-    """
-
-    def on_videoButton_clicked(self, widget):
-        # Figure out how to give url passed on button clicked
-        # os.system("python embedded_yt.py")
-        self.videoButton.set_label("Need code")
-
-    """
-    This will be called on whenever the Sound Alarm button is clicked
-    First will communicate with rpi_out to see if sound is being played and will set the self.recording flag accordingly
-    If sound alarm is active, do nothing
-    If not active, send signal to sound alarm and set self.sound_alarm accordingly
-    """
-
-    def on_soundAlarmButton_clicked(self, widget):
-        # add code to check if sound alarm is active and set self.sound_alarm accordingly
-
-        if not self.sound_alarm:
-            # code to send message to sound alarm
-
-            self.sound_alarm = True
-
-    """
-    This will be called on closing the Rokku application
-    Should close up any processes that have been started when first loading Rokku
-    """
-
     def close_application(self, widget, something):
-        # anything to do before closing (stop livestream)
+        """Turn off UI.
 
-        # closes window with .py file
+        This will be called on closing the Rokku application
+        Should close up any processes that have been started when first loading Rokku
+        """
         gtk.main_quit()
 
     def run(self):
+        """Run the UI"""
         gtk.main()

@@ -5,9 +5,9 @@ import yaml
 
 from src.pi_to_pi.utility import set_up_pub_sub
 from src.raspberry_pi_driver.utility import (
+    clean_up,
     command_line_parser,
     hash_prefix,
-    terminate_proc,
 )
 from src.raspberry_pi_ui import rokku
 
@@ -34,9 +34,7 @@ def main():
     except (KeyboardInterrupt, SystemExit):
         pass  # do nothing here because the code below completes the cleanup
 
-    logger.info(f"Terminating {listen_proc.name}...")
-    terminate_proc(listen_proc)
-    logger.info(f"{listen_proc.name} terminated successfully!")
+    clean_up(logger, processes=[listen_proc], cmds=[])
     logger.info("\n******* rpi_in_driver ends *******\n")
 
 
