@@ -39,3 +39,12 @@ loggers:
   RecordButton:
     level: DEBUG
     handlers: [file, console]
+  LivestreamButton:
+    level: DEBUG
+    handlers: [file, console]
+  AlarmButton:
+    level: DEBUG
+    handlers: [file, console]
+  VideoButton:
+    level: DEBUG
+    handlers: [file, console]
