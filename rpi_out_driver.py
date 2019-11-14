@@ -10,9 +10,9 @@ import yaml
 from src.pi_to_pi.utility import set_up_pub_sub
 from src.raspberry_pi_driver.behaviors import alarm, intercom, motion, record
 from src.raspberry_pi_driver.utility import (
+    clean_up,
     command_line_parser,
     hash_prefix,
-    terminate_proc,
 )
 
 # set up logger
@@ -52,9 +52,7 @@ def main():
             sleep(1)
     except (KeyboardInterrupt, SystemExit):
         logger.warning("Termination signal sensed.")
-        logger.info(f"Terminating {listen_proc.name}...")
-        terminate_proc(listen_proc)
-        logger.info(f"{listen_proc.name} terminated successfully!")
+        clean_up(logger, processes=[listen_proc], cmds=[])
     logger.info("\n******* rpi_out_driver ends *******\n")
     GPIO.cleanup()
 

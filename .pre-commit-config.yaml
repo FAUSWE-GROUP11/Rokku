@@ -11,11 +11,11 @@ repos:
     rev: v4.3.21
     hooks:
     -   id: isort
-        args: ["--recursive", "--verbose"]
+        args: ["--recursive"]
         additional_dependencies: [toml]
         # need to exclude files here as isort in pre-commit hook doesn't seem
         # to look for config in pyproject.toml
-        exclude: (rokku\.py|raspberry_pi_camera\/tests\/|raspberry_pi_motion_sensor\/tests)
+        exclude: (rokku\.py|raspberry_pi_camera\/tests\/|raspberry_pi_motion_sensor\/tests|raspberry_pi_ui\/utility\.py)
 -   repo: https://github.com/psf/black
     rev: stable
     hooks:
