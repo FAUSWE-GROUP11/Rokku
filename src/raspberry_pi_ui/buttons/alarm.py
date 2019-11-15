@@ -1,4 +1,4 @@
-# import json
+import json
 import logging
 import logging.config
 import os
@@ -44,12 +44,12 @@ class AlarmButton(Button):
             # let rpi_in know intent to sound alarm on rpi_out
             self.logger.info("Activating alarm on rpi_out...")
             self.alarm_sounding = True
-            self.logger.info(
-                "Sending alarm SOUND message to rpi_out..."
-            )
+            self.logger.info("Sending alarm SOUND message to rpi_out...")
             self.pub.publish(json.dumps(["alarm", True]))
             try:  # wait for rpi_out to send msg back
-                self.alarm_sounding_out = wait_msg("alarm", self.logger, self.msg_q)[1]
+                self.alarm_sounding_out = wait_msg(
+                    "alarm", self.logger, self.msg_q
+                )[1]
             except IndexError:  # no message received
                 # this is assuming rpi_out did not change state
                 self.alarm_sounding = False
@@ -81,7 +81,9 @@ class AlarmButton(Button):
             self.logger.info("Sending alarm SILENCE message to rpi_out...")
             self.pub.publish(json.dumps(["alarm", False]))
             try:  # wait for rpi_out to send msg back
-                self.alarm_sounding_out = wait_msg("alarm", self.logger, self.msg_q)[1]
+                self.alarm_sounding_out = wait_msg(
+                    "alarm", self.logger, self.msg_q
+                )[1]
             except IndexError:  # no message received
                 # this is assuming rpi_out did not change state
                 self.alarm_sounding = True
