@@ -20,7 +20,16 @@ def command_line_parser(prog_name: str):
         "-p",
         dest="public_id",
         required=True,
-        help="Provide a public id for Rokku's MQTT topic. This id must be the same for both rpi_in_driver and rpi_out_driver",
+        help="""Provide a public id for Rokku's MQTT topic.
+        This id must be the same for both rpi_in_driver and rpi_out_driver""",
+    )
+    parser.add_argument(
+        "--intercom-pwd",
+        dest="intercom_pwd",
+        required=False,
+        default="",
+        help="""Password for Mumble server. If not specified,
+        intercom will not be functional.""",
     )
     args = parser.parse_args()
     return args
