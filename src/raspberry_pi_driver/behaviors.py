@@ -70,11 +70,8 @@ def livestream(pub, flag) -> None:
         # Once recording is over and static url to link is given
         pub.publish(json.dumps(["yt_livestream_link", yt_livestream_link]))
     elif recording_on:
+        # This is handled in livestream.py
         pass
-        # display message saying a video is being recorded
-        #########################
-        #   Missing code        #
-        #########################
     else:
         # Turn livestream off
         pub.publish(json.dumps(["livestream", False]))  # Turn livestream off
