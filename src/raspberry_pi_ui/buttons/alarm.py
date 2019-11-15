@@ -40,7 +40,7 @@ class AlarmButton(Button):
         # user wants to set off alarm on rpi_out
         if not self.alarm_sounding and not self.alarm_sounding_out:
             # turn button yellow, but with message "Acitvating"
-            self._set_button_property(self.soundAlarmButton, "yellow", "Activating...")
+            set_button_property(self, "yellow", "Activating...")
             # let rpi_in know intent to sound alarm on rpi_out
             self.logger.info("Activating alarm on rpi_out...")
             self.alarm_sounding = True
@@ -49,7 +49,7 @@ class AlarmButton(Button):
             )
             self.pub.publish(json.dumps(["alarm", True]))
             try:  # wait for rpi_out to send msg back
-                self.alarm_sounding_out = self._wait_msg("alarm")[1]
+                self.alarm_sounding_out = wait_msg("alarm", self.logger, self.msg_q)[1]
             except IndexError:  # no message received
                 # this is assuming rpi_out did not change state
                 self.alarm_sounding = False
@@ -58,7 +58,7 @@ class AlarmButton(Button):
             if self.alarm_sounding_out:
                 # buzzer is playing on rpi_out: turn button to red
                 self.logger.info("Alarm SOUNDING on rpi_out")
-                self._set_button_property(self.soundAlarmButton, "red", "Silence Alarm")
+                set_button_property(self, "red", "Silence Alarm")
             else:  # A message from rpi_out was not recieved
                 self.logger.error(
                     f"Motion status: rpi_in = {self.alarm_sounding}, rpi_out = {self.alarm_sounding_out}"
@@ -67,13 +67,13 @@ class AlarmButton(Button):
                 #########################
                 #   Missing code        #
                 #########################
-                self._set_button_property(self.soundAlarmButton, "blue", "Sound Alarm")
+                set_button_property(self, "blue", "Sound Alarm")
                 self.alarm_sounding = False
 
         # Alarm is sounding. Silence Alarm.
         elif self.alarm_sounding and self.alarm_sounding_out:
             # turn button yellow, but with message "Silencing"
-            self._set_button_property(self.soundAlarmButton, "yellow", "Silencing...")
+            set_button_property(self, "yellow", "Silencing...")
             self.logger.info("Silencing rpi_out alarm...")
             self.alarm_sounding = False
 
@@ -81,7 +81,7 @@ class AlarmButton(Button):
             self.logger.info("Sending alarm SILENCE message to rpi_out...")
             self.pub.publish(json.dumps(["alarm", False]))
             try:  # wait for rpi_out to send msg back
-                self.alarm_sounding_out = self._wait_msg("alarm")[1]
+                self.alarm_sounding_out = wait_msg("alarm", self.logger, self.msg_q)[1]
             except IndexError:  # no message received
                 # this is assuming rpi_out did not change state
                 self.alarm_sounding = True
@@ -89,7 +89,7 @@ class AlarmButton(Button):
             if not self.alarm_sounding:
                 # rpi_out message recieved, motion detection is off, turn button to blue
                 self.logger.info("Alarm is SILENCED on rpi_out")
-                self._set_button_property(self.soundAlarmButton, "blue", "Sound Alarm")
+                set_button_property(self, "blue", "Sound Alarm")
                 self.alarm_sounding = False
             else:  # A message from rpi_out was not recieved
                 self.logger.error(
@@ -99,5 +99,5 @@ class AlarmButton(Button):
                 #########################
                 #   Missing code        #
                 #########################
-                self._set_button_property(self.soundAlarmButton, "red", "Silence")
+                set_button_property(self, "red", "Silence")
                 self.alarm_sounding = True
