@@ -1,6 +1,7 @@
 import argparse
 from hashlib import blake2b
 from time import sleep
+from typing import Any, List
 
 
 def command_line_parser(prog_name: str):
@@ -45,18 +46,49 @@ def hash_prefix(public_id: str) -> str:
     return h_addr.hexdigest()
 
 
-def terminate_proc(proc):
-    """
-    Nicely terminate the given process
+def terminate_proc(proc) -> None:
+    """Nicely terminate the given process.
 
-    Args:
-        proc:   The object representing the process to be terminated
-    Returns:
-        None
-    Rasies:
-        None
+    :param proc:   The object representing the process to be terminated
+
+    :returns:   None
     """
     proc.terminate()
     while proc.is_alive():
         sleep(1)
     proc.join()
+
+
+def terminate_cmd(cmd_proc) -> None:
+    """Nicely terminate the given command process (from subprocess.run).
+
+    :param cmd_proc:    The object representing the command process to be
+                        terminated
+
+    :returns:   None
+    """
+    cmd_proc.kill()
+    while cmd_proc.poll() is None:
+        sleep(1)
+    cmd_proc.wait()
+
+
+def clean_up(logger, processes: List[Any], cmds: List[Any]) -> None:
+    """Clean up any running process in the system.
+
+    :param logger:      Enable logging from the caller
+    :param processes:   A list of processes to be terminated. Each list element
+                        is a process object.
+    :param cmds:        A list of command line processes to be killed. Each
+                        list element is a tuple (cmd_proc, cmd_name).
+
+    :return:    None
+    """
+    for proc in processes:
+        logger.info(f"Terminating {proc.name}...")
+        terminate_proc(proc)
+        logger.info(f"{proc.name} terminated successfully!")
+    for cmd_proc, cmd_name in cmds:
+        logger.info(f"Terminating {cmd_name}...")
+        terminate_cmd(cmd_proc)
+        logger.info(f"{cmd_name} terminated successfully!")

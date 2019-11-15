@@ -1,8 +1,6 @@
-import json
 import logging
 import logging.config
 import os
-from time import time
 
 import gi
 import yaml
@@ -13,35 +11,40 @@ gi.require_version("Gdk", "3.0")
 from gi.repository import Gdk as gdk
 from gi.repository import Gtk as gtk
 
-
-# Any global variables that should be used throughout file
-red = "#eb3434"
-blue = "#346eeb"
-yellow = "#e5eb34"
+from src.raspberry_pi_ui.buttons import (
+    talk,
+    arm,
+    record,
+    alarm,
+    livestream,
+    video,
+)
 
 
 class Main:
-    """
-    Class implemented to create the GUI
-    Contains __init__ which adds the .glade file to draw out the application.
-    This also is wear any object in the .glade (buttons, labels, etc.) are
-    connected to self
-    """
+    """Class implemented to create the GUI."""
 
     def __init__(self, pub, msg_q):
+        """Adds the .glade file to draw out the application.
+
+        Also set up css, logger, button, and activate window.
+        """
         self.builder = gtk.Builder()
         self.builder.add_from_file(f"{os.path.dirname(__file__)}/rokku.glade")
         self.builder.connect_signals(self)
 
         # set up css
         cssProvider = gtk.CssProvider()
-        cssProvider.load_from_path(f"{os.path.dirname(__file__)}/style.css")
+        cssProvider.load_from_path(
+            f"{os.path.dirname(__file__)}/static/style.css"
+        )
         screen = gdk.Screen.get_default()
         styleContext = gtk.StyleContext()
         styleContext.add_provider_for_screen(
             screen, cssProvider, gtk.STYLE_PROVIDER_PRIORITY_USER
         )
 
+<<<<<<< HEAD
         # All functionality flags
         self.armed = False
         self.armed_out = False
@@ -103,6 +106,8 @@ class Main:
         self.yt_playlist_link = None
         self.yt_livestream_link = None
 
+=======
+>>>>>>> f7f67e498e37ec299e4907694ebee08a9512401f
         # set up logger
         with open(
             f"{os.path.dirname(__file__)}/../../logger_config.yaml", "r"
@@ -111,6 +116,7 @@ class Main:
             logging.config.dictConfig(config)
         self.logger = logging.getLogger("UI")
 
+<<<<<<< HEAD
     """
     This will be called on whenever the Sound Alarm button is clicked
     """
@@ -280,183 +286,41 @@ class Main:
         # Sets button to yellow while rpi_in tries communicating with rpi_out
         self._set_button_property(
             self.recordButton, "yellow", "Spooling up camera..."
+=======
+        # connecting all buttons to python
+        self.talk_button = talk.TalkButton(
+            self.builder.get_object("talkButton"), pub, msg_q
         )
-        # Check if not recording
-        if not self.recording:
-            self.logger.info("Sending record ON message to rpi_out...")
-            self.pub.publish(json.dumps(["record", True]))
-            try:  # wait for rpi_out to send true msg back
-                self.recording = self._wait_msg("record")[1]
-            except IndexError:  # no message received
-                self.recording = False
-        if self.recording:
-            # Since rpi_out sent back true it should be recording now
-            self.logger.info("rpi_out is recording now...")
-            # turn button to red if not already red
-            self._set_button_property(self.recordButton, "red", "Recording...")
-            # waiting for rpi_out to send youtube playlist link
-            try:  # wait for rpi_out to send msg back
-                self.yt_playlist_link = self._wait_msg("yt_playlist_link")[1]
-            except IndexError:  # no message received
-                self.recording = False
-        if (
-            type(self.yt_playlist_link) == str
-        ) and self.recording:  # Does not catch if junk str was sent back
-            self.logger.info("rpi_out recorded a video succesfully...")
-        else:  # Something wrong with mqtt or the recording failed
-            self.logger.error(
-                f"Mqtt or the YouTube Api broke, no video was recorded. Recording status: rpi_in = {self.recording}"
-            )
-            # display message box with error
-            #########################
-            #   Missing code        #
-            #########################
-        self._set_button_property(self.recordButton, "blue", "Record")
-        self.recording = False
+        self.arm_button = arm.ArmButton(
+            self.builder.get_object("armButton"), pub, msg_q
+        )
+        self.record_button = record.RecordButton(
+            self.builder.get_object("recordButton"), pub, msg_q
+        )
+        self.livestream_button = livestream.LivestreamButton(
+            self.builder.get_object("livestreamButton"), pub, msg_q
+        )
+        self.video_button = video.VideoButton(
+            self.builder.get_object("videoButton"), pub, msg_q
+        )
+        self.alarm_button = alarm.AlarmButton(
+            self.builder.get_object("soundAlarmButton"), pub, msg_q
+>>>>>>> f7f67e498e37ec299e4907694ebee08a9512401f
+        )
 
-    def on_armButton_clicked(self, widget):
-        """ This will be called on whenever the Arm button is clicked
-
-        Inbetween changing motion detector state, the button will be yellow with 'Arming' and 'Disarming' messages to notify that the change has not taken place yet.
-        If the alarm is not set, sets text to 'Disarm' and color to red along with sending a message to rpi_out activing armed flag.
-        If the alarm is set, sets text to 'Arm' and color to blue along with sending a message to rpi_out disactiving armed flag."""
-        # user wants to turn on motion_sensor for rpi_out
-        if not self.armed and not self.armed_out:
-            # turn button yellow, but with message "Arming"
-            self._set_button_property(self.armButton, "yellow", "Arming...")
-            # let rpi_in know to arm motion detector
-            self.logger.info("Arming rpi_out motion sensor...")
-            self.armed = True
-
-            self.logger.info(
-                "Sending motion detection ON message to rpi_out..."
-            )
-            self.pub.publish(json.dumps(["motion", True]))
-            try:  # wait for rpi_out to send msg back
-                self.armed_out = self._wait_msg("motion")[1]
-            except IndexError:  # no message received
-                # this is assuming rpi_out did not change state
-                self.armed = False
-
-            # If message from rpi_out was recieved
-            if self.armed_out:
-                # motion_sensor is 'armed' on rpi_out: turn button to red
-                self.logger.info("Motion sensor ARMED on rpi_out")
-                self._set_button_property(self.armButton, "red", "Disarm")
-            else:  # A message from rpi_out was not recieved
-                self.logger.error(
-                    f"Motion status: rpi_in = {self.armed}, rpi_out = {self.armed_out}"
-                )
-                # display message box with error
-                #########################
-                #   Missing code        #
-                #########################
-                self._set_button_property(self.armButton, "blue", "Arm")
-                self.armed = False
-
-        # motion detection active. Turn off sensor.
-        elif self.armed and self.armed_out:
-            # turn button yellow, but with message "Disarming"
-            self._set_button_property(self.armButton, "yellow", "Disarming...")
-            self.logger.info("Disarming rpi_out motion sensor...")
-            self.armed = False
-
-            # Send disarm signal
-            self.logger.info("Sending armed OFF message to rpi_out...")
-            self.pub.publish(json.dumps(["motion", False]))
-            try:  # wait for rpi_out to send msg back
-                self.armed_out = self._wait_msg("motion")[1]
-            except IndexError:  # no message received
-                # this is assuming rpi_out did not change state
-                self.armed = True
-
-            if not self.armed_out:
-                # rpi_out message recieved, motion detection is off, turn button to blue
-                self.logger.info("Motion sensor is OFF on rpi_out")
-                self._set_button_property(self.armButton, "blue", "Arm")
-                self.armed = False
-            else:  # A message from rpi_out was not recieved
-                self.logger.error(
-                    f"Motion status: rpi_in = {self.armed}, rpi_out = ?"
-                )
-                # display message box with error
-                #########################
-                #   Missing code        #
-                #########################
-                self._set_button_property(self.armButton, "red", "Disarm")
-                self.armed = True
-
-    """
-    This will be called on closing the Rokku application
-    Should close up any processes that have been started when first loading Rokku
-    """
+        # activate window
+        window = self.builder.get_object("Main")
+        window.connect("delete-event", self.close_application)
+        window.show_all()
 
     def close_application(self, widget, something):
-        # anything to do before closing (stop livestream)
+        """Turn off UI.
 
-        # closes window with .py file
+        This will be called on closing the Rokku application
+        Should close up any processes that have been started when first loading Rokku
+        """
         gtk.main_quit()
 
     def run(self):
+        """Run the UI"""
         gtk.main()
-
-    # Utility functions listed below.
-    def _wait_msg(self, identifier: str, timeout: int = 10):
-        """
-        Wait for a message containing the given identifier. Note that all
-        messages are in the format of '[identifier, boolean]'. Thus, we only
-        need to check the first element for identifier in the received, json-
-        loaded, list.
-
-        Args:
-            identifier:     A unique string to differentiate the recipient of
-                            the received message.
-            timeout:        Timeout duration. If function hangs for more than
-                            the amount of time specified by timeout, end the
-                            function. Default timeout set to 10 seconds
-        Return:
-            A json-loaded object (a list) from the received message. If timeout
-            is triggered, return an empty list.
-        Raises:
-            None
-        """
-        start = time()
-        msg_list = []
-        while True:
-            if time() - start >= timeout:
-                self.logger.error("Wait for rpi_out message timeout.")
-                break
-            if not self.msg_q.empty():
-                msg = self.msg_q.get()
-                msg_list = json.loads(msg)
-                if msg_list[0] == identifier:
-                    self.logger.info(
-                        f"Message for {identifier} received from rpi_out."
-                    )
-                    break
-                else:  # if the received message is not for intercom
-                    self.msg_q.put(msg)  # put the message back
-                    msg_list = []  # reset msg_list
-            while gtk.events_pending():
-                gtk.main_iteration()
-        return msg_list
-
-    def _set_button_property(self, button, color: str, label: str):
-        """
-        Set background color and label of a given button
-
-        Args:
-            button: A button widget object.
-            color:  Name of the color (choose from 'blue', 'red', and 'yellow')
-            label:  The label to be displayed on the button
-        Returns:
-            None
-        Raises:
-            None
-        """
-        ctx = button.get_style_context()
-        if self.button_color[button.get_name()]:
-            ctx.remove_class(self.button_color[button.get_name()])
-        ctx.add_class(color)
-        self.button_color[button.get_name()] = color
-        button.set_label(label)

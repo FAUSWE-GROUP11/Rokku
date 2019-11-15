@@ -30,3 +30,21 @@ loggers:
   UI:
     level: DEBUG
     handlers: [file, console]
+  TalkButton:
+    level: DEBUG
+    handlers: [file, console]
+  ArmButton:
+    level: DEBUG
+    handlers: [file, console]
+  RecordButton:
+    level: DEBUG
+    handlers: [file, console]
+  LivestreamButton:
+    level: DEBUG
+    handlers: [file, console]
+  AlarmButton:
+    level: DEBUG
+    handlers: [file, console]
+  VideoButton:
+    level: DEBUG
+    handlers: [file, console]
