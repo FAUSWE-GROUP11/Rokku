@@ -1,6 +1,7 @@
 import json
 from time import sleep
 
+from src.raspberry_pi_alarm.buzzer_interface import Buzzer
 from src.raspberry_pi_motion_sensor.motion_interface import MotionPir
 
 
@@ -49,7 +50,9 @@ def record(pub, flag) -> None:
 
 def alarm(pub, flag) -> None:
     """Behavior that will set off alarm on rpi_out."""
+    alarm = Buzzer(24)
     if flag:
-        pass  # A noise worse than death itself
+        alarm.sound()
     else:
-        pass  # Tranquility
+        alarm.silence()
+    pub.publish(json.dumps(["alarm", alarm.get_state()]))
