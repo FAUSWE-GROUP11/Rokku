@@ -89,7 +89,7 @@ class AlarmButton(Button):
                 self.alarm_sounding = True
 
             if not self.alarm_sounding:
-                # rpi_out message recieved, Alarm detection is off, turn button to blue
+                # rpi_out message recieved, Alarm sound is off, turn button to blue
                 self.logger.info("Alarm is SILENCED on rpi_out")
                 set_button_property(self, "blue", "Sound Alarm")
                 self.alarm_sounding = False
