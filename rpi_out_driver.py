@@ -8,7 +8,13 @@ import RPi.GPIO as GPIO
 import yaml
 
 from src.pi_to_pi.utility import set_up_pub_sub
-from src.raspberry_pi_driver.behaviors import alarm, intercom, motion, record
+from src.raspberry_pi_driver.behaviors import (
+    alarm,
+    intercom,
+    livestream,
+    motion,
+    record,
+)
 from src.raspberry_pi_driver.utility import (
     clean_up,
     command_line_parser,
@@ -49,6 +55,8 @@ def main():
                     motion(pub, flag, motion_queue)
                 if identifier == "record":
                     record(pub, flag)
+                if identifier == "livestream":
+                    livestream(pub, flag)
             sleep(1)
     except (KeyboardInterrupt, SystemExit):
         logger.warning("Termination signal sensed.")
