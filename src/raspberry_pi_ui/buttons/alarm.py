@@ -61,7 +61,7 @@ class AlarmButton(Button):
                 set_button_property(self, "red", "Silence Alarm")
             else:  # A message from rpi_out was not recieved
                 self.logger.error(
-                    f"Motion status: rpi_in = {self.alarm_sounding}, rpi_out = {self.alarm_sounding_out}"
+                    f"Alarm status: rpi_in = {self.alarm_sounding}, rpi_out = {self.alarm_sounding_out}"
                 )
                 # display message box with error
                 #########################
@@ -89,13 +89,13 @@ class AlarmButton(Button):
                 self.alarm_sounding = True
 
             if not self.alarm_sounding:
-                # rpi_out message recieved, motion detection is off, turn button to blue
+                # rpi_out message recieved, Alarm detection is off, turn button to blue
                 self.logger.info("Alarm is SILENCED on rpi_out")
                 set_button_property(self, "blue", "Sound Alarm")
                 self.alarm_sounding = False
             else:  # A message from rpi_out was not recieved
                 self.logger.error(
-                    f"Motion status: rpi_in = {self.alarm_sounding}, rpi_out = {self.alarm_sounding_out}"
+                    f"Alarm status: rpi_in = {self.alarm_sounding}, rpi_out = {self.alarm_sounding_out}"
                 )
                 # display message box with error
                 #########################
