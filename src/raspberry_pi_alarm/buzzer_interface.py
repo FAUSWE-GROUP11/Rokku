@@ -1,5 +1,5 @@
 import RPi.GPIO as GPIO
-from time import sleep
+
 
 class Buzzer:
     """Buzzer is a class providing definitions to interact with a buzzer module connected through the RPi pins."""
@@ -22,9 +22,3 @@ class Buzzer:
     def silence(self):
         self.state = False
         GPIO.output(self.channel, GPIO.HIGH)
-        
-
-
-
-
-
