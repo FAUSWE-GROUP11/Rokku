@@ -15,7 +15,12 @@ class CameraInterface(object):
     FPS considerbly."""
 
     def __init__(
-        self, video_length=30, resolution=2, save_location="/home/pi/Videos/"
+        self,
+        video_length=30,
+        resolution=2,
+        save_location="/home/pi/Videos/",
+        yt_livestream_link="https://youtu.be/t48LW4J8b4A",
+        yt_playlist_link="https://www.youtube.com/playlist?list=PLTdMMnsiEwSnKNWdLlAEJNiyHgG02ECXN",
     ):
 
         if isinstance(video_length, float) or isinstance(video_length, int):
@@ -41,8 +46,23 @@ class CameraInterface(object):
             raise ValueError(
                 __name__ + " ERROR: save_location argument is invalid."
             )
+        if isinstance(yt_livestream_link, str):
+            self.yt_livestream_link = yt_livestream_link
+        else:
+            # __name__ refers to the caller (main)
+            raise ValueError(
+                __name__ + " ERROR: save_location argument is invalid."
+            )
+        if isinstance(yt_playlist_link, str):
+            self.yt_playlist_link = yt_playlist_link
+        else:
+            # __name__ refers to the caller (main)
+            raise ValueError(
+                __name__ + " ERROR: save_location argument is invalid."
+            )
 
         self.modes = [(1920, 1080), (1296, 730), (640, 480)]
+        self.last_recording = ""
 
     """Just takes a simple picture. Future iterations will pass a
     variable to determine resolution and return file location.
@@ -73,6 +93,10 @@ class CameraInterface(object):
         filename = (
             self.save_location
             + datetime.datetime.now().strftime("%I:%M:%S%p on %B %d, %Y")
+            + ".h264"
+        )
+        self.last_recording = (
+            datetime.datetime.now().strftime("%I:%M:%S%p on %B %d, %Y")
             + ".h264"
         )
         camera = PiCamera()
@@ -167,7 +191,7 @@ class CameraInterface(object):
         for i in range(1, len(output) - 1, 1):
             print(output[i])
 
-        return "https://youtu.be/4R2__g8obBY"
+        return self.yt_livestream_link
 
     """This function returns void and turns off the youtube livestream
     being hosted at a predetermined youtube channel.Handled by raspivid \
@@ -178,6 +202,33 @@ class CameraInterface(object):
         cmd = "pkill raspivid"
 
         # Object to start and capture the shell command
+        temp = subprocess.Popen(["bash", "-c", cmd], stdout=subprocess.PIPE)
+
+        # Catches and prints all the output from the shell script
+        output = str(temp.communicate())
+        output = output.split("\\n")
+        for i in range(1, len(output) - 1, 1):
+            print(output[i])
+
+    """This function returns void and sends a command line instruction to
+    upload a video from the given filepath."""
+
+    def upload_to_yt(self, filepath):
+        # Making the command line script
+        cmd = (
+            'python upload_video.py --file="'
+            + filepath
+            + '"'
+            + ' --title="Date: '
+            + self.last_recording
+            + '"'
+            + ' --description="A recording from raspi_out."'
+            + ' --keywords="school,technology"'
+            + ' --category="22"'
+            + ' --privacyStatus="unlisted"'
+        )
+
+        # Passing the command to the shell
         temp = subprocess.Popen(["bash", "-c", cmd], stdout=subprocess.PIPE)
 
         # Catches and prints all the output from the shell script
@@ -202,6 +253,16 @@ class CameraInterface(object):
     def get_save_location(self):
         return self.save_location
 
+    """Returns a string of the object's YouTube livestream link"""
+
+    def get_yt_livestream_link(self):
+        return self.yt_livestream_link
+
+    """Returns a string of the object's YouTube playlist link"""
+
+    def get_yt_playlist_link(self):
+        return self.yt_playlist_link
+
     """Returns void, and accepts an integer to replace the object's
     video length in seconds."""
 
@@ -220,6 +281,18 @@ class CameraInterface(object):
     def set_save_location(self, value):
         self.save_location = value
 
+    """Returns void, and accepts a string to replace the object's
+    YouTube livestream link."""
+
+    def set_yt_livestream_link(self, value):
+        self.yt_livestream_link = value
+
+    """Returns void, and accepts a string to replace the object's
+    YouTube playlist link."""
+
+    def set_yt_playlist_link(self, value):
+        self.yt_playlist_link = value
+
     # "Private" classes go here
     """Returns string representation of camera_interface"""
 
@@ -231,4 +304,8 @@ class CameraInterface(object):
             + str(self.modes[self.resolution])
             + ", Save Location: "
             + str(self.save_location)
+            + ", YouTube Livestream Link: "
+            + str(self.yt_livestream_link)
+            + ", YouTube Playlist Link: "
+            + str(self.yt_playlist_link)
         )
