@@ -22,7 +22,7 @@ def turn_on(config, name: str, logger) -> bool:
     open_mumble = (
         "tmux send-keys -t intercom "
         f'"mumble mumble://{name}@{host}:{port}/{channel}" '
-        "Enter"
+        "Enter && "
     )
     minimize = 'sleep 3 && xdotool search "Mumble" windowminimize --sync %@'
     logger.info("Turning on Mumble CLI client...")

@@ -16,8 +16,6 @@ You can refer to [this site](https://wiki.mumble.info/wiki/Hosters) for a wide r
 ## Option 2
 You can apply for a server via [Free Mumble Server](https://cleanvoice.ru/free/mumble/en.html) by providing your email address. This server is supposed to be constant (i.e. no server expiration and no need to update server information every once in a while) and free forever. It can be an option for production level product, but keep in mind that there is no guarantee that the free server will always work.
 
-Another thing to note is that the free server provided can be connected without password. The password provided in the email is for Admin logging only.
-
 # Set up Mumble Client
 ## Option 1: `barnard`
 [`barnard`](https://github.com/layeh/barnard), an open source CLI mumcle client written in Go. It has been used in other mumble-related projects for RPi, such as [talkiepi](https://github.com/dchote/talkiepi) and [talkkonnect](https://github.com/talkkonnect/talkkonnect). Being a CLI client, `barnard` is easy to control via command line, and should be a good choice for our use case.
@@ -108,8 +106,16 @@ If it is the first time `mumble` is used, a configuration wizard will appear to 
 
 Initially, this option was ruled out by the team due to the client interface UI seemingly being impossible to control via command line. However, with the help of `tmux`, one can simply initiate `mumble` in a `tmux` session and close it by killing the `tmux` session. From limited testing so far, `mumble` works very well. It will replace `barnard` because we are having serious problem starting `barnard`. In fact, we will recommend `mumble` over `barnard` not only because the latter is not working for us right now, but also because the former is much easier to install.
 
+### Benefit of using `mumble`
+The official mumble client makes it easy to set up channel and configure which user can have access to a certain channel. For details, please refer to this [tutorial video](https://www.youtube.com/watch?v=VOeMsMjQRoM). Basically, when you connect to the server as SuperUser (you can only do this with Option 2 in "Set Up Mumble Server" section), you have the priviledge to configure ACL for all registered user. This is very neat for Rokku, because it is possible to use a unique mumble channel for each pair of `rpi_in` and `rpi_out` (i.e. no other user can access this unique channel). In other words, we can guarantee that no third party can eavesdrop the content of intercom conversation.
+
 ### Notes for `mumble`
-`mumble` requires an interface UI. That means it probably wouldn't work on Raspbian Buster Lite, which has no desktop. 
+1. `mumble` requires an interface UI. That means it probably wouldn't work on Raspbian Buster Lite, which has no desktop. 
+2. Since the UI interface is inevitable, we must minimize its window if the UI is not desirable. In our use case, this is exactly the situation: we do not want mumble's UI to be showing on top of Rokku's interface. One way to achieve this is via [`xdotool`](http://manpages.ubuntu.com/manpages/trusty/man1/xdotool.1.html). We recommend you install it via `sudo apt-get install xdotool`, and use this command to minimize mumble's UI interface window: 
+
+```
+xdotool search "Mumble" windowminimize --sync %@
+```
 
 # Configure Sound Input/Output on RPi
 There are two ways to configure sound input and output. One is via USB mic and 3.5 mm AUX headphone (or speaker), the other I2S microphone (mic), amplifier (amp) and speaker cone. I2S sound card provides much better sound quality, though they require more configuration. In addition, I2S mic and amp need a few GPIO pins, some of which are also needed by the touch screen on `rpi_in`. Therefore, we have decided that the I2S sound card will be set up for `rpi_out`, both because `rpi_out` has more GPIO pins available and this set up provides better sound quality for an open environment. For `rpi_in`, we opt for USB mic and 3.5 mm AUX headphone (speaker), due to lack of GPIO pin availability. Both approaches will be discussed below.
