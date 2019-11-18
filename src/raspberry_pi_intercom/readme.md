@@ -16,6 +16,8 @@ You can refer to [this site](https://wiki.mumble.info/wiki/Hosters) for a wide r
 ## Option 2
 You can apply for a server via [Free Mumble Server](https://cleanvoice.ru/free/mumble/en.html) by providing your email address. This server is supposed to be constant (i.e. no server expiration and no need to update server information every once in a while) and free forever. It can be an option for production level product, but keep in mind that there is no guarantee that the free server will always work.
 
+Another thing to note is that the free server provided can be connected without password. The password provided in the email is for Admin logging only.
+
 # Set up Mumble Client
 ## Option 1: `barnard`
 [`barnard`](https://github.com/layeh/barnard), an open source CLI mumcle client written in Go. It has been used in other mumble-related projects for RPi, such as [talkiepi](https://github.com/dchote/talkiepi) and [talkkonnect](https://github.com/talkkonnect/talkkonnect). Being a CLI client, `barnard` is easy to control via command line, and should be a good choice for our use case.

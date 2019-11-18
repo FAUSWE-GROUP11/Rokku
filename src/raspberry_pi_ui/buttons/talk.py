@@ -5,6 +5,7 @@ import os
 
 import yaml
 
+from src.raspberry_pi_intercom import mumble
 from src.raspberry_pi_ui.buttons.button import Button
 from src.raspberry_pi_ui.utility import set_button_property, wait_msg
 
@@ -15,8 +16,15 @@ class TalkButton(Button):
     Inherit from parent class Button
     """
 
-    def __init__(self, button, pub, msg_q):
-        """Constructor of the class, which inherit from Button class"""
+    def __init__(self, button, pub, msg_q, intercom_config):
+        """Constructor of the class, which inherit from Button class
+
+        :param button:          The real button widget from UI.
+        :param pub:             MQTT publisher object
+        :param msg_q:           A queue in MQTT subscriber object to listen to
+                                msg sent from rpi_in
+        :param intercom_config: Config to connect to a mumble client.
+        """
         super().__init__(button, pub, msg_q, "Talk")
 
         # unique functionality flags
@@ -31,7 +39,9 @@ class TalkButton(Button):
             logging.config.dictConfig(config)
         self.logger = logging.getLogger("TalkButton")
 
-    def on_clicked(self, widget):
+        self.intercom_config = intercom_config
+
+    def on_clicked(self, widget) -> None:
         """Callback when `Talk` button is clicked.
 
         This will be called on whenever the Talk button is clicked
@@ -44,20 +54,22 @@ class TalkButton(Button):
         If intercom is not active, send signal to activate intercom and set
         self.intercom_active accordingly
 
-        Intercom will reset if error message is recieved when trying to active
+        Intercom will reset if error message is received when trying to active
         intercom.
+
+        :param widget:      Pointing to this button. Not used in the function.
+
+        :return:    None
         """
         # Always turn button to yellow whenever button is clicked
         set_button_property(self, "yellow", "Configuring...")
         # user wants to turn on intercom for both rpi_in and rpi_out
         if not self.rpi_in_intercom_on and not self.rpi_out_intercom_on:
             # turn on barnard in rpi_in
-            self.logger.info("Turning on barnard Mumble CLI client...")
-            # code to turn on barnard
-            #########################
-            #   Missing code        #
-            #########################
-            self.rpi_in_intercom_on = True
+            self.logger.info("Turning on Mumble CLI client...")
+            self.rpi_in_intercom_on = mumble.turn_on(
+                self.intercom_config, "rpi_in", self.logger
+            )
 
             # Only signal to rpi_out if rpi_in's Mumble client is on
             if self.rpi_in_intercom_on:
