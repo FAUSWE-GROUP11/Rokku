@@ -21,9 +21,10 @@ def turn_on(config, name: str, logger) -> bool:
     channel: str = config["CHANNEL"]
     open_mumble = (
         "tmux send-keys -t intercom "
-        f'"mumble -n mumble://{name}@{host}:{port}/{channel}"'
+        f'"mumble mumble://{name}@{host}:{port}/{channel}" '
         "Enter"
     )
+    logger.info("Turning on Mumble CLI client...")
     try:
         mum_proc = subprocess.run(new_tmux + " && " + open_mumble, shell=True)
     except Exception:
@@ -40,6 +41,7 @@ def turn_off(logger) -> bool:
     :return: True if mumble client successfully turned off, else False
     """
     kill_intercom = "tmux kill-sess -t intercom"
+    logger.info("Turning off rpi_in Mumble CLI client...")
     try:
         mum_proc = subprocess.run(kill_intercom, shell=True)
     except Exception:
