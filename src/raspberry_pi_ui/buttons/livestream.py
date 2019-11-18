@@ -46,22 +46,19 @@ class LivestreamButton(Button):
         If not livestreaming, send signal to livestream, open window and set self.livestream
         accordingly.
         """
-        # Sets button to yellow while rpi_in tries communicating with rpi_out
-        set_button_property(self, "yellow", "Spooling up camera...")
-        # Check if not recording
-        if not self.livestream:
-            self.logger.info("Sending livestream ON message to rpi_out...")
-            self.pub.publish(json.dumps(["livestream", True]))
-            try:  # wait for rpi_out to send true msg back
-                self.livestream = wait_msg(
-                    "livestream", self.logger, self.msg_q
-                )[1]
-                # True sent back
-                if self.livestream:
-                    # Since rpi_out sent back true it should be livestreaming
-                    self.logger.info("rpi_out is livestreaming now...")
-                    # turn button to red if not already red
-                    set_button_property(self, "red", "Livestreaming...")
+        self.logger.info("Sending livestream ON message to rpi_out...")
+        self.pub.publish(json.dumps(["livestream", True]))
+        try:  # wait for rpi_out to send true msg back
+            self.livestream = wait_msg("livestream", self.logger, self.msg_q)[
+                1
+            ]
+            # True sent back
+            if self.livestream:
+                # Since rpi_out sent back true it should be livestreaming
+                self.logger.info("rpi_out is livestreaming now...")
+                # turn button to red if not already red
+                set_button_property(self, "red", "Livestreaming...")
+                try:
                     # waiting for rpi_out to send youtube playlist link
                     self.yt_livestream_link = wait_msg(
                         "yt_livestream_link",
@@ -76,40 +73,43 @@ class LivestreamButton(Button):
                         #########################
                         #   Missing code        #
                         #########################
-                else:  # Something wrong with mqtt or the recording failed
+                except IndexError:  # no message received
                     self.logger.error(
                         f"The camera is running, Mqtt broke or the YouTube Api broke. Live Stream status: rpi_in = {self.livestream}"
                     )
-                    # display message box with error
+                    # Turn livestream off
+                    self.pub.publish(json.dumps(["livestream", True]))
+                    # Reset button to blue
+                    set_button_property(self, "blue", "Livestream")
+                    # Log event
+                    self.logger.info("Livestream is off...")
+                    # display message to try again later
                     #########################
                     #   Missing code        #
                     #########################
-            except IndexError:  # no message received
-                self.livestream = True
-        elif self.livestream:
-            # Try to turn off livestream
-            self.pub.publish(json.dumps(["livestream", False]))
-            # Log event
-            self.logger.info("Turning off rpi_out livestream...")
-            try:  # wait for rpi_out to send msg back.
-                self.livestream = wait_msg(
-                    "livestream", self.logger, self.msg_q
-                )[1]
-            except IndexError:  # no message received
-                self.livestream = True
-            if not self.livestream:
-                # Reset button to blue
-                set_button_property(self, "blue", "Livestream")
-                # Log event
-                self.logger.info("Livestream is off...")
-                # close livestream window
+            if self.livestream is None:
+                self.logger.error(
+                    f"The camera is running, Mqtt broke or the YouTube Api broke. Live Stream status: rpi_in = {self.livestream}"
+                )
+                # display message to wait for recording to be done
                 #########################
                 #   Missing code        #
                 #########################
             else:
-                self.logger.info("Livestream won't turn off...")
-                set_button_property(self, "red", "Livestreaming...")
-                # display message saying to try again later
+                # Log event
+                self.logger.info("Turnrd off rpi_out livestream...")
+                # Reset button to blue
+                set_button_property(self, "blue", "Livestream")
+                # close livestream window
                 #########################
                 #   Missing code        #
                 #########################
+        except IndexError:  # no message received
+            # Log event
+            self.logger.error(
+                f"The camera is running, Mqtt broke or the YouTube Api broke. Live Stream status: rpi_in = {self.livestream}"
+            )
+            # display message saying to try again later
+            #########################
+            #   Missing code        #
+            #########################

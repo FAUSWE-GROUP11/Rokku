@@ -7,6 +7,8 @@ from src.raspberry_pi_motion_sensor.motion_interface import MotionPir
 
 livestream_on = False
 recording_on = False
+# Create camera object
+cam = CameraInterface()
 
 
 def motion(pub, flag, queue) -> None:
@@ -32,10 +34,9 @@ def intercom(pub, flag) -> None:
 def record(pub, flag) -> None:
     """Behavior that will record a video, upload it to YouTube, and publish an URL to rpi_in."""
     # Get access to globals
-    global livestream_on, recording_on
-    # Create camera object
-    cam = CameraInterface()
-    if flag and (not livestream_on) and (not recording_on):
+    global livestream_on, recording_on, cam
+
+    if (not livestream_on) and (not recording_on):
         # Prevent other recordings
         recording_on = True
         # Will change button color, assuming video is being recorded.
@@ -55,10 +56,8 @@ def record(pub, flag) -> None:
 def livestream(pub, flag) -> None:
     """Behavior that will livestream to YouTube, and publish an URL to rpi_in."""
     # Get access to globals
-    global livestream_on, recording_on
-    # Create camera object
-    cam = CameraInterface()
-    if flag and (not livestream_on) and (not recording_on):
+    global livestream_on, recording_on, cam
+    if (not livestream_on) and (not recording_on):
         # Prevent other livestreams
         livestream_on = True
         # Will change button color, assuming livestream is running.
@@ -70,8 +69,8 @@ def livestream(pub, flag) -> None:
         # Once recording is over and static url to link is given
         pub.publish(json.dumps(["yt_livestream_link", yt_livestream_link]))
     elif recording_on:
-        # This is handled in livestream.py
-        pass
+        # Send None telling rpi_in to display an error message
+        pub.publish(json.dumps(["livestream", None]))
     else:
         # Turn livestream off
         pub.publish(json.dumps(["livestream", False]))  # Turn livestream off
