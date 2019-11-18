@@ -100,12 +100,8 @@ class TalkButton(Button):
 
         # intercom active for both devices. Turn off both
         elif self.rpi_in_intercom_on and self.rpi_out_intercom_on:
-            self.logger.info("Turning off rpi_in barnard Mumble CLI client...")
-            # code to turn off barnard
-            #########################
-            #   Missing code        #
-            #########################
-            self.rpi_in_intercom_on = False
+            self.logger.info("Turning off rpi_in Mumble CLI client...")
+            self.rpi_in_intercom_on = not mumble.turn_off(self.logger)
 
             # Only signal to rpi_out if rpi_in's Mumble client is off
             if not self.rpi_in_intercom_on:
