@@ -63,7 +63,9 @@ def livestream(pub, flag) -> None:
         # Will change button color, assuming livestream is running.
         pub.publish(json.dumps(["livestream", True]))
         # Start livestreaming and capture link
-        yt_livestream_link = cam.start_yt_stream()
+        yt_livestream_link = cam.start_yt_stream(
+            "a1be-2axc-fkwq-8t2u or 6a8u-vpvr-er4h-e22h"
+        )
         # Sleep thread for 5 seconds
         sleep(5)
         # Once recording is over and static url to link is given

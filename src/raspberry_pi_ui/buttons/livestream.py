@@ -87,7 +87,7 @@ class LivestreamButton(Button):
                     #########################
                     #   Missing code        #
                     #########################
-            if self.livestream is None:
+            elif self.livestream is None:
                 self.logger.error(
                     f"The camera is running, Mqtt broke or the YouTube Api broke. Live Stream status: rpi_in = {self.livestream}"
                 )
@@ -97,7 +97,7 @@ class LivestreamButton(Button):
                 #########################
             else:
                 # Log event
-                self.logger.info("Turnrd off rpi_out livestream...")
+                self.logger.info("Turned off rpi_out livestream...")
                 # Reset button to blue
                 set_button_property(self, "blue", "Livestream")
                 # close livestream window
