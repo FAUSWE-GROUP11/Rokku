@@ -58,8 +58,6 @@ class TalkButton(Button):
         intercom.
 
         :param widget:      Pointing to this button. Not used in the function.
-
-        :return:    None
         """
         # Always turn button to yellow whenever button is clicked
         set_button_property(self, "yellow", "Configuring...")

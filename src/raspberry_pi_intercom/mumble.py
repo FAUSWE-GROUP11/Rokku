@@ -33,7 +33,7 @@ def turn_on(config, name: str, logger: logging.Logger) -> None:
         f"-p {port} "
         f"-c {channel}"
     )
-    subprocess.Popen(cmd, shell=True)
+    subprocess.Popen(cmd, shell=True)  # Use Popen for non-blocking
 
 
 def is_on(logger: logging.Logger, timeout: int = 20) -> bool:
