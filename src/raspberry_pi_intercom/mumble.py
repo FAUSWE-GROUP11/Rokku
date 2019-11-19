@@ -1,6 +1,6 @@
 import logging
 import os
-from subprocess import Popen, check_output, run
+import subprocess
 from time import sleep
 
 import gi
@@ -33,7 +33,7 @@ def turn_on(config, name: str, logger: logging.Logger) -> None:
         f"-p {port} "
         f"-c {channel}"
     )
-    Popen(cmd, shell=True)
+    subprocess.Popen(cmd, shell=True)
 
 
 def is_on(logger: logging.Logger, timeout: int = 10) -> bool:
@@ -47,7 +47,10 @@ def is_on(logger: logging.Logger, timeout: int = 10) -> bool:
     mumble_on: bool = False
     timer: int = 0
     while timer <= timeout:
-        if check_output("ps -ef | grep -c mumble", shell=True) == "2":
+        outs: bytes = subprocess.check_output(
+            "ps -ef | grep -c mumble", shell=True
+        )
+        if outs.decode("utf-8").strip() == "2":
             mumble_on = True
             break
         while gtk.events_pending():
@@ -70,7 +73,7 @@ def turn_off(logger) -> bool:
     kill_intercom = "tmux kill-sess -t intercom"
     logger.info("Turning off rpi_in Mumble CLI client...")
     try:
-        mum_proc = run(kill_intercom, shell=True)
+        mum_proc = subprocess.run(kill_intercom, shell=True)
     except Exception:
         logger.exception("ERROR: unable to turn off Mumble client")
         mum_proc = None
