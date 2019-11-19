@@ -1,8 +1,14 @@
 import os
 import subprocess
 
+import gi
 
-def turn_on(config, name: str, logger) -> bool:
+gi.require_version("Gtk", "3.0")
+
+from gi.repository import Gtk as gtk
+
+
+def turn_on(config, name: str, logger):
     """Turn on mumble client via command line
 
     The channel to connect to is configured in app_config.ini. Only registered
@@ -14,7 +20,7 @@ def turn_on(config, name: str, logger) -> bool:
     :param config:  Config to connect to a mumble client.
     :param logger:  For logging purpose
 
-    :return: True if mumble client successfully turned on, else False
+    :return: Popen object after running the command to turn on mumble client
     """
     host: str = config["HOST"]
     port: str = config["PORT"]
@@ -27,12 +33,21 @@ def turn_on(config, name: str, logger) -> bool:
         f"-p {port} "
         f"-c {channel}"
     )
+    mum_proc = subprocess.Popen(
+        cmd, stdout=subprocess.PIPE, shell=True, encoding="utf-8"
+    )
     try:
-        mum_proc = subprocess.Popen(cmd, shell=True)
-    except Exception:
-        logger.exception("ERROR: unable to turn on Mumble client")
+        outs, errs = mum_proc.communicate(timeout=10)
+    except subprocess.TimeoutExpired:
+        mum_proc.kill()
+        outs, errs = mum_proc.communicate()
         mum_proc = None
-    if mum_proc is not None:
+    while gtk.events_pending():
+        gtk.main_iteration()
+
+    if mum_proc is None or outs != "2":
+        logger.exception("ERROR: unable to turn on Mumble client")
+    else:
         logger.info("Mumble client ON.")
     return mum_proc is not None
 
