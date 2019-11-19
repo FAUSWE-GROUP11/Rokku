@@ -67,7 +67,7 @@ class TalkButton(Button):
         if not self.rpi_in_intercom_on and not self.rpi_out_intercom_on:
             # Turn on Mumble for rpi_in
             mumble.turn_on(self.intercom_config, "rpi_in", self.logger)
-            self.rpi_in_intercom_on = mumble.is_on()
+            self.rpi_in_intercom_on = mumble.is_on(self.logger)
 
             # Only signal to rpi_out if rpi_in's Mumble client is on
             if self.rpi_in_intercom_on:

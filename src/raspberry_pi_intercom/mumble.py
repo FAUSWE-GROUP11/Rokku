@@ -1,3 +1,4 @@
+import logging
 import os
 from subprocess import Popen, check_output, run
 from time import sleep
@@ -9,7 +10,7 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk as gtk
 
 
-def turn_on(config, name: str, logger) -> None:
+def turn_on(config, name: str, logger: logging.Logger) -> None:
     """Turn on mumble client via command line
 
     The channel to connect to is configured in app_config.ini. Only registered
@@ -35,9 +36,12 @@ def turn_on(config, name: str, logger) -> None:
     Popen(cmd, shell=True)
 
 
-def is_on(timeout: int = 10) -> bool:
+def is_on(logger: logging.Logger, timeout: int = 10) -> bool:
     """Check whether mumble client has been turned on
 
+    :param logger:      For logging purpose
+    :param timeout:     Define time out value for checking whether mumble is on.
+                        Default to 10 seconds
     :return: True if mumble client is on, else False
     """
     mumble_on: bool = False
@@ -50,6 +54,10 @@ def is_on(timeout: int = 10) -> bool:
             gtk.main_iteration()
         sleep(1)
         timer += 1
+    if mumble_on:
+        logger.info("Mumble client is ON.")
+    else:
+        logger.error("Unable to start Mumble client!")
     return mumble_on
 
 
@@ -57,7 +65,6 @@ def turn_off(logger) -> bool:
     """Turn off mumble client via command line
 
     :param logger:  For logging purpose
-
     :return: True if mumble client successfully turned off, else False
     """
     kill_intercom = "tmux kill-sess -t intercom"
