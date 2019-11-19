@@ -86,10 +86,12 @@ def clean_up(logger, processes: List[Any], cmds: List[Any]) -> None:
     :return:    None
     """
     for proc in processes:
-        logger.info(f"Terminating {proc.name}...")
-        terminate_proc(proc)
-        logger.info(f"{proc.name} terminated successfully!")
+        if proc is not None:
+            logger.info(f"Terminating {proc.name}...")
+            terminate_proc(proc)
+            logger.info(f"{proc.name} terminated successfully!")
     for cmd_proc, cmd_name in cmds:
-        logger.info(f"Terminating {cmd_name}...")
-        terminate_cmd(cmd_proc)
-        logger.info(f"{cmd_name} terminated successfully!")
+        if cmd_proc is not None:
+            logger.info(f"Terminating {cmd_name}...")
+            terminate_cmd(cmd_proc)
+            logger.info(f"{cmd_name} terminated successfully!")

@@ -2,6 +2,7 @@ import logging
 import shlex
 import subprocess
 import time
+from multiprocessing import Process
 
 import RPi.GPIO as GPIO
 
@@ -42,3 +43,20 @@ def togglemute(logger: logging.Logger) -> None:
         logger.info("keyboard interruption.")
     finally:
         GPIO.cleanup()
+
+
+def start_togglemute_proc(logger: logging.Logger):
+    """Start a process to handle togglemute button click.
+
+    :param logger:  For logging purpose
+    :return: The process running togglemute function, or None if process fails.
+    """
+    togglemute_proc = Process(
+        target=togglemute, name="Toggle Mumble Mute", args=(logger,)
+    )
+    try:
+        togglemute_proc.start()
+    except Exception:
+        logger.exception("ERROR: Unable to configure togglemute button")
+        togglemute_proc = None
+    return togglemute_proc
