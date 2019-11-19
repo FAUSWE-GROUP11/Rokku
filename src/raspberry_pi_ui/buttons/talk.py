@@ -73,7 +73,7 @@ class TalkButton(Button):
                 self.pub.publish(json.dumps(["intercom", True]))
                 try:  # wait for rpi_out to send msg back
                     self.rpi_out_intercom_on = wait_msg(
-                        "intercom", self.logger, self.msg_q
+                        "intercom", self.logger, self.msg_q, timeout=15
                     )[1]
                 except IndexError:  # no message received
                     self.rpi_out_intercom_on = False
@@ -84,7 +84,10 @@ class TalkButton(Button):
                 set_button_property(self, "red", "End Talk")
             else:  # at least one of the intercom is not on
                 self.logger.error(
-                    f"Intercom status: rpi_in = {self.rpi_in_intercom_on}, rpi_out = {self.rpi_out_intercom_on}"
+                    (
+                        f"Intercom status: rpi_in = {self.rpi_in_intercom_on},"
+                        f"rpi_out = {self.rpi_out_intercom_on}"
+                    )
                 )
                 # display message box with error
                 #########################
