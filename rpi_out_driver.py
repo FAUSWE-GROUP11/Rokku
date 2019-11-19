@@ -2,7 +2,7 @@ import configparser
 import json
 import logging
 from logging import config
-from multiprocessing import Queue
+from multiprocessing import Process, Queue
 from time import sleep
 
 import RPi.GPIO as GPIO
@@ -22,6 +22,7 @@ from src.raspberry_pi_driver.utility import (
     command_line_parser,
     hash_prefix,
 )
+from src.raspberry_pi_intercom.togglemute_button import togglemute
 
 # set up logger
 with open("logger_config.yaml", "r") as f:
@@ -54,6 +55,11 @@ def main():
     camera_flags = {"livestream_on": False, "recording_on": False}
     cam = CameraInterface()  # Create camera object
 
+    # Run mute button in separate process
+    togglemute_proc = Process(
+        target=togglemute, name="Toggle Mumble Mute", args=(logger,)
+    )
+
     try:
         # forever listening on topic "{prefix}/in_to_out"
         while True:
@@ -73,7 +79,7 @@ def main():
             sleep(1)
     except (KeyboardInterrupt, SystemExit):
         logger.warning("Termination signal sensed.")
-        clean_up(logger, processes=[listen_proc], cmds=[])
+        clean_up(logger, processes=[listen_proc, togglemute_proc], cmds=[])
     logger.info("\n******* rpi_out_driver ends *******\n")
     GPIO.cleanup()
 
