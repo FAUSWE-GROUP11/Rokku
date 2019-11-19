@@ -1,3 +1,4 @@
+import configparser
 import logging
 import logging.config
 import os
@@ -36,7 +37,12 @@ def button():
     in_pub, in_msg_q, in_listen_proc = set_up_pub_sub(
         hash_prefix("Rokku/test_topic"), "in_to_out", "out_to_in"
     )
-    ui = Main(in_pub, in_msg_q)
+    app_config = configparser.ConfigParser()
+    app_config.read(
+        f"{os.path.dirname(__file__)}/fixtures/test_app_config.ini"
+    )
+    intercom_config = app_config["mumble"]
+    ui = Main(in_pub, in_msg_q, intercom_config)
     yield ui.talk_button
     print("tear down button via UI")
     ui.close_application("", "")

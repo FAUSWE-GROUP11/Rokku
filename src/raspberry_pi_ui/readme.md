@@ -17,7 +17,7 @@ One of the main dependencies is the `gi` module. For Raspbian, it is included in
 3. Test whether `gi` module is available now.
 
 ## Spin up UI Window
-To spin up the UI window, run `python3 rpi_in_driver.py` from root directory and under virtual environment.
+To spin up the UI window, run `python3 rpi_in_driver.py -p [public_id]` from root directory and under virtual environment. `public_id` is a unique string to specify MQTT channel. It must be the same for `rpi_in_driver` and `rpi_out_driver` to enable communication between the two.
 
 ## Testing
 UI testing is tricky. So far, we haven't found an easy solution to simulate button click to fully test our UI. But we are able to run simple test on non-event related functions in the UI object. According to the [documentation](https://pygobject.readthedocs.io/en/latest/guide/testing.html), Travis-ci doesn't have up-to-date GTK version in its Ubuntu virtual machine, so testing of PyGObject has to be done in a Docker container. This is no longer correct, as of 11/05/2019, Travis-ci provides Ubuntu 18.04 (Bionic) which has GTK version 3.22, enough to test UI built from PyGObject.

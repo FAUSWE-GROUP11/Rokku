@@ -1,3 +1,4 @@
+import configparser
 import json
 import logging
 from logging import config
@@ -21,6 +22,7 @@ from src.raspberry_pi_driver.utility import (
     command_line_parser,
     hash_prefix,
 )
+from src.raspberry_pi_intercom.togglemute_button import start_togglemute_proc
 
 # set up logger
 with open("logger_config.yaml", "r") as f:
@@ -36,14 +38,26 @@ def main():
     # parse command line argument
     args = command_line_parser("RPI_OUT_DRIVER")
     prefix: str = hash_prefix(args.public_id)
+
+    # parse configuration file
+    app_config = configparser.ConfigParser()
+    app_config.read("./app_config.ini")
+    intercom_config = app_config["mumble"]
+
     # set up pub sub
     logger.info("Setting up publisher and subscriber")
     pub, msg_q, listen_proc = set_up_pub_sub(prefix, "out_to_in", "in_to_out")
     logger.info("Publisher and subscriber set up successfully!")
-    motion_queue = Queue()
+
+    motion_queue = Queue()  # set up queue for motion sensor
+
+    # set up flag for camera
     camera_flags = {"livestream_on": False, "recording_on": False}
-    # Create camera object
-    cam = CameraInterface()
+    cam = CameraInterface()  # Create camera object
+
+    # Run mute button in separate process
+    togglemute_proc = start_togglemute_proc(logger)
+
     try:
         # forever listening on topic "{prefix}/in_to_out"
         while True:
@@ -52,18 +66,18 @@ def main():
                 identifier, flag = json.loads(msg)
                 if identifier == "alarm":
                     alarm.alarm(pub, flag)
-                if identifier == "intercom":
-                    intercom.intercom(pub, flag)
-                if identifier == "motion":
+                elif identifier == "intercom":
+                    intercom.intercom(pub, flag, intercom_config, logger)
+                elif identifier == "motion":
                     motion.motion(pub, flag, motion_queue)
-                if identifier == "record":
+                elif identifier == "record":
                     record.record(pub, cam, camera_flags)
-                if identifier == "livestream":
+                elif identifier == "livestream":
                     livestream.livestream(pub, cam, camera_flags)
             sleep(1)
     except (KeyboardInterrupt, SystemExit):
         logger.warning("Termination signal sensed.")
-        clean_up(logger, processes=[listen_proc], cmds=[])
+        clean_up(logger, processes=[listen_proc, togglemute_proc], cmds=[])
     logger.info("\n******* rpi_out_driver ends *******\n")
     GPIO.cleanup()
 

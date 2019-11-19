@@ -24,10 +24,15 @@ from src.raspberry_pi_ui.buttons import (
 class Main:
     """Class implemented to create the GUI."""
 
-    def __init__(self, pub, msg_q):
+    def __init__(self, pub, msg_q, intercom_config):
         """Adds the .glade file to draw out the application.
 
         Also set up css, logger, button, and activate window.
+
+        :param pub:             MQTT publisher object
+        :param msg_q:           A queue on MQTT subscriber object to listen to
+                                msg sent from rpi_out.
+        :param intercom_config: Config to connect to a mumble client.
         """
         self.builder = gtk.Builder()
         self.builder.add_from_file(f"{os.path.dirname(__file__)}/rokku.glade")
@@ -54,7 +59,7 @@ class Main:
 
         # connecting all buttons to python
         self.talk_button = talk.TalkButton(
-            self.builder.get_object("talkButton"), pub, msg_q
+            self.builder.get_object("talkButton"), pub, msg_q, intercom_config
         )
         self.arm_button = arm.ArmButton(
             self.builder.get_object("armButton"), pub, msg_q

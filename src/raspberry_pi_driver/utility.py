@@ -20,7 +20,8 @@ def command_line_parser(prog_name: str):
         "-p",
         dest="public_id",
         required=True,
-        help="Provide a public id for Rokku's MQTT topic. This id must be the same for both rpi_in_driver and rpi_out_driver",
+        help="""Provide a public id for Rokku's MQTT topic.
+        This id must be the same for both rpi_in_driver and rpi_out_driver""",
     )
     args = parser.parse_args()
     return args
@@ -85,10 +86,12 @@ def clean_up(logger, processes: List[Any], cmds: List[Any]) -> None:
     :return:    None
     """
     for proc in processes:
-        logger.info(f"Terminating {proc.name}...")
-        terminate_proc(proc)
-        logger.info(f"{proc.name} terminated successfully!")
+        if proc is not None:
+            logger.info(f"Terminating {proc.name}...")
+            terminate_proc(proc)
+            logger.info(f"{proc.name} terminated successfully!")
     for cmd_proc, cmd_name in cmds:
-        logger.info(f"Terminating {cmd_name}...")
-        terminate_cmd(cmd_proc)
-        logger.info(f"{cmd_name} terminated successfully!")
+        if cmd_proc is not None:
+            logger.info(f"Terminating {cmd_name}...")
+            terminate_cmd(cmd_proc)
+            logger.info(f"{cmd_name} terminated successfully!")
