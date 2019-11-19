@@ -55,7 +55,7 @@ def is_on(logger: logging.Logger, timeout: int = 20) -> bool:
         if outs.decode("utf-8").strip() == "3":
             mumble_on = True
             break
-        while gtk.events_pending():
+        while gtk.events_pending():  # make the loop non-blocking on UI
             gtk.main_iteration()
         sleep(1)
         timer += 1
