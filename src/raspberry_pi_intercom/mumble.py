@@ -36,12 +36,12 @@ def turn_on(config, name: str, logger: logging.Logger) -> None:
     subprocess.Popen(cmd, shell=True)
 
 
-def is_on(logger: logging.Logger, timeout: int = 10) -> bool:
+def is_on(logger: logging.Logger, timeout: int = 20) -> bool:
     """Check whether mumble client has been turned on
 
     :param logger:      For logging purpose
     :param timeout:     Define time out value for checking whether mumble is on.
-                        Default to 10 seconds
+                        Default to 20 seconds
     :return: True if mumble client is on, else False
     """
     mumble_on: bool = False
@@ -50,7 +50,9 @@ def is_on(logger: logging.Logger, timeout: int = 10) -> bool:
         outs: bytes = subprocess.check_output(
             "ps -ef | grep -c mumble", shell=True
         )
-        if outs.decode("utf-8").strip() == "2":
+        # when stabilized, there should be three lines containing "mumble", one
+        # from the mumble client process, and the other two from grepping.
+        if outs.decode("utf-8").strip() == "3":
             mumble_on = True
             break
         while gtk.events_pending():
