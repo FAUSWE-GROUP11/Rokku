@@ -28,7 +28,7 @@ def turn_on(config, name: str, logger) -> bool:
         f"-c {channel}"
     )
     try:
-        mum_proc = subprocess.run(cmd, shell=True)
+        mum_proc = subprocess.Popen(cmd, shell=True)
     except Exception:
         logger.exception("ERROR: unable to turn on Mumble client")
         mum_proc = None
