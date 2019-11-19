@@ -45,11 +45,10 @@ def main():
     # Create camera object
     cam = CameraInterface()
     try:
-        # forever listening on topic "Rokku/in_to_out"
+        # forever listening on topic "{prefix}/in_to_out"
         while True:
             if not msg_q.empty():
                 msg: str = msg_q.get()
-                print(f"Sample behavior received: {msg}")
                 identifier, flag = json.loads(msg)
                 if identifier == "alarm":
                     alarm.alarm(pub, flag)
