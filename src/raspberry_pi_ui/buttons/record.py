@@ -68,7 +68,7 @@ class RecordButton(Button):
                     "yt_playlist_link",
                     self.logger,
                     self.msg_q,
-                    timeout=self.video_length + 5,
+                    timeout=self.video_length + 30,
                 )[1]
             except IndexError:  # no message received
                 self.recording = False
@@ -77,7 +77,7 @@ class RecordButton(Button):
             self.logger.info("rpi_out recorded a video succesfully...")
         else:  # Something wrong with mqtt or the recording failed
             self.logger.error(
-                f"Mqtt or the YouTube Api broke, no video was recorded. Recording status: rpi_in = {self.recording}"
+                f"The camera is running, Mqtt broke or the YouTube Api broke. No video was recorded! Recording status: rpi_in = {self.recording}"
             )
             # display message box with error
             #########################
