@@ -8,7 +8,14 @@ import RPi.GPIO as GPIO
 import yaml
 
 from src.pi_to_pi.utility import set_up_pub_sub
-from src.raspberry_pi_driver.behaviors import alarm, intercom, motion, record
+from src.raspberry_pi_camera.camera_interface import CameraInterface
+from src.raspberry_pi_driver.behaviors import (
+    alarm,
+    intercom,
+    livestream,
+    motion,
+    record,
+)
 from src.raspberry_pi_driver.utility import (
     clean_up,
     command_line_parser,
@@ -34,6 +41,9 @@ def main():
     pub, msg_q, listen_proc = set_up_pub_sub(prefix, "out_to_in", "in_to_out")
     logger.info("Publisher and subscriber set up successfully!")
     motion_queue = Queue()
+    camera_flags = {"livestream_on": False, "recording_on": False}
+    # Create camera object
+    cam = CameraInterface()
     try:
         # forever listening on topic "Rokku/in_to_out"
         while True:
@@ -48,7 +58,9 @@ def main():
                 if identifier == "motion":
                     motion(pub, flag, motion_queue)
                 if identifier == "record":
-                    record(pub, flag)
+                    record(pub, flag, cam, camera_flags)
+                if identifier == "livestream":
+                    livestream(pub, flag, cam, camera_flags)
             sleep(1)
     except (KeyboardInterrupt, SystemExit):
         logger.warning("Termination signal sensed.")
