@@ -26,7 +26,6 @@ main() {
   tmux send-keys -t intercom "mumble mumble://$NAME@$HOST:$PORT/$CHANNEL" Enter
   sleep 5
   xdotool search "Mumble" windowminimize --sync %@
-  echo $(ps -ef | grep -c mumble)
 }
 
 
