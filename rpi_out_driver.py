@@ -1,6 +1,6 @@
 import json
 import logging
-import logging.config
+from logging import config
 from multiprocessing import Queue
 from time import sleep
 
@@ -24,8 +24,8 @@ from src.raspberry_pi_driver.utility import (
 
 # set up logger
 with open("logger_config.yaml", "r") as f:
-    config = yaml.safe_load(f.read())
-    logging.config.dictConfig(config)
+    log_config = yaml.safe_load(f.read())
+    config.dictConfig(log_config)
 logger = logging.getLogger("RPI_OUT")
 
 # set up RPi board
@@ -45,22 +45,21 @@ def main():
     # Create camera object
     cam = CameraInterface()
     try:
-        # forever listening on topic "Rokku/in_to_out"
+        # forever listening on topic "{prefix}/in_to_out"
         while True:
             if not msg_q.empty():
                 msg: str = msg_q.get()
-                print(f"Sample behavior received: {msg}")
                 identifier, flag = json.loads(msg)
                 if identifier == "alarm":
-                    alarm(pub, flag)
+                    alarm.alarm(pub, flag)
                 if identifier == "intercom":
-                    intercom(pub, flag)
+                    intercom.intercom(pub, flag)
                 if identifier == "motion":
-                    motion(pub, flag, motion_queue)
+                    motion.motion(pub, flag, motion_queue)
                 if identifier == "record":
-                    record(pub, flag, cam, camera_flags)
+                    record.record(pub, cam, camera_flags)
                 if identifier == "livestream":
-                    livestream(pub, flag, cam, camera_flags)
+                    livestream.livestream(pub, cam, camera_flags)
             sleep(1)
     except (KeyboardInterrupt, SystemExit):
         logger.warning("Termination signal sensed.")
