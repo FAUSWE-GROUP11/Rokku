@@ -1,3 +1,4 @@
+import os
 import subprocess
 
 
@@ -15,24 +16,24 @@ def turn_on(config, name: str, logger) -> bool:
 
     :return: True if mumble client successfully turned on, else False
     """
-    new_tmux = "tmux new -s intercom -d && "
     host: str = config["HOST"]
     port: str = config["PORT"]
     channel: str = config["CHANNEL"]
-    open_mumble = (
-        "tmux send-keys -t intercom "
-        f'"mumble mumble://{name}@{host}:{port}/{channel}" '
-        "Enter && "
+    logger.info("Turning on Mumble client...")
+    cmd: str = (
+        f"{os.path.dirname(__file__)}/start_mumble.sh "
+        f"-n {name} "
+        f"-h {host} "
+        f"-p {port} "
+        f"-c {channel}"
     )
-    minimize = 'sleep 3 && xdotool search "Mumble" windowminimize --sync %@'
-    logger.info("Turning on Mumble CLI client...")
     try:
-        mum_proc = subprocess.run(
-            new_tmux + open_mumble + minimize, shell=True
-        )
+        mum_proc = subprocess.run(cmd, shell=True)
     except Exception:
         logger.exception("ERROR: unable to turn on Mumble client")
         mum_proc = None
+    if mum_proc is not None:
+        logger.info("Mumble client ON.")
     return mum_proc is not None
 
 
@@ -50,4 +51,6 @@ def turn_off(logger) -> bool:
     except Exception:
         logger.exception("ERROR: unable to turn off Mumble client")
         mum_proc = None
+    if mum_proc is not None:
+        logger.info("Mumble client OFF.")
     return mum_proc is not None
