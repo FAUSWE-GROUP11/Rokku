@@ -59,4 +59,6 @@ def start_togglemute_proc(logger: logging.Logger):
     except Exception:
         logger.exception("ERROR: Unable to configure togglemute button")
         togglemute_proc = None
+    if togglemute_proc is not None:
+        logger.info("Togglemute button successfully configured.")
     return togglemute_proc
