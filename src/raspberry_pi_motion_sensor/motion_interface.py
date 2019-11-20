@@ -33,12 +33,12 @@ class MotionPir:
         self.channel_num = channel_num
         GPIO.setup(self.channel_num, GPIO.IN)
 
-        self.interval = config["INTERVAL"]
-        self.trig_thresh = config["TRIG_THRESH"]
+        self.interval = int(config["INTERVAL"])
+        self.trig_thresh = int(config["TRIG_THRESH"])
         # data structure to compute the time period needed to produce the
         # most recent `self.trig_thresh` number of triggers. If the time period
         # is smaller than `self.interval`, we consider that as a real trigger.
-        self.trigger_times = deque([-1] * (self.trig_thresh - 1))
+        self.trigger_times = deque([-1.0] * (self.trig_thresh - 1))
 
     def motion_callback(self, channel):
         """channel argument is for receiving GPIO input.
@@ -52,7 +52,7 @@ class MotionPir:
         curr_time = time()
         earliest_time = self.trigger_times.popleft()
         self.trigger_times.append(curr_time)
-        if earliest_time != -1 and curr_time - earliest_time < self.interval:
+        if earliest_time > 0 and curr_time - earliest_time < self.interval:
             # Considered a real trigger
             self.queue.put(True)
             print("Movement Detected")
