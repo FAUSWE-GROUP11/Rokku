@@ -48,7 +48,6 @@ class MotionPir:
         called anytime the Pir sensor is activated. Gives main driver ability
         to see callback from different thread.
         """
-        print(f"before op: {self.trigger_times}")
         curr_time = time()
         earliest_time = self.trigger_times.popleft()
         self.trigger_times.append(curr_time)
@@ -56,7 +55,6 @@ class MotionPir:
             # Considered a real trigger
             self.queue.put(True)
             print("Movement Detected")
-        print(f"after op: {self.trigger_times}")
 
     def set_armed(self):
         """Sets Object state to True 'armed'.
@@ -72,7 +70,10 @@ class MotionPir:
         )
 
     def set_disarmed(self):
-        """Sets Object state to False 'disarmed' and will stop callbacks from motion_pir by removing event detection"""
+        """Sets Object state to False 'disarmed'.
+
+        and will stop callbacks from motion_pir by removing event detection.
+        """
 
         self.armed = False
         GPIO.remove_event_detect(self.channel_num)
