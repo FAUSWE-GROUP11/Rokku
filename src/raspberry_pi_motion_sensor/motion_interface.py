@@ -55,6 +55,8 @@ class MotionPir:
             # Considered a real trigger
             self.queue.put(True)
             print("Movement Detected")
+            GPIO.output(12, GPIO.HIGH)  # turn on LED
+        GPIO.output(12, GPIO.LOW)  # turn off LED
 
     def set_armed(self):
         """Sets Object state to True 'armed'.
