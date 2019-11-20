@@ -43,6 +43,7 @@ def main():
     app_config = configparser.ConfigParser()
     app_config.read("./app_config.ini")
     intercom_config = app_config["mumble"]
+    motion_sensor_config = app_config["motion_sensor"]
 
     # set up pub sub
     logger.info("Setting up publisher and subscriber")
@@ -69,7 +70,9 @@ def main():
                 elif identifier == "intercom":
                     intercom.intercom(pub, flag, intercom_config, logger)
                 elif identifier == "motion":
-                    motion.motion(pub, flag, motion_queue)
+                    motion.motion(
+                        pub, flag, motion_queue, motion_sensor_config
+                    )
                 elif identifier == "record":
                     record.record(pub, cam, camera_flags)
                 elif identifier == "livestream":

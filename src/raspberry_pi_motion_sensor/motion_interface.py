@@ -1,20 +1,31 @@
+from collections import deque
+from time import time
+
 import RPi.GPIO as GPIO
 
 
 class MotionPir:
     """Class implemented to interact with a PIR motion sensor.
 
-    Object will act as a 'mini-alarm system' where it can be 'armed' and 'disarmed'.
-    Functions set_armed() and set_disarmed() should be used to modify object and motion_callback() will allow
-    for object to communicate to other objects.
-    when armed.
+    Object will act as a 'mini-alarm system' where it can be 'armed' and
+    'disarmed'. Functions set_armed() and set_disarmed() should be used to
+    modify object and motion_callback() will allow for object to communicate to
+    other objects. when armed.
     """
 
-    def __init__(self, queue, channel_num):
-        """ When MotionPir is created it will be inactive, self.armed set to false.
+    def __init__(self, queue, channel_num, config):
+        """ When MotionPir is created it will be inactive, self.armed set to
+        false.
 
-        Queue from main is given to object for passing of events happening in second thread.
-        channel_num is the Broadcom SOC channel number used for input from the PIR sensor.
+        Queue from main is given to object for passing of events happening in
+        second thread.
+        channel_num is the Broadcom SOC channel number used for input from the
+        PIR sensor.
+
+        :param queue:       Notify rpi_out that a real motion trigger has been
+                            sensed.
+        :param channel_num: The GPIO pin connected to the PIR sensor.
+        :param config:      Configuration for motion sensor
         """
 
         self.armed = False
@@ -22,17 +33,30 @@ class MotionPir:
         self.channel_num = channel_num
         GPIO.setup(self.channel_num, GPIO.IN)
 
+        self.interval = config["INTERVAL"]
+        self.trig_thresh = config["TRIG_THRESH"]
+        # data structure to compute the time period needed to produce the
+        # most recent `self.trig_thresh` number of triggers. If the time period
+        # is smaller than `self.interval`, we consider that as a real trigger.
+        self.trigger_times = deque([-1] * (self.trig_thresh - 1))
+
     def motion_callback(self, channel):
         """channel argument is for receiving GPIO input.
 
         Function runs on different thread than main.
-        When object (self.armed) is 'armed' / True, this function will be called anytime the Pir sensor is activated.
-        Gives main driver ability to see callback from different thread.
+        When object (self.armed) is 'armed' / True, this function will be
+        called anytime the Pir sensor is activated. Gives main driver ability
+        to see callback from different thread.
         """
-
-        # Here, alternatively, an application / command can be started
-        self.queue.put(True)
-        print("Movement Detected")
+        print(f"before op: {self.trigger_times}")
+        curr_time = time()
+        earliest_time = self.trigger_times.popleft()
+        self.trigger_times.append(curr_time)
+        if earliest_time != -1 and curr_time - earliest_time < self.interval:
+            # Considered a real trigger
+            self.queue.put(True)
+            print("Movement Detected")
+        print(f"after op: {self.trigger_times}")
 
     def set_armed(self):
         """Sets Object state to True 'armed' and calls monitor() to initialize GPIO input
@@ -42,6 +66,9 @@ class MotionPir:
         self.armed = True
         GPIO.add_event_detect(
             self.channel_num, GPIO.RISING, callback=self.motion_callback
+        )
+        GPIO.add_event_detect(
+            self.channel_num, GPIO.FALLING, callback=self.motion_callback
         )
 
     def set_disarmed(self):
