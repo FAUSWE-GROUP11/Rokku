@@ -81,7 +81,8 @@ class MotionPir:
             self.queue.put(True)
             self.queue.join()  # block until user acknowledges it
 
-        self.led_proc.kill()
+        if self.led_proc is not None:
+            self.led_proc.terminate()
         GPIO.output(12, GPIO.LOW)  # turn off LED
 
     def set_armed(self):
