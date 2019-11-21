@@ -92,7 +92,7 @@ class Main:
         self.alert_proc = Process(
             target=alert.alert,
             name="Alert User",
-            args=(pub, msg_q, self.logger),
+            args=(pub.topic, msg_q, self.logger),
         )
         self.alert_proc.start()
 

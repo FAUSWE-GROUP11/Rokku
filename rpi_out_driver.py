@@ -2,7 +2,7 @@ import configparser
 import json
 import logging
 from logging import config
-from multiprocessing import Queue
+from multiprocessing import Process, Queue
 from time import sleep
 
 import RPi.GPIO as GPIO
@@ -21,6 +21,8 @@ from src.raspberry_pi_driver.utility import (
     clean_up,
     command_line_parser,
     hash_prefix,
+    led_on,
+    terminate_proc,
 )
 from src.raspberry_pi_intercom.togglemute_button import start_togglemute_proc
 from src.raspberry_pi_motion_sensor.motion_interface import MotionPir
@@ -30,9 +32,6 @@ with open("logger_config.yaml", "r") as f:
     log_config = yaml.safe_load(f.read())
     config.dictConfig(log_config)
 logger = logging.getLogger("RPI_OUT")
-
-# set up RPi board
-GPIO.setmode(GPIO.BCM)  # use GPIO.setmode(GPIO.board) for using pin numbers
 
 
 def main():
@@ -59,6 +58,7 @@ def main():
     motion_queue = Queue()  # set up queue for motion sensor
     motion_pin = 23  # channel 23 (GPIO23) is connected to motion sensor
     sensor = MotionPir(motion_queue, motion_pin, motion_sensor_config)
+    led_proc = None  # placeholder for process lighting up LED.
 
     # Run mute button in separate process
     togglemute_proc = start_togglemute_proc(logger)
@@ -83,6 +83,7 @@ def main():
                     # User acknowledged motion has been detected.
                     # Resume motion sensor
                     sensor.set_armed()
+                    terminate_proc(led_proc, logger)
 
             if not motion_queue.empty():  # motion detected
                 motion_queue.get()
@@ -93,6 +94,8 @@ def main():
                 # change rpi_in's UI (use should NOT be able to interact with
                 # UI when the alert is on)
                 sensor.set_disarmed()
+                led_proc = Process(target=led_on, name="LED proc", args=(12,))
+                led_proc.start()
             sleep(1)
     except (KeyboardInterrupt, SystemExit):
         logger.warning("Termination signal sensed.")

@@ -3,6 +3,8 @@ from hashlib import blake2b
 from time import sleep
 from typing import Any, List
 
+import RPi.GPIO as GPIO
+
 
 def command_line_parser(prog_name: str):
     """
@@ -94,3 +96,11 @@ def clean_up(logger, processes: List[Any], cmds: List[Any]) -> None:
     for cmd_proc, cmd_name in cmds:
         if cmd_proc is not None:
             terminate_cmd(cmd_proc, cmd_name, logger)
+
+
+def led_on(pin: int):
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(pin, GPIO.OUT)
+    while True:
+        GPIO.output(pin, GPIO.HIGH)
+        sleep(0.1)

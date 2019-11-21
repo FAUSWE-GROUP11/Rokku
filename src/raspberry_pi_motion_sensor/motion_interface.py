@@ -2,17 +2,11 @@ import logging
 import os
 from collections import deque
 from logging import config
-from time import sleep, time
+from time import time
 from typing import Deque
 
 import RPi.GPIO as GPIO
 import yaml
-
-
-def led_on():
-    while True:
-        GPIO.output(12, GPIO.HIGH)
-        sleep(0.1)
 
 
 class MotionPir:
@@ -42,6 +36,8 @@ class MotionPir:
         self.armed = False
         self.queue = queue
         self.channel_num = channel_num
+        # use GPIO.setmode(GPIO.board) for using pin numbers
+        GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.channel_num, GPIO.IN)
         GPIO.setup(12, GPIO.OUT)
 
@@ -68,7 +64,7 @@ class MotionPir:
         curr_time = time()
         earliest_time = self.trigger_times.popleft()
         self.trigger_times.append(curr_time)
-        print("*** PIR Triggered ***")
+        self.logger.debug("*** PIR Triggered ***")
         if earliest_time > 0 and curr_time - earliest_time < self.interval:
             # Considered a real trigger
             self.logger.info("Motion Detected")
