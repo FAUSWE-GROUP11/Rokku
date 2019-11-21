@@ -1,6 +1,7 @@
 import json
 from time import time
 from typing import Any, List
+from time import sleep
 
 import gi
 
@@ -28,23 +29,44 @@ def set_button_property(button, color: str, label: str):
     button.set_label(label)
 
 
-def wait_msg(identifier: str, logger, msg_q, timeout: int = 10) -> List[Any]:
-    """
-    Wait for a message containing the given identifier. Note that all
-    messages are in the format of '[identifier, boolean]'. Thus, we only
-    need to check the first element for identifier in the received, json-
-    loaded, list.
+def retrieve_msg(identifier: str, msg_q) -> List[Any]:
+    """Retrieve one msg from msg_q.
 
-    :param identifier:      A unique string to differentiate the recipient of
-                            the received message.
-    :param logger:          Logging from the caller.
-    :param msg_q:           A queue to receive msg from rpi_out
-    :param timeout:         Timeout duration. If function hangs for more than
-                            the amount of time specified by timeout, end the
-                            function. Default timeout set to 10 seconds
-    :return:
-        A json-loaded object (a list) from the received message. If timeout
-        is triggered, return an empty list.
+    If the msg does not fit identifier, put the msg back in the queue.
+
+    :param identifier:  A unique string to differentiate the recipient of
+                        the received message.
+    :param msg_q:       A queue to receive msg from rpi_out
+    :return: A json-loaded object (or empty list) from the received message.
+    """
+    msg = msg_q.get()
+    msg_list = json.loads(msg)
+    # if the received message is not what we want
+    if msg_list[0] != identifier:
+        msg_q.put(msg)  # put the message back
+        msg_list = []  # reset msg_list
+    return msg_list
+
+
+def wait_msg(identifier: str, logger, msg_q, timeout: int = 10) -> List[Any]:
+    """Wait for a message containing the given identifier inside UI.
+
+    Note that all messages are in the format of '[identifier, boolean]'. Thus,
+    we only need to check the first element for identifier in the received,
+    json-loaded, list.
+
+    If timeout or force_end is triggered, return an empty list.
+
+    This function shall be used ONLY in button callback.
+
+    :param identifier:  A unique string to differentiate the recipient of
+                        the received message.
+    :param logger:      Logging from the caller.
+    :param msg_q:       A queue to receive msg from rpi_out
+    :param timeout:     Timeout duration. If function hangs for more than
+                        the amount of time specified by timeout, end the
+                        function. Default timeout set to 10 seconds.
+    :return: A json-loaded object (or empty list) from the received message.
     """
     start = time()
     msg_list = []
@@ -53,14 +75,11 @@ def wait_msg(identifier: str, logger, msg_q, timeout: int = 10) -> List[Any]:
             logger.error("Wait for rpi_out message timeout.")
             break
         if not msg_q.empty():
-            msg = msg_q.get()
-            msg_list = json.loads(msg)
-            if msg_list[0] == identifier:
+            msg_list = retrieve_msg(identifier, msg_q)
+            if msg_list:
                 logger.info(f"Message for {identifier} received from rpi_out.")
                 break
-            else:  # if the received message is not for intercom
-                msg_q.put(msg)  # put the message back
-                msg_list = []  # reset msg_list
-        while gtk.events_pending():
+        while gtk.events_pending():  # keep UI alive
             gtk.main_iteration()
+        sleep(1)
     return msg_list

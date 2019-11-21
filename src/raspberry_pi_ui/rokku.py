@@ -1,6 +1,7 @@
 import logging
 import logging.config
 import os
+from multiprocessing import Process
 
 import gi
 import yaml
@@ -19,6 +20,8 @@ from src.raspberry_pi_ui.buttons import (
     livestream,
     video,
 )
+from src.raspberry_pi_driver.behaviors import alert
+from src.raspberry_pi_driver.utility import terminate_proc
 
 
 class Main:
@@ -82,12 +85,21 @@ class Main:
         window.connect("delete-event", self.close_application)
         window.show_all()
 
+        # set up motion sensor alert
+        self.alert_proc = Process(
+            target=alert.alert,
+            name="Alert User",
+            args=(pub, msg_q, self.logger),
+        )
+        self.alert_proc.start()
+
     def close_application(self, widget, something):
         """Turn off UI.
 
         This will be called on closing the Rokku application
         Should close up any processes that have been started when first loading Rokku
         """
+        terminate_proc(self.alert_proc, self.logger)
         gtk.main_quit()
 
     def run(self):

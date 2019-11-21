@@ -60,7 +60,6 @@ class MotionPir:
             config.dictConfig(log_config)
         self.logger = logging.getLogger("MOTION_SENSOR")
 
-        self.led_proc = Process(target=led_on, args=())  # turn on LED
         self.triggered = False  # flag
 
     def motion_callback(self, channel):
@@ -78,14 +77,15 @@ class MotionPir:
         if earliest_time > 0 and curr_time - earliest_time < self.interval:
             # Considered a real trigger
             self.logger.info("Motion Detected")
-            self.led_proc.start()
+            led_proc = Process(target=led_on, args=())  # turn on LED
+            led_proc.start()
             self.triggered = True
             self.queue.put(True)
             self.queue.join()  # block until user acknowledges it
 
-        if self.triggered:
-            self.led_proc.terminate()
-        GPIO.output(12, GPIO.LOW)  # turn off LED
+        if self.triggered:  # turn off LED
+            led_proc.terminate()
+            self.triggered = False
 
     def set_armed(self):
         """Sets Object state to True 'armed'.

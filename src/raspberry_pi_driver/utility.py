@@ -47,31 +47,34 @@ def hash_prefix(public_id: str) -> str:
     return h_addr.hexdigest()
 
 
-def terminate_proc(proc) -> None:
+def terminate_proc(proc, logger) -> None:
     """Nicely terminate the given process.
 
     :param proc:   The object representing the process to be terminated
-
-    :returns:   None
+    :param logger: For logging purpose
     """
+    logger.info(f"Terminating {proc.name}...")
     proc.terminate()
     while proc.is_alive():
         sleep(1)
     proc.join()
+    logger.info(f"{proc.name} terminated successfully!")
 
 
-def terminate_cmd(cmd_proc) -> None:
+def terminate_cmd(cmd_proc, cmd_name, logger) -> None:
     """Nicely terminate the given command process (from subprocess.run).
 
     :param cmd_proc:    The object representing the command process to be
-                        terminated
-
-    :returns:   None
+                        terminated.
+    :param cmd_name:    Name of the command process.
+    :param logger:      For logging purpose.
     """
+    logger.info(f"Terminating {cmd_name}...")
     cmd_proc.kill()
     while cmd_proc.poll() is None:
         sleep(1)
     cmd_proc.wait()
+    logger.info(f"{cmd_name} terminated successfully!")
 
 
 def clean_up(logger, processes: List[Any], cmds: List[Any]) -> None:
@@ -87,11 +90,7 @@ def clean_up(logger, processes: List[Any], cmds: List[Any]) -> None:
     """
     for proc in processes:
         if proc is not None:
-            logger.info(f"Terminating {proc.name}...")
-            terminate_proc(proc)
-            logger.info(f"{proc.name} terminated successfully!")
+            terminate_proc(proc, logger)
     for cmd_proc, cmd_name in cmds:
         if cmd_proc is not None:
-            logger.info(f"Terminating {cmd_name}...")
-            terminate_cmd(cmd_proc)
-            logger.info(f"{cmd_name} terminated successfully!")
+            terminate_cmd(cmd_proc, cmd_name, logger)
