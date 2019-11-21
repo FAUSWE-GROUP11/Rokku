@@ -21,7 +21,6 @@ from src.raspberry_pi_driver.utility import (
     clean_up,
     command_line_parser,
     hash_prefix,
-    led_on,
     terminate_proc,
 )
 from src.raspberry_pi_intercom.togglemute_button import start_togglemute_proc
@@ -94,7 +93,9 @@ def main():
                 # change rpi_in's UI (use should NOT be able to interact with
                 # UI when the alert is on)
                 sensor.set_disarmed()
-                led_proc = Process(target=led_on, name="LED proc", args=(12,))
+                led_proc = Process(
+                    target=sensor.led_on, name="LED proc", args=()
+                )
                 led_proc.start()
             sleep(1)
     except (KeyboardInterrupt, SystemExit):

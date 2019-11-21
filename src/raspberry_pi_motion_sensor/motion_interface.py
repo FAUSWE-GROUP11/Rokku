@@ -36,10 +36,11 @@ class MotionPir:
         self.armed = False
         self.queue = queue
         self.channel_num = channel_num
+        self.led_pin = 12
         # use GPIO.setmode(GPIO.board) for using pin numbers
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.channel_num, GPIO.IN)
-        GPIO.setup(12, GPIO.OUT)
+        GPIO.setup(self.led_pin, GPIO.OUT)
 
         self.interval = float(motion_sensor_config["INTERVAL"])
         self.trig_thresh = int(motion_sensor_config["TRIG_THRESH"])
@@ -96,6 +97,11 @@ class MotionPir:
     def get_state(self):
         """Return the state of armed / 'alarm system' """
         return self.armed
+
+    def led_on(self):
+        """Turn on an indicator LED when motion is really triggered"""
+        while True:
+            GPIO.output(self.led_pin, GPIO.HIGH)
 
     def _reset_trigger_times(self) -> Deque[float]:
         """Reset all elements in trigger_times to -1.
