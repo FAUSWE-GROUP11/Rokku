@@ -2,7 +2,7 @@ import configparser
 import json
 import logging
 from logging import config
-from multiprocessing import Queue
+from multiprocessing import JoinableQueue
 from time import sleep
 
 import RPi.GPIO as GPIO
@@ -50,7 +50,7 @@ def main():
     pub, msg_q, listen_proc = set_up_pub_sub(prefix, "out_to_in", "in_to_out")
     logger.info("Publisher and subscriber set up successfully!")
 
-    motion_queue = Queue()  # set up queue for motion sensor
+    motion_queue = JoinableQueue()  # set up queue for motion sensor
 
     # set up flag for camera
     camera_flags = {"livestream_on": False, "recording_on": False}
@@ -77,6 +77,13 @@ def main():
                     record.record(pub, cam, camera_flags)
                 elif identifier == "livestream":
                     livestream.livestream(pub, cam, camera_flags)
+                # user acknowledged motion has been detected.
+                elif identifier == "motion_ackd":
+                    motion_queue.task_done()  # unblock and resume motion sensor
+
+            if not motion_queue.empty():  # motion detected, notify user
+                motion_queue.get()
+                pub.publish(json.dumps(["motion_detected", True]))
             sleep(1)
     except (KeyboardInterrupt, SystemExit):
         logger.warning("Termination signal sensed.")

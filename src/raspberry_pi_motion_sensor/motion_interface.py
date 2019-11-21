@@ -32,6 +32,7 @@ class MotionPir:
         self.queue = queue
         self.channel_num = channel_num
         GPIO.setup(self.channel_num, GPIO.IN)
+        GPIO.setup(12, GPIO.OUT)
 
         self.interval = int(config["INTERVAL"])
         self.trig_thresh = int(config["TRIG_THRESH"])
@@ -53,9 +54,11 @@ class MotionPir:
         self.trigger_times.append(curr_time)
         if earliest_time > 0 and curr_time - earliest_time < self.interval:
             # Considered a real trigger
-            self.queue.put(True)
             print("Movement Detected")
             GPIO.output(12, GPIO.HIGH)  # turn on LED
+            self.queue.put(True)
+            self.queue.join()  # block until user acknowledges it
+
         GPIO.output(12, GPIO.LOW)  # turn off LED
 
     def set_armed(self):
