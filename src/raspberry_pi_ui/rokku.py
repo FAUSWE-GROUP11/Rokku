@@ -85,7 +85,10 @@ class Main:
         window.connect("delete-event", self.close_application)
         window.show_all()
 
-        # set up motion sensor alert
+        # Set up motion sensor alert
+        # Must use a separate process to handle alert.alert, because it contains
+        # a forever loop, which if directly invoked in UI, would cause failure
+        # when UI is closed.
         self.alert_proc = Process(
             target=alert.alert,
             name="Alert User",

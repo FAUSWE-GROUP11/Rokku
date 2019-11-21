@@ -1,14 +1,15 @@
 import json
 
-from src.raspberry_pi_motion_sensor.motion_interface import MotionPir
 
+def motion(pub, flag, sensor) -> None:
+    """Behavior that will arm or disarm the motion sensor.
 
-def motion(pub, flag, queue, motion_sensor_config) -> None:
-    """Behavior that will arm or disarm the motion sensor."""
-    # channel 23 is GPIO23 is PIN16
-    sensor = MotionPir(queue, 23, motion_sensor_config)
-    if flag:
+    :param pub:     MQTT publisher object.
+    :param flag:    True to turn on motion sensor, False to turn off
+    :param sensor:  MotionPIR sensor object.
+    """
+    if flag:  # turn on motion sensor
         sensor.set_armed()
-    else:
+    else:  # turn off motion sensor
         sensor.set_disarmed()
     pub.publish(json.dumps(["motion", sensor.get_state()]))

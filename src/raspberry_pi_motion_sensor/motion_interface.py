@@ -2,8 +2,8 @@ import logging
 import os
 from collections import deque
 from logging import config
-from multiprocessing import Process
 from time import sleep, time
+from typing import Deque
 
 import RPi.GPIO as GPIO
 import yaml
@@ -47,10 +47,7 @@ class MotionPir:
 
         self.interval = int(motion_sensor_config["INTERVAL"])
         self.trig_thresh = int(motion_sensor_config["TRIG_THRESH"])
-        # data structure to compute the time period needed to produce the
-        # most recent `self.trig_thresh` number of triggers. If the time period
-        # is smaller than `self.interval`, we consider that as a real trigger.
-        self.trigger_times = deque([-1.0] * (self.trig_thresh - 1))
+        self.trigger_times = None
 
         # set up logger
         with open(
@@ -59,8 +56,6 @@ class MotionPir:
             log_config = yaml.safe_load(f_obj.read())
             config.dictConfig(log_config)
         self.logger = logging.getLogger("MOTION_SENSOR")
-
-        self.triggered = False  # flag
 
     def motion_callback(self, channel):
         """channel argument is for receiving GPIO input.
@@ -77,15 +72,7 @@ class MotionPir:
         if earliest_time > 0 and curr_time - earliest_time < self.interval:
             # Considered a real trigger
             self.logger.info("Motion Detected")
-            led_proc = Process(target=led_on, args=())  # turn on LED
-            led_proc.start()
-            self.triggered = True
             self.queue.put(True)
-            self.queue.join()  # block until user acknowledges it
-
-        if self.triggered:  # turn off LED
-            led_proc.terminate()
-            self.triggered = False
 
     def set_armed(self):
         """Sets Object state to True 'armed'.
@@ -95,6 +82,7 @@ class MotionPir:
         to a rising edge
         """
         self.armed = True
+        self.trigger_times = self._reset_trigger_times()
         GPIO.add_event_detect(
             self.channel_num, GPIO.RISING, callback=self.motion_callback
         )
@@ -112,6 +100,16 @@ class MotionPir:
     def get_state(self):
         """Return the state of armed / 'alarm system' """
         return self.armed
+
+    def _reset_trigger_times(self) -> Deque[float]:
+        """Reset all elements in trigger_times to -1.
+
+        Returned value is a data structure to compute the time period needed to
+        produce the most recent `self.trig_thresh` number of triggers. If the
+        time period is smaller than `self.interval`, we consider that as a real
+        trigger.
+        """
+        return deque([-1.0] * (self.trig_thresh - 1))
 
 
 # TODO Decide where board mode setup belongs

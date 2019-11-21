@@ -2,7 +2,7 @@ import configparser
 import json
 import logging
 from logging import config
-from multiprocessing import JoinableQueue
+from multiprocessing import Queue
 from time import sleep
 
 import RPi.GPIO as GPIO
@@ -23,6 +23,7 @@ from src.raspberry_pi_driver.utility import (
     hash_prefix,
 )
 from src.raspberry_pi_intercom.togglemute_button import start_togglemute_proc
+from src.raspberry_pi_motion_sensor.motion_interface import MotionPir
 
 # set up logger
 with open("logger_config.yaml", "r") as f:
@@ -50,11 +51,14 @@ def main():
     pub, msg_q, listen_proc = set_up_pub_sub(prefix, "out_to_in", "in_to_out")
     logger.info("Publisher and subscriber set up successfully!")
 
-    motion_queue = JoinableQueue()  # set up queue for motion sensor
-
     # set up flag for camera
     camera_flags = {"livestream_on": False, "recording_on": False}
     cam = CameraInterface()  # Create camera object
+
+    # set up motion sensor
+    motion_queue = Queue()  # set up queue for motion sensor
+    motion_pin = 23  # channel 23 (GPIO23) is connected to motion sensor
+    sensor = MotionPir(motion_queue, motion_pin, motion_sensor_config)
 
     # Run mute button in separate process
     togglemute_proc = start_togglemute_proc(logger)
@@ -70,20 +74,25 @@ def main():
                 elif identifier == "intercom":
                     intercom.intercom(pub, flag, intercom_config, logger)
                 elif identifier == "motion":
-                    motion.motion(
-                        pub, flag, motion_queue, motion_sensor_config
-                    )
+                    motion.motion(pub, flag, sensor)
                 elif identifier == "record":
                     record.record(pub, cam, camera_flags)
                 elif identifier == "livestream":
                     livestream.livestream(pub, cam, camera_flags)
-                # user acknowledged motion has been detected.
                 elif identifier == "motion_ackd":
-                    motion_queue.task_done()  # unblock and resume motion sensor
+                    # User acknowledged motion has been detected.
+                    # Resume motion sensor
+                    sensor.set_armed()
 
-            if not motion_queue.empty():  # motion detected, notify user
+            if not motion_queue.empty():  # motion detected
                 motion_queue.get()
-                pub.publish(json.dumps(["motion_detected", True]))
+                pub.publish(
+                    json.dumps(["motion_detected", True])
+                )  # alert user
+                # Halt motion sensor as user deals with alert without explicitly
+                # change rpi_in's UI (use should NOT be able to interact with
+                # UI when the alert is on)
+                sensor.set_disarmed()
             sleep(1)
     except (KeyboardInterrupt, SystemExit):
         logger.warning("Termination signal sensed.")
