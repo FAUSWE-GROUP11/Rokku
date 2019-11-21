@@ -48,3 +48,6 @@ loggers:
   VideoButton:
     level: DEBUG
     handlers: [file, console]
+  MOTION_SENSOR:
+    level: DEBUG
+    handlers: [file, console]

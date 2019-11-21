@@ -1,7 +1,11 @@
+import logging
+import os
 from collections import deque
+from logging import config
 from time import time
 
 import RPi.GPIO as GPIO
+import yaml
 
 
 class MotionPir:
@@ -13,7 +17,7 @@ class MotionPir:
     other objects. when armed.
     """
 
-    def __init__(self, queue, channel_num, config):
+    def __init__(self, queue, channel_num, motion_sensor_config):
         """ When MotionPir is created it will be inactive, self.armed set to
         false.
 
@@ -34,12 +38,20 @@ class MotionPir:
         GPIO.setup(self.channel_num, GPIO.IN)
         GPIO.setup(12, GPIO.OUT)
 
-        self.interval = int(config["INTERVAL"])
-        self.trig_thresh = int(config["TRIG_THRESH"])
+        self.interval = int(motion_sensor_config["INTERVAL"])
+        self.trig_thresh = int(motion_sensor_config["TRIG_THRESH"])
         # data structure to compute the time period needed to produce the
         # most recent `self.trig_thresh` number of triggers. If the time period
         # is smaller than `self.interval`, we consider that as a real trigger.
         self.trigger_times = deque([-1.0] * (self.trig_thresh - 1))
+
+        # set up logger
+        with open(
+            f"{os.path.dirname(__file__)}/../..logger_config.yaml", "r"
+        ) as f_obj:
+            log_config = yaml.safe_load(f_obj.read())
+            config.dictConfig(log_config)
+        self.logger = logging.getLogger("MOTION_SENSOR")
 
     def motion_callback(self, channel):
         """channel argument is for receiving GPIO input.
@@ -54,7 +66,7 @@ class MotionPir:
         self.trigger_times.append(curr_time)
         if earliest_time > 0 and curr_time - earliest_time < self.interval:
             # Considered a real trigger
-            print("Movement Detected")
+            self.logger.info("Motion Detected")
             GPIO.output(12, GPIO.HIGH)  # turn on LED
             self.queue.put(True)
             self.queue.join()  # block until user acknowledges it
@@ -68,28 +80,24 @@ class MotionPir:
         manage callback on second thread to run motion_callback() in response
         to a rising edge
         """
-
         self.armed = True
         GPIO.add_event_detect(
             self.channel_num, GPIO.RISING, callback=self.motion_callback
         )
+        self.logger.info("Rokku ARMED: motion sensor ON")
 
     def set_disarmed(self):
         """Sets Object state to False 'disarmed'.
 
         and will stop callbacks from motion_pir by removing event detection.
         """
-
         self.armed = False
         GPIO.remove_event_detect(self.channel_num)
+        self.logger.info("Rokku DISARMED: motion sensor OFF")
 
     def get_state(self):
-        """Returnss the state of armed / 'alarm system' """
-
-        if self.armed:
-            return True
-        else:
-            return False
+        """Return the state of armed / 'alarm system' """
+        return self.armed
 
 
 # TODO Decide where board mode setup belongs
