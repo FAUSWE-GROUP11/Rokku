@@ -41,7 +41,7 @@ class MotionPir:
         GPIO.setup(self.channel_num, GPIO.IN)
         GPIO.setup(12, GPIO.OUT)
 
-        self.interval = int(motion_sensor_config["INTERVAL"])
+        self.interval = float(motion_sensor_config["INTERVAL"])
         self.trig_thresh = int(motion_sensor_config["TRIG_THRESH"])
         self.trigger_times = None
 
