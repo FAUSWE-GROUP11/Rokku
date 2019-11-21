@@ -119,13 +119,10 @@ class ArmButton(Button):
         appear. User must acknowledges the alert in order to get back to the
         regular UI
         """
-        alert_msg = wait_msg(
-            "motion_detected", self.logger, self.msg_q, timeout=10000
-        )
+        wait_msg("motion_detected", self.logger, self.msg_q, timeout=10000)
         # play alert sound
 
         # show pop-up window
 
         # for testing purpose only
-        if not alert_msg:
-            self.pub.publish(json.dumps(["motion_ackd", True]))
+        self.pub.publish(json.dumps(["motion_ackd", True]))

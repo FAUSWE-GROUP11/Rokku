@@ -61,6 +61,7 @@ class MotionPir:
         self.logger = logging.getLogger("MOTION_SENSOR")
 
         self.led_proc = Process(target=led_on, args=())  # turn on LED
+        self.triggered = False  # flag
 
     def motion_callback(self, channel):
         """channel argument is for receiving GPIO input.
@@ -78,10 +79,11 @@ class MotionPir:
             # Considered a real trigger
             self.logger.info("Motion Detected")
             self.led_proc.start()
+            self.triggered = True
             self.queue.put(True)
             self.queue.join()  # block until user acknowledges it
 
-        if self.led_proc is not None:
+        if self.triggered:
             self.led_proc.terminate()
         GPIO.output(12, GPIO.LOW)  # turn off LED
 
