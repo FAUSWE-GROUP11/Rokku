@@ -67,6 +67,8 @@ class ArmButton(Button):
                 # motion_sensor is 'armed' on rpi_out: turn button to red
                 self.logger.info("Motion sensor ARMED on rpi_out")
                 set_button_property(self, "red", "Disarm")
+                self.alert()
+                print("*** Shouldn't reach here ***")
             else:  # A message from rpi_out was not recieved
                 self.logger.error(
                     f"Motion status: rpi_in = {self.armed}, rpi_out = {self.armed_out}"
@@ -109,3 +111,19 @@ class ArmButton(Button):
                 #########################
                 set_button_property(self, "red", "Disarm")
                 self.armed = True
+
+    def alert(self):
+        """Alert user when motion sensor is reallly triggered.
+
+        An alerting sound will be played for 30 seconds and a pop-up window will
+        appear. User must acknowledges the alert in order to get back to the
+        regular UI
+        """
+        alert_msg = wait_msg("motion_detected", self.logger, self.msg_q)
+        # play alert sound
+
+        # show pop-up window
+
+        # for testing purpose only
+        if not alert_msg:
+            self.pub.publish(json.dumps(["motion_ackd", True]))

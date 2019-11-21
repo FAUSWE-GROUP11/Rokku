@@ -2,10 +2,17 @@ import logging
 import os
 from collections import deque
 from logging import config
-from time import time
+from multiprocessing import Process
+from time import sleep, time
 
 import RPi.GPIO as GPIO
 import yaml
+
+
+def led_on():
+    while True:
+        GPIO.output(12, GPIO.HIGH)
+        sleep(0.1)
 
 
 class MotionPir:
@@ -47,11 +54,13 @@ class MotionPir:
 
         # set up logger
         with open(
-            f"{os.path.dirname(__file__)}/../..logger_config.yaml", "r"
+            f"{os.path.dirname(__file__)}/../../logger_config.yaml", "r"
         ) as f_obj:
             log_config = yaml.safe_load(f_obj.read())
             config.dictConfig(log_config)
         self.logger = logging.getLogger("MOTION_SENSOR")
+
+        self.led_proc = Process(target=led_on, args=())  # turn on LED
 
     def motion_callback(self, channel):
         """channel argument is for receiving GPIO input.
@@ -64,13 +73,15 @@ class MotionPir:
         curr_time = time()
         earliest_time = self.trigger_times.popleft()
         self.trigger_times.append(curr_time)
+        print("*** PIR Triggered ***")
         if earliest_time > 0 and curr_time - earliest_time < self.interval:
             # Considered a real trigger
             self.logger.info("Motion Detected")
-            GPIO.output(12, GPIO.HIGH)  # turn on LED
+            self.led_proc.start()
             self.queue.put(True)
             self.queue.join()  # block until user acknowledges it
 
+        self.led_proc.kill()
         GPIO.output(12, GPIO.LOW)  # turn off LED
 
     def set_armed(self):
