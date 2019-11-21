@@ -26,7 +26,6 @@ class Main:
 
     def __init__(self, pub, msg_q, intercom_config):
         """Adds the .glade file to draw out the application.
-
         Also set up css, logger, button, and activate window.
 
         :param pub:             MQTT publisher object
@@ -84,7 +83,6 @@ class Main:
 
     def close_application(self, widget, something):
         """Turn off UI.
-
         This will be called on closing the Rokku application
         Should close up any processes that have been started when first loading Rokku
         """
