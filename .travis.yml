@@ -11,6 +11,7 @@ install:
     libcairo2-dev
     libgirepository1.0-dev
     gir1.2-gtk-3.0
+    gir1.2-webkit-3.0
     xvfb
   - pip3 install -r requirements.txt
   - pip3 install flake8

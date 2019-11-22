@@ -5,6 +5,7 @@ import os
 
 import yaml
 
+from src.raspberry_pi_ui import embedded_yt
 from src.raspberry_pi_ui.buttons.button import Button
 
 # from src.raspberry_pi_ui.utility import set_button_property, wait_msg
@@ -12,7 +13,6 @@ from src.raspberry_pi_ui.buttons.button import Button
 
 class VideoButton(Button):
     """A wrapper class representing the talk button widget on UI.
-
     Inherit from parent class Button
     """
 
@@ -21,6 +21,7 @@ class VideoButton(Button):
         super().__init__(button, pub, msg_q, "Video")
 
         # unique functionality flags
+        self.yt_videos_link = None
 
         # set up logger
         with open(
@@ -38,4 +39,8 @@ class VideoButton(Button):
         #########################
         #   Missing code        #
         #########################
+
+        # Pass YT Video Playlist Link
+        yt_window = embedded_yt.EmbeddedYT(self.yt_videos_link, "Videos")
+        yt_window.run()
         pass
