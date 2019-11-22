@@ -2,7 +2,7 @@ import configparser
 import json
 import logging
 from logging import config
-from multiprocessing import Queue
+from multiprocessing import Process, Queue
 from time import sleep
 
 import RPi.GPIO as GPIO
@@ -21,17 +21,16 @@ from src.raspberry_pi_driver.utility import (
     clean_up,
     command_line_parser,
     hash_prefix,
+    terminate_proc,
 )
 from src.raspberry_pi_intercom.togglemute_button import start_togglemute_proc
+from src.raspberry_pi_motion_sensor.motion_interface import MotionPir
 
 # set up logger
 with open("logger_config.yaml", "r") as f:
     log_config = yaml.safe_load(f.read())
     config.dictConfig(log_config)
 logger = logging.getLogger("RPI_OUT")
-
-# set up RPi board
-GPIO.setmode(GPIO.BCM)  # use GPIO.setmode(GPIO.board) for using pin numbers
 
 
 def main():
@@ -43,17 +42,22 @@ def main():
     app_config = configparser.ConfigParser()
     app_config.read("./app_config.ini")
     intercom_config = app_config["mumble"]
+    motion_sensor_config = app_config["motion_sensor"]
 
     # set up pub sub
     logger.info("Setting up publisher and subscriber")
     pub, msg_q, listen_proc = set_up_pub_sub(prefix, "out_to_in", "in_to_out")
     logger.info("Publisher and subscriber set up successfully!")
 
-    motion_queue = Queue()  # set up queue for motion sensor
-
     # set up flag for camera
     camera_flags = {"livestream_on": False, "recording_on": False}
     cam = CameraInterface()  # Create camera object
+
+    # set up motion sensor
+    motion_queue = Queue()  # set up queue for motion sensor
+    motion_pin = 23  # channel 23 (GPIO23) is connected to motion sensor
+    sensor = MotionPir(motion_queue, motion_pin, motion_sensor_config)
+    led_proc = None  # placeholder for process lighting up LED.
 
     # Run mute button in separate process
     togglemute_proc = start_togglemute_proc(logger)
@@ -69,11 +73,30 @@ def main():
                 elif identifier == "intercom":
                     intercom.intercom(pub, flag, intercom_config, logger)
                 elif identifier == "motion":
-                    motion.motion(pub, flag, motion_queue)
+                    motion.motion(pub, flag, sensor)
                 elif identifier == "record":
                     record.record(pub, cam, camera_flags)
                 elif identifier == "livestream":
                     livestream.livestream(pub, cam, camera_flags)
+                elif identifier == "motion_ackd":
+                    # User acknowledged motion has been detected.
+                    # Resume motion sensor
+                    sensor.set_armed()
+                    terminate_proc(led_proc, logger)
+
+            if not motion_queue.empty():  # motion detected
+                motion_queue.get()
+                pub.publish(
+                    json.dumps(["motion_detected", True])
+                )  # alert user
+                # Halt motion sensor as user deals with alert without explicitly
+                # change rpi_in's UI (use should NOT be able to interact with
+                # UI when the alert is on)
+                sensor.set_disarmed()
+                led_proc = Process(
+                    target=sensor.led_on, name="LED proc", args=()
+                )
+                led_proc.start()
             sleep(1)
     except (KeyboardInterrupt, SystemExit):
         logger.warning("Termination signal sensed.")
