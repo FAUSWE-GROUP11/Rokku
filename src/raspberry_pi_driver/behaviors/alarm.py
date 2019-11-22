@@ -5,9 +5,9 @@ from src.raspberry_pi_alarm.buzzer_interface import Buzzer
 
 def alarm(pub, flag) -> None:
     """Behavior that will set off alarm on rpi_out."""
-    alarm = Buzzer(24)
+    alarm_ = Buzzer(24)
     if flag:
-        alarm.sound()
+        alarm_.sound()
     else:
-        alarm.silence()
-    pub.publish(json.dumps(["alarm", alarm.get_state()]))
+        alarm_.silence()
+    pub.publish(json.dumps(["alarm", alarm_.get_state()]))
