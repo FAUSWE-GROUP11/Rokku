@@ -1,4 +1,5 @@
 import datetime
+import os
 import socket
 import subprocess
 from time import sleep
@@ -20,7 +21,8 @@ class CameraInterface(object):
         resolution=2,
         save_location="/home/pi/Videos/",
         yt_livestream_link="https://youtu.be/t48LW4J8b4A",
-        yt_playlist_link="https://www.youtube.com/playlist?list=PLTdMMnsiEwSnKNWdLlAEJNiyHgG02ECXN",
+        yt_playlist_link="https://youtube.com/playlist?list=PLTdMMnsiEwSnKNWdLlAEJNiyHgG02ECXN",
+        key="6a8u-vpvr-er4h-e22h",
     ):
 
         if isinstance(video_length, float) or isinstance(video_length, int):
@@ -51,18 +53,24 @@ class CameraInterface(object):
         else:
             # __name__ refers to the caller (main)
             raise ValueError(
-                __name__ + " ERROR: save_location argument is invalid."
+                __name__ + " ERROR: yt_livestream argument is invalid."
             )
         if isinstance(yt_playlist_link, str):
             self.yt_playlist_link = yt_playlist_link
         else:
             # __name__ refers to the caller (main)
             raise ValueError(
-                __name__ + " ERROR: save_location argument is invalid."
+                __name__ + " ERROR: yt_playlist argument is invalid."
             )
+        if isinstance(key, str):
+            self.key = key
+        else:
+            # __name__ refers to the caller (main)
+            raise ValueError(__name__ + " ERROR: key argument is invalid.")
 
         self.modes = [(1920, 1080), (1296, 730), (640, 480)]
         self.last_recording = ""
+        self.path = os.path.dirname(__file__)
 
     """Just takes a simple picture. Future iterations will pass a
     variable to determine resolution and return file location.
@@ -104,6 +112,7 @@ class CameraInterface(object):
         camera.start_recording(filename)
         camera.wait_recording(self.video_length)
         camera.stop_recording()
+        camera.close()
         return filename
 
     """This starts the mjpg streamer program using a shell script.
@@ -175,11 +184,11 @@ class CameraInterface(object):
     predetermined youtube channel. Handled by raspivid in a shell
     script."""
 
-    def start_yt_stream(self, key):
+    def start_yt_stream(self):
         # String of start stream shell script
         cmd = (
             "raspivid -o - -t 0 -vf -hf -fps 24 -w 640 -h 480 -b 5000000 | ffmpeg -re -ar 44100 -ac 2 -acodec pcm_s16le -f s16le -ac 2 -i /dev/zero -f h264 -i - -vcodec copy -acodec aac -ab 128k -g 50 -strict experimental -f flv rtmp://a.rtmp.youtube.com/live2/"
-            + key
+            + self.key
         )
 
         # Object to start and capture the shell command
@@ -190,7 +199,6 @@ class CameraInterface(object):
         output = output.split("\\n")
         for i in range(1, len(output) - 1, 1):
             print(output[i])
-
         return self.yt_livestream_link
 
     """This function returns void and turns off the youtube livestream
@@ -209,6 +217,9 @@ class CameraInterface(object):
         output = output.split("\\n")
         for i in range(1, len(output) - 1, 1):
             print(output[i])
+        # Forcefully free up camera
+        camera = PiCamera()
+        camera.close()
 
     """This function returns void and sends a command line instruction to
     upload a video from the given filepath."""
@@ -216,7 +227,7 @@ class CameraInterface(object):
     def upload_to_yt(self, filepath):
         # Making the command line script
         cmd = (
-            'python upload_video.py --file="'
+            f'python {self.path}/upload_video.py --file="'
             + filepath
             + '"'
             + ' --title="Date: '
@@ -292,6 +303,12 @@ class CameraInterface(object):
 
     def set_yt_playlist_link(self, value):
         self.yt_playlist_link = value
+
+    """Returns void, and accepts a string to replace the object's
+    key."""
+
+    def set_key(self, value):
+        self.key = value
 
     # "Private" classes go here
     """Returns string representation of camera_interface"""

@@ -17,8 +17,8 @@ def record(pub, cam, camera_flags) -> None:
         filepath = cam.record_video()
         # Upload to YouTube
         cam.upload_to_yt(filepath)
-        # Sleep thread for 5 seconds
-        sleep(5)
+        # Sleep thread for 2 seconds
+        sleep(2)
         # Once recording is over and static url to playlist is given
         pub.publish(
             json.dumps(["yt_playlist_link", cam.get_yt_playlist_link()])

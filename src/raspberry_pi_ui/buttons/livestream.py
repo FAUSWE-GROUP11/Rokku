@@ -75,7 +75,7 @@ class LivestreamButton(Button):
                         #########################
                 except IndexError:  # no message received
                     self.logger.error(
-                        f"The camera is running, Mqtt broke or the YouTube Api broke. Live Stream status: rpi_in = {self.livestream}"
+                        f"The camera is running, Mqtt broke or the YouTube Api broke. Live Stream status: rpi_in = {self.livestream}1"
                     )
                     # Turn livestream off
                     self.pub.publish(json.dumps(["livestream", True]))
@@ -89,7 +89,7 @@ class LivestreamButton(Button):
                     #########################
             elif self.livestream is None:
                 self.logger.error(
-                    f"The camera is running, Mqtt broke or the YouTube Api broke. Live Stream status: rpi_in = {self.livestream}"
+                    f"The camera is running, Mqtt broke or the YouTube Api broke. Live Stream status: rpi_in = {self.livestream}2"
                 )
                 # display message to wait for recording to be done
                 #########################
@@ -107,7 +107,7 @@ class LivestreamButton(Button):
         except IndexError:  # no message received
             # Log event
             self.logger.error(
-                f"The camera is running, Mqtt broke or the YouTube Api broke. Live Stream status: rpi_in = {self.livestream}"
+                f"The camera is running, Mqtt broke or the YouTube Api broke. Live Stream status: rpi_in = {self.livestream}3"
             )
             # display message saying to try again later
             #########################
