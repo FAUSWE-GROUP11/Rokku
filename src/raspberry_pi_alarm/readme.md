@@ -1,6 +1,9 @@
 # Buzzer Module
 
 ----
+<img src="https://github.com/CurtisWoodworth/Rokku/blob/CurtisWoodworth/AlarmReadme/src/raspberry_pi_alarm/images/AlarmBuzzer.jpg" width="300">
+
+Link to purchase similar if not the same buzzer: [Passive Low Level Trigger Buzzer](https://www.amazon.com/ARCELI-3-3-5V-Passive-Trigger-Arduino/dp/B07MPYWVGD/ref=sr_1_3?keywords=buzzer+module&qid=1574466115&s=electronics&sr=1-3)
 
 ## Installation/Setup
 
