@@ -5,7 +5,7 @@ import os
 
 import yaml
 
-from src.rasberry_pi_ui import embedded_yt
+from src.raspberry_pi_ui import embedded_yt
 from src.raspberry_pi_ui.buttons.button import Button
 from src.raspberry_pi_ui.utility import set_button_property, wait_msg
 
