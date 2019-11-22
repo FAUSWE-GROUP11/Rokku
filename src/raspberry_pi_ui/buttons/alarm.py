@@ -5,6 +5,7 @@ import os
 
 import yaml
 
+from src.raspberry_pi_ui import message_box
 from src.raspberry_pi_ui.buttons.button import Button
 from src.raspberry_pi_ui.utility import set_button_property, wait_msg
 
@@ -64,9 +65,9 @@ class AlarmButton(Button):
                     f"Alarm status: rpi_in = {self.alarm_sounding}, rpi_out = {self.alarm_sounding_out}"
                 )
                 # display message box with error
-                #########################
-                #   Missing code        #
-                #########################
+                message = message_box.MessageBox("title", "message")
+                message.run()
+
                 set_button_property(self, "blue", "Sound Alarm")
                 self.alarm_sounding = False
 
@@ -98,8 +99,8 @@ class AlarmButton(Button):
                     f"Alarm status: rpi_in = {self.alarm_sounding}, rpi_out = {self.alarm_sounding_out}"
                 )
                 # display message box with error
-                #########################
-                #   Missing code        #
-                #########################
+                message = message_box.MessageBox("title", "message")
+                message.run()
+
                 set_button_property(self, "red", "Silence")
                 self.alarm_sounding = True

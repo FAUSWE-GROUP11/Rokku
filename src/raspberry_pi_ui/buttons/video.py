@@ -5,7 +5,7 @@ import os
 
 import yaml
 
-from src.raspberry_pi_ui import embedded_yt
+from src.raspberry_pi_ui import embedded_yt, message_box
 from src.raspberry_pi_ui.buttons.button import Button
 
 # from src.raspberry_pi_ui.utility import set_button_property, wait_msg
@@ -39,6 +39,10 @@ class VideoButton(Button):
         #########################
         #   Missing code        #
         #########################
+
+        # display message box with error
+        message = message_box.MessageBox("title", "message")
+        message.run()
 
         # Pass YT Video Playlist Link
         yt_window = embedded_yt.EmbeddedYT(self.yt_videos_link, "Videos")

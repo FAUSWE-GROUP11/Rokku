@@ -15,7 +15,7 @@ repos:
         additional_dependencies: [toml]
         # need to exclude files here as isort in pre-commit hook doesn't seem
         # to look for config in pyproject.toml
-        exclude: (rokku\.py|raspberry_pi_camera\/tests\/|raspberry_pi_motion_sensor\/tests\/|raspberry_pi_alarm\/tests\/|raspberry_pi_ui\/utility\.py|raspberry_pi_intercom\/mumble\.py|embedded_yt\.py)
+        exclude: (rokku\.py|raspberry_pi_camera\/tests\/|raspberry_pi_motion_sensor\/tests\/|raspberry_pi_alarm\/tests\/|raspberry_pi_ui\/utility\.py|raspberry_pi_intercom\/mumble\.py|embedded_yt\.py|message_box\.py)
 -   repo: https://github.com/psf/black
     rev: stable
     hooks:
