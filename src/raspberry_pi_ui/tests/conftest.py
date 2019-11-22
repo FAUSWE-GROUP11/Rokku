@@ -7,7 +7,7 @@ import pytest
 import yaml
 
 from src.pi_to_pi.utility import set_up_pub_sub
-from src.raspberry_pi_driver.utility import hash_prefix, terminate_proc
+from src.raspberry_pi_driver.utility import hash_prefix
 from src.raspberry_pi_ui.rokku import Main
 
 
@@ -28,7 +28,8 @@ def mqtt_out():
     yield mqtt_out
     print("tear down mqtt_out")
     _, _, out_listen_proc = mqtt_out
-    terminate_proc(out_listen_proc)
+    out_listen_proc.terminate()
+    out_listen_proc.join()
 
 
 @pytest.fixture(scope="package")
@@ -46,7 +47,8 @@ def button():
     yield ui.talk_button
     print("tear down button via UI")
     ui.close_application("", "")
-    terminate_proc(in_listen_proc)
+    in_listen_proc.terminate()
+    in_listen_proc.join()
 
 
 @pytest.fixture(scope="package")
