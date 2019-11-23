@@ -5,6 +5,7 @@ import os
 
 import yaml
 
+from src.raspberry_pi_ui import message_box
 from src.raspberry_pi_ui.buttons.button import Button
 from src.raspberry_pi_ui.utility import set_button_property, wait_msg
 
@@ -64,9 +65,8 @@ class RecordButton(Button):
                     self.recording = False
                     self.logger.error(f"Mqtt broke, no video recorded...")
                     # display message box with error
-                    #########################
-                    #   Missing code        #
-                    #########################
+                    message = message_box.MessageBox("title", "message")
+                    message.run()
             if self.recording:
                 # Since rpi_out sent back true it should be recording now
                 self.logger.info("rpi_out is recording now...")
@@ -86,9 +86,8 @@ class RecordButton(Button):
                         f"Mqtt broke, no YouTube link recieved..."
                     )
                     # display message box with error
-                    #########################
-                    #   Missing code        #
-                    #########################
+                    message = message_box.MessageBox("title", "message")
+                    message.run()
             # Does not catch if junk str was sent back
             if type(self.yt_playlist_link) == str and self.recording:
                 self.logger.info("rpi_out recorded a video succesfully...")
@@ -97,9 +96,8 @@ class RecordButton(Button):
                     f"The camera is running or the YouTube Api broke. No video was recorded! Recording status: rpi_in = {self.recording}"
                 )
                 # display message box with error
-                #########################
-                #   Missing code        #
-                #########################
+                message = message_box.MessageBox("title", "message")
+                message.run()
             # Clean up
             self.yt_playlist_link = None
             set_button_property(self, "blue", "Record")
