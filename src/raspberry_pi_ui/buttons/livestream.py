@@ -5,7 +5,7 @@ import os
 
 import yaml
 
-from src.raspberry_pi_ui import embedded_yt
+from src.raspberry_pi_ui import embedded_yt, message_box
 from src.raspberry_pi_ui.buttons.button import Button
 from src.raspberry_pi_ui.utility import set_button_property, wait_msg
 
@@ -86,17 +86,15 @@ class LivestreamButton(Button):
                     # Log event
                     self.logger.info("Livestream is off...")
                     # display message to try again later
-                    #########################
-                    #   Missing code        #
-                    #########################
+                    message = message_box.MessageBox("title", "message")
+                    message.run()
             elif self.livestream is None:
                 self.logger.error(
                     f"The camera is running, Mqtt broke or the YouTube Api broke. Live Stream status: rpi_in = {self.livestream}"
                 )
                 # display message to wait for recording to be done
-                #########################
-                #   Missing code        #
-                #########################
+                message = message_box.MessageBox("title", "message")
+                message.run()
             else:
                 # Log event
                 self.logger.info("Turned off rpi_out livestream...")
@@ -112,6 +110,5 @@ class LivestreamButton(Button):
                 f"The camera is running, Mqtt broke or the YouTube Api broke. Live Stream status: rpi_in = {self.livestream}"
             )
             # display message saying to try again later
-            #########################
-            #   Missing code        #
-            #########################
+            message = message_box.MessageBox("title", "message")
+            message.run()

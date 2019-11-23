@@ -5,6 +5,7 @@ import os
 
 import yaml
 
+from src.raspberry_pi_ui import message_box
 from src.raspberry_pi_ui.buttons.button import Button
 from src.raspberry_pi_ui.utility import set_button_property, wait_msg
 
@@ -72,9 +73,9 @@ class ArmButton(Button):
                     f"Motion status: rpi_in = {self.armed}, rpi_out = {self.armed_out}"
                 )
                 # display message box with error
-                #########################
-                #   Missing code        #
-                #########################
+                message = message_box.MessageBox("title", "message")
+                message.run()
+
                 set_button_property(self, "blue", "Arm")
                 self.armed = False
 

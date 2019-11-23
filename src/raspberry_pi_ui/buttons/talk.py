@@ -6,6 +6,7 @@ import os
 import yaml
 
 from src.raspberry_pi_intercom import mumble
+from src.raspberry_pi_ui import message_box
 from src.raspberry_pi_ui.buttons.button import Button
 from src.raspberry_pi_ui.utility import set_button_property, wait_msg
 
@@ -90,9 +91,9 @@ class TalkButton(Button):
                     )
                 )
                 # display message box with error
-                #########################
-                #   Missing code        #
-                #########################
+                message = message_box.MessageBox("title", "message")
+                message.run()
+
                 self.rpi_in_intercom_on = not mumble.turn_off(self.logger)
                 self.rpi_out_intercom_on = False
                 set_button_property(self, "blue", "Talk")
