@@ -1,4 +1,5 @@
 import json
+import os
 from time import time
 from typing import Any, List
 from time import sleep
@@ -95,7 +96,7 @@ def play_notification_sound(duration: int, logger):
 
     :param logger: Logs when an audio message is played.
     """
-
+    audio_dir = os.getcwd() + "/static/audio/notify.wav"
     dur_param = "-d" + str(duration)
-    play = subprocess.run(["aplay", "-q", dur_param, "notify.wav"], check=True)
+    play = subprocess.run(["aplay", "-q", dur_param, audio_dir], check=True)
     logger.info(f"Notification sound: {play}")
