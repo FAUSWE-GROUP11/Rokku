@@ -4,7 +4,7 @@ from time import sleep
 
 
 def test_init(motion_sensor):
-    assert motion_sensor.channel_num == 23
+    assert motion_sensor.motion_pin == 23
 
 
 def test_init_2(motion_sensor):

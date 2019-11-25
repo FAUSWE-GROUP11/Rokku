@@ -56,7 +56,8 @@ def main():
     # set up motion sensor
     motion_queue = Queue()  # set up queue for motion sensor
     motion_pin = 23  # channel 23 (GPIO23) is connected to motion sensor
-    sensor = MotionPir(motion_queue, motion_pin, motion_sensor_config)
+    led_pin = 12  # GPIO12 is connected to motion sensor LED indicator
+    sensor = MotionPir(motion_queue, motion_pin, led_pin, motion_sensor_config)
     led_proc = None  # placeholder for process lighting up LED.
 
     # Run mute button in separate process
@@ -81,8 +82,8 @@ def main():
                 elif identifier == "motion_ackd":
                     # User acknowledged motion has been detected.
                     # Resume motion sensor
-                    sensor.set_armed()
                     terminate_proc(led_proc, logger)
+                    sensor.set_armed()
 
             if not motion_queue.empty():  # motion detected
                 motion_queue.get()

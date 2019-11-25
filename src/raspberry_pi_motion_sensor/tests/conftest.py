@@ -23,4 +23,5 @@ def motion_sensor():
     motion_sensor_config = app_config["motion_sensor"]
     motion_queue = Queue()
     motion_pin = 23
-    yield MotionPir(motion_queue, motion_pin, motion_sensor_config)
+    led_pin = 12
+    yield MotionPir(motion_queue, motion_pin, led_pin, motion_sensor_config)
