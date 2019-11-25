@@ -26,7 +26,7 @@ def togglemute(logger: logging.Logger) -> None:
 
     try:
         while True:
-            input_state = GPIO.input(16)
+            input_state = GPIO.input(input_pin)
             if input_state:  # input high, button released
                 GPIO.output(output_pin, GPIO.LOW)  # turn off LED
                 if not mute:

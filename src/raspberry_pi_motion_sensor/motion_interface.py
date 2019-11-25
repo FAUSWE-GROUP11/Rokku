@@ -18,7 +18,7 @@ class MotionPir:
     other objects. when armed.
     """
 
-    def __init__(self, queue, channel_num, motion_sensor_config):
+    def __init__(self, queue, motion_pin, led_pin, motion_sensor_config):
         """ When MotionPir is created it will be inactive, self.armed set to
         false.
 
@@ -27,19 +27,21 @@ class MotionPir:
         channel_num is the Broadcom SOC channel number used for input from the
         PIR sensor.
 
-        :param queue:       Notify rpi_out that a real motion trigger has been
-                            sensed.
-        :param channel_num: The GPIO pin connected to the PIR sensor.
-        :param config:      Configuration for motion sensor
+        :param queue:                   Notify rpi_out that a real motion
+                                        trigger has been sensed.
+        :param motion_pin:              The GPIO pin connected to the PIR
+                                        sensor.
+        :param led_pin:                 The GPIO pin connected to LED indicator.
+        :param motion_sensor_config:    Configuration for motion sensor
         """
 
         self.armed = False
         self.queue = queue
-        self.channel_num = channel_num
-        self.led_pin = 12
+        self.motion_pin = motion_pin
+        self.led_pin = led_pin
         # use GPIO.setmode(GPIO.board) for using pin numbers
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.channel_num, GPIO.IN)
+        GPIO.setup(self.motion_pin, GPIO.IN)
         GPIO.setup(self.led_pin, GPIO.OUT)
 
         self.interval = float(motion_sensor_config["INTERVAL"])
@@ -78,10 +80,11 @@ class MotionPir:
         manage callback on second thread to run motion_callback() in response
         to a rising edge
         """
+        GPIO.output(self.led_pin, GPIO.LOW)  # turn off LED
         self.armed = True
         self.trigger_times = self._reset_trigger_times()
         GPIO.add_event_detect(
-            self.channel_num, GPIO.RISING, callback=self.motion_callback
+            self.motion_pin, GPIO.RISING, callback=self.motion_callback
         )
         self.logger.info("Rokku ARMED: motion sensor ON")
 
@@ -91,7 +94,7 @@ class MotionPir:
         and will stop callbacks from motion_pir by removing event detection.
         """
         self.armed = False
-        GPIO.remove_event_detect(self.channel_num)
+        GPIO.remove_event_detect(self.motion_pin)
         self.logger.info("Rokku DISARMED: motion sensor OFF")
 
     def get_state(self):
