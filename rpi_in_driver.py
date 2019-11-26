@@ -28,6 +28,7 @@ def main():
     app_config = configparser.ConfigParser()
     app_config.read("./app_config.ini")
     intercom_config = app_config["mumble"]
+    video_config = app_config["video"]
 
     # set up pub sub
     logger.info("Setting up publisher and subscriber")
@@ -35,7 +36,7 @@ def main():
     logger.info("Publisher and subscriber set up successfully!")
     try:
         logger.info("Spinning up UI...")
-        rokku_ui = rokku.Main(pub, msg_q, intercom_config)
+        rokku_ui = rokku.Main(pub, msg_q, intercom_config, video_config)
         rokku_ui.run()
         logger.info("UI terminated.")
     except (KeyboardInterrupt, SystemExit):

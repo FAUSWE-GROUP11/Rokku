@@ -24,7 +24,7 @@ from src.raspberry_pi_ui.buttons import (
 class Main:
     """Class implemented to create the GUI."""
 
-    def __init__(self, pub, msg_q, intercom_config):
+    def __init__(self, pub, msg_q, intercom_config, video_config):
         """Adds the .glade file to draw out the application.
         Also set up css, logger, button, and activate window.
 
@@ -32,6 +32,7 @@ class Main:
         :param msg_q:           A queue on MQTT subscriber object to listen to
                                 msg sent from rpi_out.
         :param intercom_config: Config to connect to a mumble client.
+        :param video_config:    Config for recording video and livestream.
         """
         self.builder = gtk.Builder()
         self.builder.add_from_file(f"{os.path.dirname(__file__)}/rokku.glade")
@@ -76,7 +77,10 @@ class Main:
             camera_flags,
         )
         self.video_button = video.VideoButton(
-            self.builder.get_object("videoButton"), pub, msg_q
+            self.builder.get_object("videoButton"),
+            pub,
+            msg_q,
+            video_config["yt_playlist_link"],
         )
         self.alarm_button = alarm.AlarmButton(
             self.builder.get_object("soundAlarmButton"), pub, msg_q

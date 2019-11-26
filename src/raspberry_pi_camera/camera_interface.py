@@ -15,15 +15,7 @@ class CameraInterface(object):
     using resolution mode 2 or 1 as 0 puts strain on the cameraand reduces
     FPS considerbly."""
 
-    def __init__(
-        self,
-        video_length=30,
-        resolution=2,
-        save_location="/home/pi/Videos/",
-        yt_livestream_link="https://youtube.com/watch?v=ISU7pYXEfuE",
-        yt_playlist_link="https://youtube.com/playlist?list=PLTdMMnsiEwSnKNWdLlAEJNiyHgG02ECXN",
-        key="6a8u-vpvr-er4h-e22h",
-    ):
+    def __init__(self, video_config, video_length=30, resolution=2):
 
         if isinstance(video_length, float) or isinstance(video_length, int):
             self.video_length = video_length
@@ -41,29 +33,29 @@ class CameraInterface(object):
                 __name__ + " ERROR: resolution argument is invalid."
             )
 
-        if isinstance(save_location, str):
-            self.save_location = save_location
+        if isinstance(video_config["save_location"], str):
+            self.save_location = video_config["save_location"]
         else:
             # __name__ refers to the caller (main)
             raise ValueError(
                 __name__ + " ERROR: save_location argument is invalid."
             )
-        if isinstance(yt_livestream_link, str):
-            self.yt_livestream_link = yt_livestream_link
+        if isinstance(video_config["yt_livestream_link"], str):
+            self.yt_livestream_link = video_config["yt_livestream_link"]
         else:
             # __name__ refers to the caller (main)
             raise ValueError(
                 __name__ + " ERROR: yt_livestream argument is invalid."
             )
-        if isinstance(yt_playlist_link, str):
-            self.yt_playlist_link = yt_playlist_link
+        if isinstance(video_config["yt_playlist_link"], str):
+            self.yt_playlist_link = video_config["yt_playlist_link"]
         else:
             # __name__ refers to the caller (main)
             raise ValueError(
                 __name__ + " ERROR: yt_playlist argument is invalid."
             )
-        if isinstance(key, str):
-            self.key = key
+        if isinstance(video_config["key"], str):
+            self.key = video_config["key"]
         else:
             # __name__ refers to the caller (main)
             raise ValueError(__name__ + " ERROR: key argument is invalid.")

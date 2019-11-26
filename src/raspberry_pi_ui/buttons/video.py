@@ -16,12 +16,12 @@ class VideoButton(Button):
     Inherit from parent class Button
     """
 
-    def __init__(self, button, pub, msg_q):
+    def __init__(self, button, pub, msg_q, yt_playlist_link):
         """Constructor of the class, which inherit from Button class"""
         super().__init__(button, pub, msg_q, "Video")
 
         # unique functionality flags
-        self.yt_videos_link = None
+        self.yt_videos_link = yt_playlist_link
 
         # set up logger
         with open(
