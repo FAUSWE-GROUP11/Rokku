@@ -1,12 +1,10 @@
 import configparser
 import logging
 from logging import config
-from multiprocessing import Process
 
 import yaml
 
 from src.pi_to_pi.utility import set_up_pub_sub
-from src.raspberry_pi_driver.behaviors import alert
 from src.raspberry_pi_driver.utility import (
     clean_up,
     command_line_parser,
@@ -36,16 +34,6 @@ def main():
     pub, msg_q, listen_proc = set_up_pub_sub(prefix, "in_to_out", "out_to_in")
     logger.info("Publisher and subscriber set up successfully!")
     try:
-        # Set up motion sensor alert
-        # Must use a separate process to handle alert.alert, because it contains
-        # a forever loop, which if directly invoked in UI, would cause failure
-        # when UI is closed.
-        alert_proc = Process(
-            target=alert.alert,
-            name="Alert User",
-            args=(pub.topic, msg_q, logger),
-        )
-        alert_proc.start()
         logger.info("Spinning up UI...")
         rokku_ui = rokku.Main(pub, msg_q, intercom_config)
         rokku_ui.run()
@@ -53,7 +41,7 @@ def main():
     except (KeyboardInterrupt, SystemExit):
         pass  # do nothing here because the code below completes the cleanup
 
-    clean_up(logger, processes=[listen_proc, alert_proc], cmds=[])
+    clean_up(logger, processes=[listen_proc], cmds=[])
     logger.info("\n******* rpi_in_driver ends *******\n")
 
 

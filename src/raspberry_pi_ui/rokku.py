@@ -92,7 +92,6 @@ class Main:
         This will be called on closing the Rokku application
         Should close up any processes that have been started when first loading Rokku
         """
-        # terminate_proc(self.alert_proc, self.logger)
         gtk.main_quit()
 
     def run(self):
