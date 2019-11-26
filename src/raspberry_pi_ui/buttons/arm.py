@@ -79,8 +79,8 @@ class ArmButton(Button):
                         "motion_detected", self.logger, self.msg_q, 100
                     )[1]:
                         # play alert sound
-                        duration = 30
-                        play_notification_sound(duration, self.logger)
+                        repeats = 5
+                        play_notification_sound(repeats, self.logger)
                         # display message box with error
                         message = message_box.MessageBox(
                             "Motion Detected", "Motion is detected outside!"
@@ -94,7 +94,10 @@ class ArmButton(Button):
                     f"Motion status: rpi_in = {self.armed}, rpi_out = {self.armed_out}"
                 )
                 # display message box with error
-                message = message_box.MessageBox("title", "message")
+                message = message_box.MessageBox(
+                    "Motion Sensor Fail",
+                    "Motion sensor on rpi_out fails to start.",
+                )
                 message.run()
 
                 set_button_property(self, "blue", "Arm")
