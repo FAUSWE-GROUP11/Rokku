@@ -7,6 +7,7 @@ import sys
 import time
 
 import httplib2
+import playlist
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload
@@ -149,6 +150,10 @@ def resumable_upload(insert_request):
                     print(
                         "Video id '%s' was successfully uploaded."
                         % response["id"]
+                    )
+                    # Attempts to add successfully uploaded video to a playlist
+                    playlist.add_video_to_playlist(
+                        response["id"], "PLTdMMnsiEwSnKNWdLlAEJNiyHgG02ECXN"
                     )
                 else:
                     exit(

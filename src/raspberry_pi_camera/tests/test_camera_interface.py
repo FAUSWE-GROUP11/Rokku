@@ -32,7 +32,7 @@ class TestClass:
         capture = str(sample)
         assert (
             capture
-            == "Video Length: 30, Resolution: (640, 480), Save Location: /home/pi/Videos/, YouTube Livestream Link: https://youtu.be/t48LW4J8b4A, YouTube Playlist Link: https://www.youtube.com/playlist?list=PLTdMMnsiEwSnKNWdLlAEJNiyHgG02ECXN"
+            == "Video Length: 30, Resolution: (640, 480), Save Location: /home/pi/Videos/, YouTube Livestream Link: https://youtu.be/t48LW4J8b4A, YouTube Playlist Link: https://youtube.com/playlist?list=PLTdMMnsiEwSnKNWdLlAEJNiyHgG02ECXN"
         )
 
     def test_six(self):
