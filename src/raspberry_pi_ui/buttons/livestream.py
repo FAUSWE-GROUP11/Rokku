@@ -2,10 +2,11 @@ import json
 import logging
 import logging.config
 import os
+import webbrowser
 
 import yaml
 
-from src.raspberry_pi_ui import embedded_yt, message_box
+from src.raspberry_pi_ui import message_box
 from src.raspberry_pi_ui.buttons.button import Button
 from src.raspberry_pi_ui.utility import set_button_property, wait_msg
 
@@ -74,10 +75,11 @@ class LivestreamButton(Button):
                         # Does not catch if junk str was sent back
                         if type(self.yt_livestream_link) == str:
                             # display window with livestream
-                            yt_window = embedded_yt.EmbeddedYT(
-                                self.yt_livestream_link, "Livestream"
-                            )
-                            yt_window.run()
+                            # yt_window = embedded_yt.EmbeddedYT(
+                            #     self.yt_livestream_link, "Livestream"
+                            # )
+                            # yt_window.run()
+                            webbrowser.open(self.yt_livestream_link)
                     except IndexError:  # no message received
                         self.logger.error(
                             f"The camera is running, Mqtt broke or the YouTube Api broke. Live Stream status: rpi_in = {self.livestream}"

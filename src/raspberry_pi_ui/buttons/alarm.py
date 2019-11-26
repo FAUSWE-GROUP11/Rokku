@@ -65,7 +65,9 @@ class AlarmButton(Button):
                     f"Alarm status: rpi_in = {self.alarm_sounding}, rpi_out = {self.alarm_sounding_out}"
                 )
                 # display message box with error
-                message = message_box.MessageBox("title", "message")
+                message = message_box.MessageBox(
+                    "Alarm Fail", "Alarm on rpi_out fails to respond!"
+                )
                 message.run()
 
                 set_button_property(self, "blue", "Sound Alarm")

@@ -43,6 +43,7 @@ def main():
     app_config.read("./app_config.ini")
     intercom_config = app_config["mumble"]
     motion_sensor_config = app_config["motion_sensor"]
+    video_config = app_config["video"]
 
     # set up pub sub
     logger.info("Setting up publisher and subscriber")
@@ -51,7 +52,7 @@ def main():
 
     # set up flag for camera
     camera_flags = {"livestream_on": False, "recording_on": False}
-    cam = CameraInterface()  # Create camera object
+    cam = CameraInterface(video_config)  # Create camera object
 
     # set up motion sensor
     motion_queue = Queue()  # set up queue for motion sensor

@@ -15,15 +15,7 @@ class CameraInterface(object):
     using resolution mode 2 or 1 as 0 puts strain on the cameraand reduces
     FPS considerbly."""
 
-    def __init__(
-        self,
-        video_length=30,
-        resolution=2,
-        save_location="/home/pi/Videos/",
-        yt_livestream_link="https://youtu.be/t48LW4J8b4A",
-        yt_playlist_link="https://youtube.com/playlist?list=PLTdMMnsiEwSnKNWdLlAEJNiyHgG02ECXN",
-        key="6a8u-vpvr-er4h-e22h",
-    ):
+    def __init__(self, video_config, video_length=30, resolution=2):
 
         if isinstance(video_length, float) or isinstance(video_length, int):
             self.video_length = video_length
@@ -41,29 +33,29 @@ class CameraInterface(object):
                 __name__ + " ERROR: resolution argument is invalid."
             )
 
-        if isinstance(save_location, str):
-            self.save_location = save_location
+        if isinstance(video_config["save_location"], str):
+            self.save_location = video_config["save_location"]
         else:
             # __name__ refers to the caller (main)
             raise ValueError(
                 __name__ + " ERROR: save_location argument is invalid."
             )
-        if isinstance(yt_livestream_link, str):
-            self.yt_livestream_link = yt_livestream_link
+        if isinstance(video_config["yt_livestream_link"], str):
+            self.yt_livestream_link = video_config["yt_livestream_link"]
         else:
             # __name__ refers to the caller (main)
             raise ValueError(
                 __name__ + " ERROR: yt_livestream argument is invalid."
             )
-        if isinstance(yt_playlist_link, str):
-            self.yt_playlist_link = yt_playlist_link
+        if isinstance(video_config["yt_playlist_link"], str):
+            self.yt_playlist_link = video_config["yt_playlist_link"]
         else:
             # __name__ refers to the caller (main)
             raise ValueError(
                 __name__ + " ERROR: yt_playlist argument is invalid."
             )
-        if isinstance(key, str):
-            self.key = key
+        if isinstance(video_config["key"], str):
+            self.key = video_config["key"]
         else:
             # __name__ refers to the caller (main)
             raise ValueError(__name__ + " ERROR: key argument is invalid.")
@@ -186,19 +178,10 @@ class CameraInterface(object):
 
     def start_yt_stream(self):
         # String of start stream shell script
-        cmd = (
-            "raspivid -o - -t 0 -vf -hf -fps 24 -w 640 -h 480 -b 5000000 | ffmpeg -re -ar 44100 -ac 2 -acodec pcm_s16le -f s16le -ac 2 -i /dev/zero -f h264 -i - -vcodec copy -acodec aac -ab 128k -g 50 -strict experimental -f flv rtmp://a.rtmp.youtube.com/live2/"
-            + self.key
-        )
-
+        cmd = f"{os.path.dirname(__file__)}/start_livestream.sh"
         # Object to start and capture the shell command
-        temp = subprocess.Popen(["bash", "-c", cmd], stdout=subprocess.PIPE)
+        subprocess.Popen(cmd, shell=True)
 
-        # Catches and prints all the output from the shell script
-        output = str(temp.communicate())
-        output = output.split("\\n")
-        for i in range(1, len(output) - 1, 1):
-            print(output[i])
         return self.yt_livestream_link
 
     """This function returns void and turns off the youtube livestream
@@ -207,16 +190,8 @@ class CameraInterface(object):
 
     def stop_yt_stream(self):
         # String of start stream shell script
-        cmd = "pkill raspivid"
-
-        # Object to start and capture the shell command
-        temp = subprocess.Popen(["bash", "-c", cmd], stdout=subprocess.PIPE)
-
-        # Catches and prints all the output from the shell script
-        output = str(temp.communicate())
-        output = output.split("\\n")
-        for i in range(1, len(output) - 1, 1):
-            print(output[i])
+        kill_livestream = "tmux kill-sess -t livestream"
+        subprocess.run(kill_livestream, shell=True)
         # Forcefully free up camera
         camera = PiCamera()
         camera.close()

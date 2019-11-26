@@ -11,7 +11,7 @@ from src.raspberry_pi_driver.utility import hash_prefix
 from src.raspberry_pi_ui.rokku import Main
 
 
-# For more info about pytest.fixture, read
+# For more info about pytest.fixtures, read
 # http://doc.pytest.org/en/latest/fixture.html#fixture-finalization-executing-teardown-code
 # and https://pybit.es/pytest-fixtures.html
 # Note the use of "package" scope. It is important because we want all
@@ -43,7 +43,8 @@ def button():
         f"{os.path.dirname(__file__)}/fixtures/test_app_config.ini"
     )
     intercom_config = app_config["mumble"]
-    ui = Main(in_pub, in_msg_q, intercom_config)
+    video_config = app_config["video"]
+    ui = Main(in_pub, in_msg_q, intercom_config, video_config)
     yield ui.talk_button
     print("tear down button via UI")
     ui.close_application("", "")
