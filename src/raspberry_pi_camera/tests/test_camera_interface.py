@@ -19,7 +19,7 @@ def test_five(camera):
     capture = str(camera)
     assert (
         capture
-        == "Video Length: 30, Resolution: (640, 480), Save Location: /home/pi/Videos/, YouTube Livestream Link: https://youtu.be/t48LW4J8b4A, YouTube Playlist Link: https://youtube.com/playlist?list=PLTdMMnsiEwSnKNWdLlAEJNiyHgG02ECXN"
+        == "Video Length: 30, Resolution: (640, 480), Save Location: /home/pi/Videos/, YouTube Livestream Link: https://youtube.com/watch?v=ISU7pYXEfuE, YouTube Playlist Link: https://youtube.com/playlist?list=PLTdMMnsiEwSnKNWdLlAEJNiyHgG02ECXN"
     )
 
 
