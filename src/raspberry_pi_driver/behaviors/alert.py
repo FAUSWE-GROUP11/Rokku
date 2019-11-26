@@ -41,7 +41,6 @@ def alert(topic, msg_q, logger) -> None:
             message.run()
 
             # for testing purpose only
-            sleep(5)
             pub.publish(json.dumps(["motion_ackd", True]))
 
         sleep(1)
