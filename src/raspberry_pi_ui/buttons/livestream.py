@@ -82,8 +82,9 @@ class LivestreamButton(Button):
                         self.logger.error(
                             f"The camera is running, Mqtt broke or the YouTube Api broke. Live Stream status: rpi_in = {self.livestream}"
                         )
-                        # Change flag
+                        # Change flags
                         self.camera_flags["livestream_on"] = False
+                        self.livestream = False
                         # Turn livestream off
                         self.pub.publish(json.dumps(["livestream", True]))
                         # Reset button to blue
@@ -102,6 +103,7 @@ class LivestreamButton(Button):
                     )
                     # Change flag
                     self.camera_flags["livestream_on"] = False
+                    self.livestream = False
                     # display message to wait for recording to be done
                     message = message_box.MessageBox(
                         "Sorry, but...",
@@ -109,7 +111,7 @@ class LivestreamButton(Button):
                     )
                     message.run()
                 else:
-                    # Change flag
+                    # Change flags
                     self.camera_flags["livestream_on"] = False
                     # Log event
                     self.logger.info("Turned off rpi_out livestream...")
@@ -124,7 +126,8 @@ class LivestreamButton(Button):
                 self.logger.error(
                     f"The camera is running, Mqtt broke or the YouTube Api broke. Live Stream status: rpi_in = {self.livestream}"
                 )
-                # Change flag
+                # Change flags
+                self.livestream = False
                 self.camera_flags["livestream_on"] = False
                 # Reset button to blue
                 set_button_property(self, "blue", "Livestream")
