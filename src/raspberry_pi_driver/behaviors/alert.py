@@ -2,7 +2,8 @@ import json
 from time import sleep
 
 from src.pi_to_pi import publisher
-from src.raspberry_pi_ui.utility import retrieve_msg
+from src.raspberry_pi_ui import message_box
+from src.raspberry_pi_ui.utility import play_notification_sound, retrieve_msg
 
 
 def alert(topic, msg_q, logger) -> None:
@@ -30,14 +31,14 @@ def alert(topic, msg_q, logger) -> None:
             # once "motion_detected" message is received, we do the following
 
             # play alert sound
-            #########################
-            #   Missing code        #
-            #########################
+            duration = 30
+            play_notification_sound(duration, logger)
 
             # show pop-up window
-            #########################
-            #   Missing code        #
-            #########################
+            message = message_box.MessageBox(
+                "Motion Detected", "Motion is detected outside!"
+            )
+            message.run()
 
             # for testing purpose only
             sleep(5)
