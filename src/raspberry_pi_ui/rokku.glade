@@ -7,8 +7,8 @@
     <property name="title" translatable="yes">Rokku</property>
     <property name="resizable">False</property>
     <property name="window_position">center-always</property>
-    <property name="default_width">800</property>
-    <property name="default_height">480</property>
+    <property name="default_width">1024</property>
+    <property name="default_height">600</property>
     <child>
       <placeholder/>
     </child>
