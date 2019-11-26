@@ -1,48 +1,38 @@
-import sys
-
-import fake_rpi
-
-sys.modules["picamera"] = fake_rpi.picamera  # Fake picamera
-
-from .. import camera_interface  # from .. import camera_interface
+def test_one(camera):
+    assert "camera" in globals() or "camera" in locals()
 
 
-"""import os"""
+"""def test_two(self):
+    camera.start_mjpg_streamer()
+    assert camera.check_mjpg_streamer()"""
 
-sample = camera_interface.CameraInterface()
+"""def test_three(self):
+    camera.stop_mjpg_streamer()
+    assert not camera.check_mjpg_streamer()"""
+
+"""def test_four(self):
+    fname = camera.record_video()
+    assert os.path.isfile(fname)"""
 
 
-class TestClass:
-    def test_one(self):
-        assert "sample" in globals() or "sample" in locals()
+def test_five(camera):
+    capture = str(camera)
+    assert (
+        capture
+        == "Video Length: 30, Resolution: (640, 480), Save Location: /home/pi/Videos/, YouTube Livestream Link: https://youtu.be/t48LW4J8b4A, YouTube Playlist Link: https://youtube.com/playlist?list=PLTdMMnsiEwSnKNWdLlAEJNiyHgG02ECXN"
+    )
 
-    """def test_two(self):
-        sample.start_mjpg_streamer()
-        assert sample.check_mjpg_streamer()"""
 
-    """def test_three(self):
-        sample.stop_mjpg_streamer()
-        assert not sample.check_mjpg_streamer()"""
+def test_six(camera):
+    camera.set_video_length(10)
+    assert camera.get_video_length() == 10
 
-    """def test_four(self):
-        fname = sample.record_video()
-        assert os.path.isfile(fname)"""
 
-    def test_five(self):
-        capture = str(sample)
-        assert (
-            capture
-            == "Video Length: 30, Resolution: (640, 480), Save Location: /home/pi/Videos/, YouTube Livestream Link: https://youtu.be/t48LW4J8b4A, YouTube Playlist Link: https://youtube.com/playlist?list=PLTdMMnsiEwSnKNWdLlAEJNiyHgG02ECXN"
-        )
+def test_seven(camera):
+    camera.set_resolution(1)
+    assert camera.get_resolution() == "(1296, 730)"
 
-    def test_six(self):
-        sample.set_video_length(10)
-        assert sample.get_video_length() == 10
 
-    def test_seven(self):
-        sample.set_resolution(1)
-        assert sample.get_resolution() == "(1296, 730)"
-
-    def test_eight(self):
-        sample.set_save_location("/home/pi/Pictures/")
-        assert sample.get_save_location() == "/home/pi/Pictures/"
+def test_eight(camera):
+    camera.set_save_location("/home/pi/Pictures/")
+    assert camera.get_save_location() == "/home/pi/Pictures/"
