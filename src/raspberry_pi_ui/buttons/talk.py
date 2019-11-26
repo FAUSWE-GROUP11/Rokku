@@ -91,7 +91,9 @@ class TalkButton(Button):
                     )
                 )
                 # display message box with error
-                message = message_box.MessageBox("title", "message")
+                message = message_box.MessageBox(
+                    "Intercom Fail", "Intercom fails to start on rpi_out"
+                )
                 message.run()
 
                 self.rpi_in_intercom_on = not mumble.turn_off(self.logger)
