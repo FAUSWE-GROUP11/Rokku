@@ -59,6 +59,9 @@ class Main:
             logging.config.dictConfig(config)
         self.logger = logging.getLogger("UI")
 
+        # set up flag for camera
+        camera_flags = {"livestream_on": False, "recording_on": False}
+
         # connecting all buttons to python
         self.talk_button = talk.TalkButton(
             self.builder.get_object("talkButton"), pub, msg_q, intercom_config
@@ -67,10 +70,13 @@ class Main:
             self.builder.get_object("armButton"), pub, msg_q
         )
         self.record_button = record.RecordButton(
-            self.builder.get_object("recordButton"), pub, msg_q
+            self.builder.get_object("recordButton"), pub, msg_q, camera_flags
         )
         self.livestream_button = livestream.LivestreamButton(
-            self.builder.get_object("livestreamButton"), pub, msg_q
+            self.builder.get_object("livestreamButton"),
+            pub,
+            msg_q,
+            camera_flags,
         )
         self.video_button = video.VideoButton(
             self.builder.get_object("videoButton"), pub, msg_q
