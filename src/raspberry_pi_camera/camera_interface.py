@@ -20,7 +20,7 @@ class CameraInterface(object):
         video_length=30,
         resolution=2,
         save_location="/home/pi/Videos/",
-        yt_livestream_link="https://youtu.be/t48LW4J8b4A",
+        yt_livestream_link="https://youtube.com/watch?v=ISU7pYXEfuE",
         yt_playlist_link="https://youtube.com/playlist?list=PLTdMMnsiEwSnKNWdLlAEJNiyHgG02ECXN",
         key="6a8u-vpvr-er4h-e22h",
     ):
