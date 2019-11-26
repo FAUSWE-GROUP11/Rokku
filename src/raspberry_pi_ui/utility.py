@@ -87,16 +87,17 @@ def wait_msg(identifier: str, logger, msg_q, timeout: int = 10) -> List[Any]:
     return msg_list
 
 
-def play_notification_sound(duration: int, logger):
+def play_notification_sound(repeats: int, logger):
     """
     Plays a sound from a .wav file within sounds.
 
-    :param duration: Allows you to shorten a sound from its original length. If it is bigger than
-    length of audio time the process will finish when the audio file is done playing.
+    :param repeats: Number of times notification sound will be played
 
     :param logger: Logs when an audio message is played.
     """
-    audio_dir = os.getcwd() + "/static/audio/notify.wav"
-    dur_param = "-d" + str(duration)
-    play = subprocess.run(["aplay", "-q", dur_param, audio_dir], check=True)
+    audio_dir = os.path.dirname(__file__) + "/static/audio/notify.wav"
+    rep: int = 0
+    while rep <= repeats:
+        play = subprocess.run(["aplay", "-q", audio_dir], check=True)
+        rep += 1
     logger.info(f"Notification sound: {play}")

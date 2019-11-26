@@ -1,6 +1,7 @@
 import json
 import shlex
 import subprocess
+from time import sleep
 
 from src.raspberry_pi_intercom import mumble
 
@@ -24,6 +25,7 @@ def intercom(pub, flag, config, logger) -> None:
     """
     if flag:
         mumble.turn_on(config, "rpi_out", logger)
+        sleep(1)
         subprocess.run(shlex.split("mumble rpc mute"))  # mute mumble client
         pub.publish(json.dumps(["intercom", mumble.is_on(logger)]))
     else:

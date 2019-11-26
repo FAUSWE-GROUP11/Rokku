@@ -2,12 +2,17 @@ import json
 import logging
 import logging.config
 import os
+from time import sleep
 
 import yaml
 
 from src.raspberry_pi_ui import message_box
 from src.raspberry_pi_ui.buttons.button import Button
-from src.raspberry_pi_ui.utility import set_button_property, wait_msg
+from src.raspberry_pi_ui.utility import (
+    play_notification_sound,
+    set_button_property,
+    wait_msg,
+)
 
 
 class ArmButton(Button):
@@ -68,12 +73,31 @@ class ArmButton(Button):
                 # motion_sensor is 'armed' on rpi_out: turn button to red
                 self.logger.info("Motion sensor ARMED on rpi_out")
                 set_button_property(self, "red", "Disarm")
+
+                while True:
+                    if wait_msg(
+                        "motion_detected", self.logger, self.msg_q, 100
+                    )[1]:
+                        # play alert sound
+                        repeats = 2
+                        play_notification_sound(repeats, self.logger)
+                        # display message box with error
+                        message = message_box.MessageBox(
+                            "Motion Detected", "Motion is detected outside!"
+                        )
+                        message.run()
+                        self.pub.publish(json.dumps(["motion_ackd", True]))
+                    sleep(1)
+
             else:  # A message from rpi_out was not recieved
                 self.logger.error(
                     f"Motion status: rpi_in = {self.armed}, rpi_out = {self.armed_out}"
                 )
                 # display message box with error
-                message = message_box.MessageBox("title", "message")
+                message = message_box.MessageBox(
+                    "Motion Sensor Fail",
+                    "Motion sensor on rpi_out fails to start.",
+                )
                 message.run()
 
                 set_button_property(self, "blue", "Arm")

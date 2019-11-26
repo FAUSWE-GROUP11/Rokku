@@ -279,7 +279,7 @@ aplay recording.wav
 
 # Troubleshooting
 * If you run into this error during downloading and building `barnard`: `fatal: index file smaller than expected git pull`, reinstalling Raspbian can resolve this problem.
-* If you have a USB speaker, identify that it uses sound card 2 (after running `aplay -i`), change the `~/.asoundrc` like this
+* If you have a USB speaker, identify that it uses sound card 2 (after running `aplay -l`), change the `~/.asoundrc` like this
 
 ```
 pcm.!default {
