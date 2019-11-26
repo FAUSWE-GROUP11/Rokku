@@ -8,7 +8,7 @@
     <property name="resizable">False</property>
     <property name="window_position">center-always</property>
     <property name="default_width">1024</property>
-    <property name="default_height">600</property>
+    <property name="default_height">575</property>
     <child>
       <placeholder/>
     </child>

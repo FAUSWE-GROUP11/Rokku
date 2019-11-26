@@ -79,7 +79,7 @@ class ArmButton(Button):
                         "motion_detected", self.logger, self.msg_q, 100
                     )[1]:
                         # play alert sound
-                        repeats = 5
+                        repeats = 2
                         play_notification_sound(repeats, self.logger)
                         # display message box with error
                         message = message_box.MessageBox(
