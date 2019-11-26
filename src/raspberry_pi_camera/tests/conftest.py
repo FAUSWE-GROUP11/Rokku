@@ -14,6 +14,8 @@ from src.raspberry_pi_camera import camera_interface
 def camera():
     """Camera interface object"""
     app_config = configparser.ConfigParser()
-    app_config.read(f"{os.path.dirname(__file__)}/fixtures/app_config.ini")
+    app_config.read(
+        f"{os.path.dirname(__file__)}/fixtures/test_app_config.ini"
+    )
     video_config = app_config["video"]
     yield camera_interface.CameraInterface(video_config)
