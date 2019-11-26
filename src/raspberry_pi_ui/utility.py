@@ -98,5 +98,5 @@ def play_notification_sound(duration: int, logger):
     """
     audio_dir = os.path.dirname(__file__) + "/static/audio/notify.wav"
     dur_param = "-d" + str(duration)
-    play = subprocess.Popen(["aplay", "-q", dur_param, audio_dir])
+    play = subprocess.run(["aplay", "-q", dur_param, audio_dir], check=True)
     logger.info(f"Notification sound: {play}")
