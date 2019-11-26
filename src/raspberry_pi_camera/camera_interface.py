@@ -186,19 +186,10 @@ class CameraInterface(object):
 
     def start_yt_stream(self):
         # String of start stream shell script
-        cmd = (
-            "raspivid -o - -t 0 -vf -hf -fps 24 -w 640 -h 480 -b 5000000 | ffmpeg -re -ar 44100 -ac 2 -acodec pcm_s16le -f s16le -ac 2 -i /dev/zero -f h264 -i - -vcodec copy -acodec aac -ab 128k -g 50 -strict experimental -f flv rtmp://a.rtmp.youtube.com/live2/"
-            + self.key
-        )
-
+        cmd = f"{os.path.dirname(__file__)}/start_livestream.sh"
         # Object to start and capture the shell command
-        temp = subprocess.Popen(["bash", "-c", cmd], stdout=subprocess.PIPE)
+        subprocess.Popen(cmd, shell=True)
 
-        # Catches and prints all the output from the shell script
-        output = str(temp.communicate())
-        output = output.split("\\n")
-        for i in range(1, len(output) - 1, 1):
-            print(output[i])
         return self.yt_livestream_link
 
     """This function returns void and turns off the youtube livestream
@@ -207,16 +198,8 @@ class CameraInterface(object):
 
     def stop_yt_stream(self):
         # String of start stream shell script
-        cmd = "pkill raspivid"
-
-        # Object to start and capture the shell command
-        temp = subprocess.Popen(["bash", "-c", cmd], stdout=subprocess.PIPE)
-
-        # Catches and prints all the output from the shell script
-        output = str(temp.communicate())
-        output = output.split("\\n")
-        for i in range(1, len(output) - 1, 1):
-            print(output[i])
+        kill_livestream = "tmux kill-sess -t livestream"
+        subprocess.run(kill_livestream, shell=True)
         # Forcefully free up camera
         camera = PiCamera()
         camera.close()
