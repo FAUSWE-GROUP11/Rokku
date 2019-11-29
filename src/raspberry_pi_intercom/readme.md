@@ -173,14 +173,14 @@ If both headphone and microphone tests are good, your sound input/output configu
 
 ## I2S Mic, Amp, and Speaker Cone
 ### Finished product
-![RPi I2S Product](https://raw.githubusercontent.com/FAUSWE-GROUP11/Rokku/master/raspberry-pi-intercom/static/rpi_I2S_product.jpg)
+![RPi I2S Product](https://github.com/FAUSWE-GROUP11/Rokku/blob/master/src/raspberry_pi_intercom/static/rpi_I2S_product.jpg)
 
 
 ### Prepare the I2S mic and amp
 In general, follow [this tutorial](https://learn.adafruit.com/adafruit-i2s-mems-microphone-breakout/overview) to solder I2S mic and wire it to RPi. Similarly, follow [this tutorial](https://learn.adafruit.com/adafruit-max98357-i2s-class-d-mono-amp/overview) for I2S amp solder and wiring. However, since we are going to configure both the mic and amp, the eventual wiring and configuration are slightly modified (see below for details).
 
 ### Wiring diagram
-![RPi I2S Wiring](https://raw.githubusercontent.com/FAUSWE-GROUP11/Rokku/master/raspberry-pi-intercom/static/rpi_I2S_wiring.png)
+![RPi I2S Wiring](https://github.com/FAUSWE-GROUP11/Rokku/blob/master/src/raspberry_pi_intercom/static/rpi_I2S_wiring.png)
 
 ### I2S mic configuration
 Follow exactly the procedures laied out [here](https://learn.adafruit.com/adafruit-i2s-mems-microphone-breakout/raspberry-pi-wiring-and-test). No change needed.

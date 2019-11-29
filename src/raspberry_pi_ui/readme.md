@@ -5,7 +5,7 @@
 One of the main dependencies is the `gi` module. For Raspbian, it is included in system site-packages. However, system site-packages are by default not included in the virtual environment. In order to not flood our `requirements.txt` with unused system site-packages, we should refrain from including system site-packages in the virtual environment. In order to install the `gi` module, follow the steps below (thanks to [this SO answer](https://stackoverflow.com/questions/26678457/how-do-i-install-python3-gi-within-virtualenv)):
 
 1. Install GTK+ 3 / GIR.
-`sudo apt-get install libcairo2-dev libgirepository1.0-dev gir1.2-gtk-3.0`
+`sudo apt-get install libcairo2-dev libgirepository1.0-dev gir1.2-gtk-3.0 gir1.2-webkit-3.0`
 2. Activate your virtual environment, and then install `pygobject`: `pip3 install pygobject`
 3. Test whether `gi` module is available now:
 
@@ -15,6 +15,8 @@ One of the main dependencies is the `gi` module. For Raspbian, it is included in
 1. Install GTK+ 3 with Homebrew: `brew install gtk+3`. 
 2. Activate your virtual environment, and then install `pygobject`: `PKG_CONFIG_PATH=/usr/local/opt/libffi/lib/pkgconfig ARCHFLAGS="-arch x86_64" pip3 install pygobject`
 3. Test whether `gi` module is available now.
+
+`webkit` is also NOT included in MacOS. One might need to download it from [the official website](https://webkit.org/downloads/). However, this is not tested.
 
 ## Spin up UI Window
 To spin up the UI window, run `python3 rpi_in_driver.py -p [public_id]` from root directory and under virtual environment. `public_id` is a unique string to specify MQTT channel. It must be the same for `rpi_in_driver` and `rpi_out_driver` to enable communication between the two.
