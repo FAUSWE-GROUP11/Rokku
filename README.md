@@ -23,7 +23,7 @@
 * **`src/raspberry_pi_motion_sensor`**: Motion sensor interface to properly detect a true motion and send out a trigger.
 * **`src/raspberry_pi_ui`**: Component for user interface, relying on `Gtk` library for processing button clicks and `glade` framework to draw out the UI. 
 
-When both `rpi_in` and `rpi_out` drivers are initiated, the two Raspberry Pis will share two MQTT channels, one for `rpi_in` to send messages to `rpi_out`, and the other `rpi_out` to `rpi_in`. `rpi_in` starts the UI, through which user can send commands to `rpi_out` via button click. Meanwhile, `rpi_out` is actively waiting for commands to arrive so that it can react accordingly. For a general example of how the two Raspberry Pis coordinate actions, we can take a closer look at how the intercom system works. After user presses the button to initiate intercom from `rpi_in`, `rpi_in` spins up its own Mumble client and sends a command (a json-encoded message) via the "in-to-out" MQTT channel to `rpi_out`. `rpi_out`, upon receiving the command, turns on its own Mumble client. It then sends a message back to `rpi_in` via the "out-to-in" MQTT channel, reporting whether the Mumble client has been successfully started. After `rpi_in` receives this report, based on whether Mumble clients have been successfully started on both ends, `rpi_in` will indicate user to start using the intercom service or display error message. This work flow applies to most of the other functionalities that require communication between the two Raspberry Pis.
+When both `rpi_in` and `rpi_out` drivers are initiated, the two Raspberry Pis will share two MQTT topics, one for `rpi_in` to send messages to `rpi_out`, and the other `rpi_out` to `rpi_in`. `rpi_in` starts the UI, through which user can send commands to `rpi_out` via button click. Meanwhile, `rpi_out` is actively waiting for commands to arrive so that it can react accordingly. For a general example of how the two Raspberry Pis coordinate actions, we can take a closer look at how the intercom system works. After user presses the button to initiate intercom from `rpi_in`, `rpi_in` spins up its own Mumble client and sends a command (a json-encoded message) via the "in-to-out" MQTT topic to `rpi_out`. `rpi_out`, upon receiving the command, turns on its own Mumble client. It then sends a message back to `rpi_in` via the "out-to-in" MQTT topic, reporting whether the Mumble client has been successfully started. After `rpi_in` receives this report, based on whether Mumble clients have been successfully started on both ends, `rpi_in` will indicate user to start using the intercom service or display error message. This work flow applies to most of the other functionalities that require communication between the two Raspberry Pis.
 
 ## Usage
 ### Clone This Repo
@@ -70,7 +70,7 @@ For `rpi_in`: `python3 rpi_in_driver.py -p <unique_string>`
 
 For `rpi_out`: `python3 rpi_out_driver.py -p <unique_string>`
 
-The `<unique_string>` is used as a prefix for the MQTT channel where the two Raspebrry Pis will be communicating. It can be any string, but for security reasons, it should be sufficiently unique to the user. This string MUST be the same for both `rpi_in` and `rpi_out`.
+The `<unique_string>` is used as a prefix for the MQTT topic where the two Raspebrry Pis will be communicating. It can be any string, but for security reasons, it should be sufficiently unique to the user. This string MUST be the same for both `rpi_in` and `rpi_out`.
 
 Once both drivers are actively running, user can use `Rokku` via the UI on `rpi_in`.
 
@@ -80,11 +80,11 @@ Once both drivers are actively running, user can use `Rokku` via the UI on `rpi_
 Both livestream and video upload must be authenticated by Google via oauth2. The youtube account should also be set up private and youtube playlist set to "unlisted" to ensure no third party can get access to the footage.
 
 ### MQTT Broker
-Since the server used for MQTT is free to the public (test.mosquitto.org), security is built into the channel name such that it is almost impossible for any third party to eavesdrop on the communication between the two Raspberry Pis. User is **strongly recommended** to change the `SALT` value in the `hash_prefix` function in `src/raspberry_pi_driver/utility.py` before using `Rokku`. The `SALT` value should be a random string. Once changed, it can remain as is, unless it is exposed to a third party. 
+Since the server used for MQTT is free to the public (test.mosquitto.org), security is built into the topic name such that it is almost impossible for any third party to eavesdrop on the communication between the two Raspberry Pis. User is **strongly recommended** to change the `SALT` value in the `hash_prefix` function in `src/raspberry_pi_driver/utility.py` before using `Rokku`. The `SALT` value should be a random string. Once changed, it can remain as is, unless it is exposed to a third party. 
 
-Upon starting the driver, user must provide a string to generate a prefix for the MQTT channel (along with the `SALT`). This string does not have to be random, but should be sufficiently unique to the user.
+Upon starting the driver, user must provide a string to generate a prefix for the MQTT topic (along with the `SALT`). This string does not have to be random, but should be sufficiently unique to the user.
 
-With both a sufficiently unique string and a never-exposed random `SALT`, we can generate a very secure channel name.
+With both a sufficiently unique string and a never-exposed random `SALT`, we can generate a very secure topic name.
 
 ### Mumble
 In order to prevent third party from eavesdropping on the intercom conversation, user is **strongly recommended** to set up access-control list (ACL) on a specific `Rokku` channel for ONLY `rpi_in` and `rpi_out`. This way, no other party is able to join the `Rokku` channel. Please refer to the [intercom doc on mumble](https://github.com/FAUSWE-GROUP11/Rokku/blob/master/src/raspberry_pi_intercom/readme.md#benefits-of-mumble) for how to set up ACL for a specific Mumble channel.
