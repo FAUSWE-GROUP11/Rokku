@@ -41,7 +41,7 @@ def hash_prefix(public_id: str) -> str:
     Raises:
         None
     """
-    SALT = "sYEuhMrWC6".encode("utf-8")  # This salt MUST NOT change!
+    SALT = "sYEuhMrWC6".encode("utf-8")  # User MUST change this SALT
     h_addr = blake2b(digest_size=32, salt=SALT)
     h_addr.update(public_id.encode("utf-8"))
     return h_addr.hexdigest()
