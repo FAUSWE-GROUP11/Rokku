@@ -14,7 +14,7 @@ fake-rpi==0.6.2
 google-api-python-client==1.7.11
 google-auth==1.7.1
 google-auth-httplib2==0.0.3
-httplib2==0.14.0
+httplib2==0.18.0
 identify==1.4.7
 idna==2.8
 importlib-metadata==0.23
