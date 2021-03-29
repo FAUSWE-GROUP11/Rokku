@@ -31,7 +31,7 @@ pre-commit==1.18.3
 py==1.8.0
 pyasn1==0.4.8
 pyasn1-modules==0.2.7
-Pygments==2.4.2
+Pygments==2.7.4
 PyGObject==3.34.0
 pyparsing==2.4.2
 pytest==5.2.1
