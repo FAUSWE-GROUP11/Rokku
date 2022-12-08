@@ -5,7 +5,7 @@ attrs==19.3.0
 bleach==3.1.2
 build-utils==0.3.2
 cachetools==3.1.1
-certifi==2019.9.11
+certifi==2022.12.7
 cfgv==2.0.1
 chardet==3.0.4
 colorama==0.4.1
